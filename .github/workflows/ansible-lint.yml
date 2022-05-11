@@ -1,0 +1,11 @@
+name: Verify last minute flow
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run ansible-lint
+        uses: ansible-community/ansible-lint-action@main

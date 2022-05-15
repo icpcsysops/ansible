@@ -9,6 +9,3 @@ ldap_organization: ICPC
 
 # Domain name to use as base for LDAP in DNS format
 ldap_domain: icpc.global
-
-# IP address of the LDAP server
-ldap_server_ip: 10.0.0.203

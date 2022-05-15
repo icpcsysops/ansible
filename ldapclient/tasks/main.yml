@@ -1,3 +1,7 @@
+- name: Set fact with LDAP server IP address
+  ansible.builtin.set_fact:
+    ldap_server_ip: "{{ hostvars['ldap-server']['ansible_host'] }}"
+
 - name: Set nscld LDAP settings
   ansible.builtin.debconf:
     name: nscld

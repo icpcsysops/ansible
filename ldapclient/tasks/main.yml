@@ -1,0 +1,51 @@
+- name: Set nscld LDAP settings
+  ansible.builtin.debconf:
+    name: nscld
+    question: "nslcd/{{ item.key }}"
+    value: "{{ item.value }}"
+    vtype: string
+  loop:
+    - key: ldap-base
+      value: "{{ ldap_domain_dc }}"
+    - key: ldap-uris
+      value: "ldap://{{ ldap_server_ip }}/"
+  notify: Restart nscd
+
+- name: Configure libnss-ldapd nsswitch information
+  ansible.builtin.debconf:
+    name: libnss-ldapd
+    question: libnss-ldapd/nsswitch
+    value: passwd, group
+    vtype: multiselect
+
+- name: Set ldap-auth-config LDAP settings
+  ansible.builtin.debconf:
+    name: ldap-auth-config
+    question: "ldap-auth-config/{{ item.key }}"
+    value: "{{ item.value }}"
+    vtype: string
+  loop:
+    - key: ldapns/base-dn
+      value: "{{ ldap_domain_dc }}"
+    - key: ldapns/ldap-server
+      value: "ldap://{{ ldap_server_ip }}/"
+    - key: rootbinddn
+      value: cn=admin,{{ ldap_domain_dc }}
+  notify: Restart nscd
+
+- name: Set ldap-auth-config LDAP root bind password
+  ansible.builtin.debconf:
+    name: ldap-auth-config
+    question: ldap-auth-config/rootbindpw
+    value: "{{ ldap_admin_password }}"
+    vtype: password
+  changed_when: false # This is neede because otherwise this task will report as changed every time
+  notify: Restart nscd
+
+- name: Install LDAP authentication packages
+  ansible.builtin.apt:
+    pkg:
+      - libnss-ldapd
+      - libpam-ldapd
+      - ldap-auth-config
+  notify: Restart nscd

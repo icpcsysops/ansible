@@ -1,0 +1,4 @@
+- name: Restart nscd
+  ansible.builtin.systemd:
+    name: nscd
+    state: restarted

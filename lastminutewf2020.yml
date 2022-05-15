@@ -1,17 +1,25 @@
 ---
-- hosts: contestants
-  vars:
-    host_type: contestant
-    version: ansibleconversion0.1
-    baseip: 10.3.3
+- hosts: all
   roles:
     - role: timezone
       tags: timezone
-    - role: packages
-      tags: packages
+- hosts: contestants
+  vars:
+    baseip: 10.3.3
+  roles:
+    - role: ldapclient
+      tags: ldapclient
+    # - role: packages
+    #   tags: packages
+- hosts: ldapserver
+  roles:
+    - role: ldapserver
+      tags: ldapserver
+- hosts: all
   tasks:
     - name: Log version of script on client
       community.general.syslogger:
         ident: "lastminute"
         msg: "Finished {{ version }}"
         priority: "notice"
+      changed_when: false

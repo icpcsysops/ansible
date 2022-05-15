@@ -1,6 +1,10 @@
-- name: Set fact with LDAP server IP address
+- name: Set fact with LDAP server URL (untrimmed)
   ansible.builtin.set_fact:
-    ldap_server_ip: "{{ hostvars['ldap-server']['ansible_host'] }}"
+    ldap_server_urls_untrimmed: "{% for host in groups['ldapserver'] %}ldap://{{ hostvars[host]['ansible_host'] }}/ {% endfor %}"
+
+- name: Set fact with LDAP server URL (trimmed)
+  ansible.builtin.set_fact:
+    ldap_server_urls: "{{ ldap_server_urls_untrimmed | trim }}"
 
 - name: Set nscld LDAP settings
   ansible.builtin.debconf:
@@ -12,7 +16,7 @@
     - key: ldap-base
       value: "{{ ldap_domain_dc }}"
     - key: ldap-uris
-      value: "ldap://{{ ldap_server_ip }}/"
+      value: "{{ ldap_server_urls }}"
   notify: Restart nscd
 
 - name: Configure libnss-ldapd nsswitch information
@@ -32,7 +36,7 @@
     - key: ldapns/base-dn
       value: "{{ ldap_domain_dc }}"
     - key: ldapns/ldap-server
-      value: "ldap://{{ ldap_server_ip }}/"
+      value: "{{ ldap_server_urls }}"
     - key: rootbinddn
       value: cn=admin,{{ ldap_domain_dc }}
   notify: Restart nscd

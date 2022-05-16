@@ -1,14 +1,10 @@
-- name: Set fact with LDAP server URL (untrimmed)
-  ansible.builtin.set_fact:
-    ldap_server_urls_untrimmed: "{% for host in groups['ldapserver'] %}ldap://{{ hostvars[host]['ansible_host'] }}/ {% endfor %}"
-
 - name: Set fact with LDAP server URL (trimmed)
   ansible.builtin.set_fact:
-    ldap_server_urls: "{{ ldap_server_urls_untrimmed | trim }}"
+    ldap_server_urls: "ldap://{{ groups['ldapserver'] | map('extract', hostvars, ['ansible_host']) | join('/ ldap://') | trim }}/"
 
-- name: Set nscld LDAP settings
+- name: Set nslcd LDAP settings
   ansible.builtin.debconf:
-    name: nscld
+    name: nslcd
     question: "nslcd/{{ item.key }}"
     value: "{{ item.value }}"
     vtype: string
@@ -17,7 +13,9 @@
       value: "{{ ldap_domain_dc }}"
     - key: ldap-uris
       value: "{{ ldap_server_urls }}"
-  notify: Restart nscd
+  notify:
+    - Reconfigure nslcd
+    - Restart nscd
 
 - name: Configure libnss-ldapd nsswitch information
   ansible.builtin.debconf:
@@ -25,6 +23,9 @@
     question: libnss-ldapd/nsswitch
     value: passwd, group
     vtype: multiselect
+  notify:
+    - Reconfigure nslcd
+    - Restart nscd
 
 - name: Set ldap-auth-config LDAP settings
   ansible.builtin.debconf:
@@ -39,7 +40,9 @@
       value: "{{ ldap_server_urls }}"
     - key: rootbinddn
       value: cn=admin,{{ ldap_domain_dc }}
-  notify: Restart nscd
+  notify:
+    - Reconfigure ldap-auth-config
+    - Restart nscd
 
 - name: Set ldap-auth-config LDAP root bind password
   ansible.builtin.debconf:
@@ -48,7 +51,9 @@
     value: "{{ ldap_admin_password }}"
     vtype: password
   changed_when: false # This is needed because otherwise this task will report as changed every time
-  notify: Restart nscd
+  notify:
+    - Reconfigure ldap-auth-config
+    - Restart nscd
 
 - name: Install LDAP authentication packages
   ansible.builtin.apt:

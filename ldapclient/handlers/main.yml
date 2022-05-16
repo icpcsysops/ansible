@@ -2,3 +2,15 @@
   ansible.builtin.systemd:
     name: nscd
     state: restarted
+
+# See https://serverfault.com/a/1059752 for why we move the dpkg config file out of the way
+
+- name: Reconfigure nslcd
+  ansible.builtin.include_tasks: reconfigure_package.yml
+  vars:
+    package: nslcd
+
+- name: Reconfigure ldap-auth-config
+  ansible.builtin.include_tasks: reconfigure_package.yml
+  vars:
+    package: ldap-auth-config

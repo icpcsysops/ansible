@@ -4,7 +4,7 @@
     question: slapd/{{ item }}
     value: "{{ ldap_admin_password }}"
     vtype: password
-  changed_when: false # This is neede because otherwise this task will report as changed every time
+  changed_when: false # This is needed because otherwise this task will report as changed every time
   loop:
     - password1
     - password2

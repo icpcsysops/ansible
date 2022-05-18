@@ -1,0 +1,4 @@
+# Variables for all hosts that will not change between different contests
+ansible_user: root
+ansible_python_interpreter: /usr/bin/python3
+version: ansibleconversion0.1

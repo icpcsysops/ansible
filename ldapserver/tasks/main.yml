@@ -1,0 +1,41 @@
+- name: Set LDAP admin password
+  ansible.builtin.debconf:
+    name: slapd
+    question: slapd/{{ item }}
+    value: "{{ ldap_admin_password }}"
+    vtype: password
+  changed_when: false # This is needed because otherwise this task will report as changed every time
+  loop:
+    - password1
+    - password2
+
+- name: Set LDAP organization
+  ansible.builtin.debconf:
+    name: slapd
+    question: shared/organization
+    value: "{{ ldap_organization }}"
+    vtype: string
+
+- name: Set LDAP domain
+  ansible.builtin.debconf:
+    name: slapd
+    question: slapd/domain
+    value: "{{ ldap_domain }}"
+    vtype: string
+
+- name: Install LDAP server and utilities
+  ansible.builtin.apt:
+    pkg:
+      - slapd
+      - ldap-utils
+      - python3-ldap
+
+- name: Add group and people organizational units
+  community.general.ldap_entry:
+    dn: ou={{ item }},{{ ldap_domain_dc }}
+    objectClass: organizationalUnit
+    bind_dn: cn=admin,{{ ldap_domain_dc }}
+    bind_pw: "{{ ldap_admin_password }}"
+  loop:
+    - people
+    - groups

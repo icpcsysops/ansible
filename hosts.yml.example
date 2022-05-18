@@ -1,0 +1,12 @@
+# Hosts file for Ansible. Copy this file to `hosts.yml` and change its contents
+contestants:
+  hosts:
+    team1:
+      ansible_host: 10.0.0.153
+ldapserver:
+  hosts:
+    ldap-server1:
+      ansible_host: 10.0.0.203
+  hosts:
+    ldap-server2:
+      ansible_host: 10.0.0.204

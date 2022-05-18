@@ -1,0 +1,11 @@
+# Variables that will change between different contests.
+# Copy this file to `dynamic.yml` and change the variables
+
+# Password for the LDAP admin user
+ldap_admin_password: supersecretpassword
+
+# Organization to use for LDAP
+ldap_organization: ICPC
+
+# Domain name to use as base for LDAP in DNS format
+ldap_domain: icpc.global

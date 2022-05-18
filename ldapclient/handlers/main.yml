@@ -1,0 +1,20 @@
+- name: Restart nscd
+  ansible.builtin.systemd:
+    name: nscd
+    state: restarted
+
+# See https://serverfault.com/a/1059752 for why we move the dpkg config file out of the way
+
+- name: Reconfigure nslcd
+  ansible.builtin.shell:
+    cmd: |
+      mv /var/lib/dpkg/info/nslcd.config /var/lib/dpkg/info/nslcd.config.ansible-tmp &&
+      dpkg-reconfigure -f noninteractive nslcd &&
+      mv /var/lib/dpkg/info/nslcd.config.ansible-tmp /var/lib/dpkg/info/nslcd.config
+
+- name: Reconfigure ldap-auth-config
+  ansible.builtin.shell:
+    cmd: |
+      mv /var/lib/dpkg/info/ldap-auth-config.config /var/lib/dpkg/info/ldap-auth-config.config.ansible-tmp &&
+      dpkg-reconfigure -f noninteractive ldap-auth-config &&
+      mv /var/lib/dpkg/info/ldap-auth-config.config.ansible-tmp /var/lib/dpkg/info/ldap-auth-config.config

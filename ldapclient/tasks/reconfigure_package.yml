@@ -1,9 +1,0 @@
-- name: move config file out of the way
-  ansible.builtin.command:
-    cmd: mv /var/lib/dpkg/info/{{ package }}.config /var/lib/dpkg/info/{{ package }}.config.ansible-tmp
-- name: Run dpkg-reconfigure
-  ansible.builtin.command:
-    cmd: dpkg-reconfigure -f noninteractive {{ package }}
-- name: Move config file back
-  ansible.builtin.command:
-    cmd: mv /var/lib/dpkg/info/{{ package }}.config.ansible-tmp /var/lib/dpkg/info/{{ package }}.config

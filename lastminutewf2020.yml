@@ -1,11 +1,18 @@
 ---
 - hosts: all
   roles:
-    - role: timezone
-      tags: timezone
+    - role: stuvusIT.systemd-timesyncd
+      timesync_timezone: "{{ timezone }}"
+      timesync_ntp_hosts:
+         - "{{ baseip }}.208"
+         - "{{ baseip }}.209"
+         - "{{ baseip }}.210"
+      timesync_fallback_ntp_hosts:
+        - "{{ baseip }}.208"
+        - "{{ baseip }}.209"
+        - "{{ baseip }}.210"
+      tags: systemd-timesyncd
 - hosts: contestants
-  vars:
-    baseip: 10.3.3
   roles:
     - role: ldapclient
       tags: ldapclient

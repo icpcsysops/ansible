@@ -26,7 +26,10 @@
   tasks:
     - name: point rsyslog to backup
       ansible.builtin.copy:
-        src: rsyslog.d.70-clients.conf
+        content: |
+          # ship the important logs to backup
+          kern.warning                    @backup
+          auth,authpriv.*                 @backup
         dest: /etc/rsyslog.d/70-clients.conf
         owner: root
         group: root

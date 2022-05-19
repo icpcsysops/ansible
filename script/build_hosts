@@ -94,6 +94,14 @@ ldapserver:
       ansible_host: 10.3.3.211
     ldap-server2:
       ansible_host: 10.3.3.210
+ntpservers:
+  hosts:
+     backup:
+       ansible_host: 10.3.3.210
+     scoreboard:
+       ansible_host: 10.3.3.208
+     packages:
+       ansible_host: 10.3.3.209
 all:
   vars:
     timezone: {timezone}

@@ -1,0 +1,3 @@
+[submodule "systemd-timesyncd"]
+	path = systemd-timesyncd
+	url = https://github.com/stuvusIT/systemd-timesyncd

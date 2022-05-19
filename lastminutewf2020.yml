@@ -22,6 +22,15 @@
   roles:
     - role: ldapserver
       tags: ldapserver
+- hosts: all:!backup
+  tasks:
+    - name: point rsyslog to backup
+      ansible.builtin.copy:
+        src: rsyslog.d.70-clients.conf
+        dest: /etc/rsyslog.d/70-clients.conf
+        owner: root
+        group: root
+        mode: '0644'
 - hosts: all
   tasks:
     - name: Ensure scoreboard in /etc/hosts
@@ -45,30 +54,18 @@
         owner: root
         group: root
         mode: '0644'
-    - name: Replace sysopspackages.icpc.global in /etc/apt/sources.list with packages
+    - name: Replace sysopspackages.icpc.global with packages
       ansible.builtin.replace:
-        path: /etc/apt/sources.list
+        path: /etc/apt/{{ item }}
         regexp: "sysopspackages.icpc.global"
         replace: "packages"
         owner: root
         group: root
         mode: '0644'
-    - name: Replace sysopspackages.icpc.global in /etc/apt/sources.list.d/mono.list with packages
-      ansible.builtin.replace:
-        path: /etc/apt/sources.list.d/mono.list
-        regexp: "sysopspackages.icpc.global"
-        replace: "packages"
-        owner: root
-        group: root
-        mode: '0644'
-    - name: Replace sysopspackages.icpc.global in /etc/apt/sources.list.d/pypy-ubuntu-ppa-buster.list with packages
-      ansible.builtin.replace:
-        path: /etc/apt/sources.list.d/pypy-ubuntu-ppa-buster.list
-        regexp: "sysopspackages.icpc.global"
-        replace: "packages"
-        owner: root
-        group: root
-        mode: '0644'
+      loop:
+        - "sources.list"
+        - "sources.list.d/mono.list"
+        - "sources.list.d/pypy-ubuntu-ppa-buster.list"
     - name: Log version of script on client
       community.general.syslogger:
         ident: "lastminute"

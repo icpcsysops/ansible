@@ -45,6 +45,30 @@
         owner: root
         group: root
         mode: '0644'
+    - name: Replace sysopspackages.icpc.global in /etc/apt/sources.list with packages
+      ansible.builtin.replace:
+        path: /etc/apt/sources.list
+        regexp: "sysopspackages.icpc.global"
+        replace: "packages"
+        owner: root
+        group: root
+        mode: '0644'
+    - name: Replace sysopspackages.icpc.global in /etc/apt/sources.list.d/mono.list with packages
+      ansible.builtin.replace:
+        path: /etc/apt/sources.list.d/mono.list
+        regexp: "sysopspackages.icpc.global"
+        replace: "packages"
+        owner: root
+        group: root
+        mode: '0644'
+    - name: Replace sysopspackages.icpc.global in /etc/apt/sources.list.d/pypy-ubuntu-ppa-buster.list with packages
+      ansible.builtin.replace:
+        path: /etc/apt/sources.list.d/pypy-ubuntu-ppa-buster.list
+        regexp: "sysopspackages.icpc.global"
+        replace: "packages"
+        owner: root
+        group: root
+        mode: '0644'
     - name: Log version of script on client
       community.general.syslogger:
         ident: "lastminute"

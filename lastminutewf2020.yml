@@ -24,6 +24,27 @@
       tags: ldapserver
 - hosts: all
   tasks:
+    - name: Ensure scoreboard in /etc/hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ baseip }}.208	scoreboard"
+        owner: root
+        group: root
+        mode: '0644'
+    - name: Ensure packages in /etc/hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ baseip }}.209	packages"
+        owner: root
+        group: root
+        mode: '0644'
+    - name: Ensure backup in /etc/hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ baseip }}.210	backup"
+        owner: root
+        group: root
+        mode: '0644'
     - name: Log version of script on client
       community.general.syslogger:
         ident: "lastminute"

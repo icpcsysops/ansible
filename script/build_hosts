@@ -1,0 +1,101 @@
+#!/usr/bin/python3
+
+import yaml
+
+contestants = {}
+judges = {}
+others = {}
+wf = 0
+if wf:
+    timezone = "Asia/Dhaka"
+    max_team = 152
+    max_human_judge = 12
+    max_pc2_autojudge = 0
+    max_kattis_autojudge = 16
+    max_domjudge = 16
+    max_domjudge_ccsadmin = 5
+    max_ccsadmin = 5
+else:
+    # nac2022
+    timezone = "America/New_York"
+    max_team = 53
+    max_human_judge = 12
+    max_pc2_autojudge = 0
+    max_kattis_autojudge = 0
+    max_domjudge = 0
+    max_domjudge_ccsadmin = 0
+    max_ccsadmin = 0
+
+
+def print_host(num, hostname, ip, list_fh, group, base_ip=0):
+    group[f"{hostname}{num}"] = {"ansible_host": f"{ip}.{base_ip+num}"}
+    print(f"{hostname}{num}", file=list_fh)
+
+
+def print_server(hostname, ip, group=[]):
+    group[f"{hostname}"] = {"ansible_host": f"{ip}"}
+
+
+if __name__ == "__main__":
+    with open("../hosts.yml", "wt") as fh:
+        with open("../list.team", "wt") as list_fh:
+            for i in range(max_team):
+                print_host(i + 1, "team", "10.0.0", list_fh, contestants)
+        document = f"""
+contestants:
+  hosts: {contestants}
+"""
+        print(yaml.dump(yaml.safe_load(document), explicit_start=True), file=fh)
+        with open("../list.judge", "wt") as list_fh:
+            for i in range(max_human_judge):
+                print_host(i + 1, "judge", "10.2.2", list_fh, judges)
+        with open("../list.autojudges", "wt") as list_fh:
+            for i in range(max_kattis_autojudge):
+                print_host(i + 1, "autojudge", "10.2.2", list_fh, judges, 31)
+        with open("../list.pc2judges", "wt") as list_fh:
+            for i in range(max_pc2_autojudge):
+                print_host(i + 1, "pc2-aj", "10.2.2", list_fh, judges, 143)
+        with open("../list.domjudges", "wt") as list_fh:
+            for i in range(max_domjudge):
+                print_host(i + 1, "domjudge-judgehost", "10.2.2", list_fh, judges, 192)
+        document = f"""
+judges:
+  hosts: {judges}
+"""
+        print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)
+        with open("../list.domjudges_ccsadmin", "wt") as list_fh:
+            for i in range(max_domjudge_ccsadmin):
+                print_host(i + 1, "domjudge-ccsadmin", "10.3.3", list_fh, others, 222)
+        with open("../list.ccsadmin", "wt") as list_fh:
+            for i in range(max_ccsadmin):
+                print_host(i + 1, "-ccsadmin", "10.3.3", list_fh, others, 231)
+        print_server("squidserver", "10.3.3.205", others)
+        # print_server("media", "10.3.3.206", others);
+        print_server("cds", "10.3.3.207", others)
+        print_server("scoreboard", "10.3.3.208", others)
+        print_server("packages", "10.3.3.209", others)
+        print_server("backup", "10.3.3.210", others)
+        print_server("authprint", "10.3.3.211", others)
+        # print_server("kattis", "10.3.3.212", others)
+        # print_server("kattisbackup", "10.3.3.213", others)
+        print_server("squidserver", "10.3.3.214", others)
+        # print_server("pc2-shadowccs", "10.3.3.215", others)
+        # print_server("domserver", "10.3.3.216", others)
+        document = f"""
+others:
+  hosts:
+    {others}
+"""
+        print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)
+        document = f"""
+ldapserver:
+  hosts:
+    ldap-server1:
+      ansible_host: 10.3.3.211
+    ldap-server2:
+      ansible_host: 10.3.3.210
+all:
+  vars:
+    timezone: {timezone}
+"""
+        print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)

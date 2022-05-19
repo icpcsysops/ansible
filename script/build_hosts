@@ -7,6 +7,7 @@ judges = {}
 others = {}
 wf = 0
 if wf:
+    timezone = "Asia/Dhaka"
     max_team = 152
     max_human_judge = 12
     max_pc2_autojudge = 0
@@ -16,6 +17,7 @@ if wf:
     max_ccsadmin = 5
 else:
     # nac2022
+    timezone = "America/New_York"
     max_team = 53
     max_human_judge = 12
     max_pc2_autojudge = 0
@@ -85,12 +87,15 @@ others:
     {others}
 """
         print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)
-        document = """
+        document = f"""
 ldapserver:
   hosts:
     ldap-server1:
       ansible_host: 10.3.3.211
     ldap-server2:
       ansible_host: 10.3.3.210
+all:
+  vars:
+    timezone: {timezone}
 """
         print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)

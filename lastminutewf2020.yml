@@ -1,7 +1,7 @@
 ---
 - hosts: all
   roles:
-    - role: systemd-timesyncd
+    - role: stuvusIT.systemd-timesyncd
       timesync_timezone: "{{ timezone }}"
       timesync_ntp_hosts:
          - "{{ baseip }}.208"

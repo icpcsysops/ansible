@@ -1,0 +1,21 @@
+---
+- hosts: contestants
+  tasks:
+    - name: enable autologin to user p
+      ansible.builtin.copy:
+        content: |
+          [daemon]
+          AutomaticLoginEnable = true
+          AutomaticLogin = p
+          [security]
+          
+          [xdmcp]
+          
+          [chooser]
+          
+          [debug]
+        dest: /etc/gdm3/custom.conf
+        owner: root
+        group: root
+        mode: '0644'
+

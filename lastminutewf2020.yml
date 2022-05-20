@@ -111,3 +111,41 @@
         msg: "Finished {{ version }}"
         priority: "notice"
       changed_when: false
+    - name: workaround nautilus auto-mounting
+      ansible.builtin.file:
+        path: /media
+        owner: root
+        group: root
+        mode: "0700"
+    - name: gvfs permission tweaking
+      ansible.builtin.file:
+        path: /usr/lib/gvfs/gvfs-{{ item }}
+        owner: root
+        group: root
+        mode: "0744"
+      loop:
+        - "udisks2-volume-monitor"
+    - name: gvfsd permission tweaking
+      ansible.builtin.file:
+        path: /usr/lib/gvfs/gvfsd-{{ item }}
+        owner: root
+        group: root
+        mode: "0744"
+      loop:
+        - "burn"
+        - "computer"
+        - "localtest"
+    - name: place 21_icpc-disable-automount-schema.gschema.override
+      ansible.builtin.copy:
+        content: |
+          [org.gnome.desktop.media-handling]
+          automount-open=false
+          automount=false
+        dest: /usr/share/glib-2.0/schemas/21_icpc-disable-automount-schema.gschema.override
+        owner: root
+        group: root
+        mode: '0644'
+      notify: glib-compile-schemas
+  handlers:
+     - name: glib-compile-schemas
+       command: glib-compile-schemas /usr/share/glib-2.0/schemas

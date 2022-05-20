@@ -1,5 +1,27 @@
 ---
 - hosts: all
+  tasks:
+    - name: Ensure /etc/default/grub has proper GRUB_CMDLINE_LINUX_DEFAULT
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: "GRUB_CMDLINE_LINUX_DEFAULT=\"quiet\""
+        replace: "GRUB_CMDLINE_LINUX_DEFAULT=\"quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1\""
+        owner: root
+        group: root
+        mode: '0644'
+      notify: update grub
+    - name: Ensure /etc/default/grub has proper GRUB_TIMEOUT
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: "GRUB_TIMEOUT=.*"
+        replace: "GRUB_TIMEOUT=3"
+        owner: root
+        group: root
+        mode: '0644'
+      notify: update grub
+  handlers:
+    - name: update grub
+      shell: /usr/sbin/update-grub
   roles:
     - role: stuvusIT.systemd-timesyncd
       timesync_timezone: "{{ timezone }}"

@@ -7,6 +7,7 @@ judges = {}
 others = {}
 wf = 0
 if wf:
+    name = "wf2021"
     timezone = "Asia/Dhaka"
     max_team = 152
     max_human_judge = 12
@@ -16,7 +17,7 @@ if wf:
     max_domjudge_ccsadmin = 5
     max_ccsadmin = 5
 else:
-    # nac2022
+    name = "nac2022"
     timezone = "America/New_York"
     max_team = 53
     max_human_judge = 12
@@ -105,5 +106,6 @@ ntpservers:
 all:
   vars:
     timezone: {timezone}
+    job_sheet: {name}
 """
         print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)

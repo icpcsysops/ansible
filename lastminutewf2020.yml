@@ -24,7 +24,7 @@
       notify: update grub
   handlers:
     - name: update grub
-      shell: /usr/sbin/update-grub
+      command: /usr/sbin/update-grub
   roles:
     - role: stuvusIT.systemd-timesyncd
       timesync_timezone: "{{ timezone }}"

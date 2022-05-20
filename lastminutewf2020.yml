@@ -12,7 +12,9 @@
         owner: root
         group: root
         mode: '0644'
-      notify: update grub
+      notify:
+        -  update grub
+        -  reboot
     - name: Ensure /etc/default/grub has proper GRUB_TIMEOUT
       ansible.builtin.replace:
         path: /etc/default/grub
@@ -21,10 +23,14 @@
         owner: root
         group: root
         mode: '0644'
-      notify: update grub
+      notify:
+        -  update grub
+        -  reboot
   handlers:
     - name: update grub
       command: /usr/sbin/update-grub
+    - name: reboot
+      reboot
   roles:
     - role: stuvusIT.systemd-timesyncd
       timesync_timezone: "{{ timezone }}"

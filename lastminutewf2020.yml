@@ -51,6 +51,7 @@
     - role: ldapclient
       tags: ldapclient
       when: ldap_domain is defined
+    - role: hyperthreadingdisabled
 
 - name: configure ldap server
   hosts: ldapserver

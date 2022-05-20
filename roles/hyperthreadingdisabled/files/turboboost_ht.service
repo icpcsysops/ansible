@@ -1,0 +1,10 @@
+[Unit]
+Description=Job to disable turboboost_ht
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+ExecStart=/usr/sbin/disable_turboboost_ht
+Type=oneshot
+RemainAfterExit=yes

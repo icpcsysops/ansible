@@ -117,24 +117,17 @@
         owner: root
         group: root
         mode: "0700"
-    - name: gvfs permission tweaking
+    - name: gvfs/gvfsd permission tweaking to disable
       ansible.builtin.file:
-        path: /usr/lib/gvfs/gvfs-{{ item }}
+        path: /usr/lib/gvfs/{{ item }}
         owner: root
         group: root
         mode: "0744"
       loop:
-        - "udisks2-volume-monitor"
-    - name: gvfsd permission tweaking
-      ansible.builtin.file:
-        path: /usr/lib/gvfs/gvfsd-{{ item }}
-        owner: root
-        group: root
-        mode: "0744"
-      loop:
-        - "burn"
-        - "computer"
-        - "localtest"
+        - "gvfs-udisks2-volume-monitor"
+        - "gvfsd-burn"
+        - "gvfsd-computer"
+        - "gvfsd-localtest"
     - name: place 21_icpc-disable-automount-schema.gschema.override
       ansible.builtin.copy:
         content: |

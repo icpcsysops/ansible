@@ -1,0 +1,56 @@
+- name: Create presentation client user
+  ansible.builtin.user:
+    name: p
+    home: /p
+    uid: 17263
+    shell: "/usr/bin/bash"
+
+- name: Add run script for p
+  ansible.builtin.copy:
+    src: pres_client_run.sh
+    dest: /p/run
+    owner: p
+    group: p
+    mode: 0755
+
+- name: Add .xsessionrc script for p
+  ansible.builtin.copy:
+    content: |
+      /p/run
+      exit 0
+    dest: /p/.xsessionrc
+    owner: p
+    group: p
+    mode: 0755
+
+- name: Check if presclient is installed
+  ansible.builtin.stat:
+    path: /p/client.sh
+  register: pres
+
+- name: Download and install the presentation client
+  block:
+    - name: Get prerelease version
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=1
+        method: GET
+        return_content: true
+        status_code: 200
+        body_format: json
+      register: latest_presentationclient_release_array
+      when: not pres.stat.exists
+
+    - name: Set presentation client latest version
+      ansible.builtin.set_fact:
+        pres_version: "{{ latest_presentationclient_release_array.json[0].name | replace('v', '') }}"
+
+    - name: Download and unpack the client
+      ansible.builtin.unarchive:
+        src: https://github.com/icpctools/icpctools/releases/download/v{{ pres_version }}/presentations-{{ pres_version }}.zip
+        dest: /p/
+        remote_src: true
+        owner: p
+        group: p
+      become_user: p
+      become: true
+  when: not pres.stat.exists

@@ -47,6 +47,7 @@
     - role: cups
     - role: ldapclient
       tags: ldapclient
+      when: ldap_domain is defined
 - hosts: ldapserver
   roles:
     - role: ldapserver
@@ -71,6 +72,14 @@
         state: restarted
 - hosts: all
   tasks:
+    - name: Update all packages to their latest version
+      apt:
+        name: "*"
+        state: latest
+        only_update: true
+        update_cache: yes
+        cache_valid_time: 3600
+        autoremove: yes
     - name: Ensure scoreboard in /etc/hosts
       ansible.builtin.lineinfile:
         path: /etc/hosts

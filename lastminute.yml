@@ -8,6 +8,7 @@
       when: ldap_domain is defined
     - role: hyperthreadingdisabled
     - role: reverseproxy
+    - role: p100
 
   tasks:
     - name: remove uid 1000 user

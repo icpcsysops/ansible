@@ -1,0 +1,19 @@
+---
+- name: copy cups banners
+  ansible.builtin.copy:
+    src: banners/{{ job_sheet }}
+    dest: /usr/share/cups/banners/
+  when: job_sheet != "none"
+- name: copy cups data
+  ansible.builtin.copy:
+    src: data/{{ job_sheet }}.pdf
+    dest: /usr/share/cups/data/
+  when: job_sheet != "none"
+- name: template printers.conf file
+  template:
+    src: printers.conf.j2
+    dest: /etc/cups/printers.conf
+    mode: 0644
+    group: root
+    owner: root
+  notify: restart cups

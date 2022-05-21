@@ -44,10 +44,9 @@
       tags: systemd-timesyncd
 - hosts: contestants
   roles:
+    - role: cups
     - role: ldapclient
       tags: ldapclient
-    # - role: packages
-    #   tags: packages
 - hosts: ldapserver
   roles:
     - role: ldapserver
@@ -84,6 +83,13 @@
       ansible.builtin.lineinfile:
         path: /etc/hosts
         line: "{{ baseip }}.210	backup"
+        owner: root
+        group: root
+        mode: '0644'
+    - name: Ensure printsrv in /etc/hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ baseip }}.211	printsrv"
         owner: root
         group: root
         mode: '0644'

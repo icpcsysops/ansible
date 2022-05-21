@@ -1,5 +1,35 @@
 ---
 - hosts: all
+  tasks:
+     - name: Pre-generate the kernel flags for ansible usage
+       set_fact:
+         procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1"
+    - name: Ensure /etc/default/grub has proper GRUB_CMDLINE_LINUX_DEFAULT
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
+        line: "GRUB_CMDLINE_LINUX_DEFAULT=\"{{ procline }}\""
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        -  update grub
+        -  reboot
+    - name: Ensure /etc/default/grub has proper GRUB_TIMEOUT
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: "GRUB_TIMEOUT=.*"
+        replace: "GRUB_TIMEOUT=3"
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        -  update grub
+  handlers:
+    - name: update grub
+      command: /usr/sbin/update-grub
+    - name: reboot
+      reboot:
   roles:
     - role: stuvusIT.systemd-timesyncd
       timesync_timezone: "{{ timezone }}"

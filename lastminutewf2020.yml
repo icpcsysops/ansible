@@ -59,7 +59,7 @@
     - name: Ensure printsrv in /etc/hosts
       ansible.builtin.lineinfile:
         path: /etc/hosts
-        line: "{{ baseip }}.211	printserv"
+        line: "{{ baseip }}.211	printsrv"
         owner: root
         group: root
         mode: '0644'

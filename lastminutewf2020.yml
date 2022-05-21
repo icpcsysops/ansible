@@ -105,12 +105,6 @@
         - "sources.list"
         - "sources.list.d/mono.list"
         - "sources.list.d/pypy-ubuntu-ppa-buster.list"
-    - name: Log version of script on client
-      community.general.syslogger:
-        ident: "lastminute"
-        msg: "Finished {{ version }}"
-        priority: "notice"
-      changed_when: false
     - name: workaround nautilus auto-mounting
       ansible.builtin.file:
         path: /media
@@ -139,6 +133,12 @@
         group: root
         mode: '0644'
       notify: glib-compile-schemas
+    - name: Log version of script on client
+      community.general.syslogger:
+        ident: "lastminute"
+        msg: "Finished {{ version }}"
+        priority: "notice"
+      changed_when: false
   handlers:
      - name: glib-compile-schemas
        command: glib-compile-schemas /usr/share/glib-2.0/schemas

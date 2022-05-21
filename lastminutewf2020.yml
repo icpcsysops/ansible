@@ -63,6 +63,12 @@
         owner: root
         group: root
         mode: '0644'
+      notify: restart rsyslog
+  handlers:
+    - name: restart rsyslog
+      service:
+        name: rsyslog
+        state: restarted
 - hosts: all
   tasks:
     - name: Ensure scoreboard in /etc/hosts

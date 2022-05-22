@@ -11,6 +11,12 @@
     dest: /usr/share/cups/data/
     mode: 0644
   when: job_sheet != "none"
+- name: check printers.conf for "DeviceURI ipp://printsrv:631/classes/contest"
+  ansible.builtin.command: grep -Fxq "DeviceURI ipp://printsrv:631/classes/contest" /etc/cups/printers.conf
+  register: checkprinters
+  check_mode: false
+  ignore_errors: true
+  changed_when: false
 - name: template printers.conf file
   ansible.builtin.template:
     src: printers.conf.j2
@@ -19,3 +25,4 @@
     group: root
     owner: root
   notify: restart cups
+  when: checkprinters.rc != 0

@@ -80,34 +80,18 @@
         update_cache: yes
         cache_valid_time: 3600
         autoremove: yes
-    - name: Ensure scoreboard in /etc/hosts
+    - name: Ensure the necessary hosts are present in /etc/hosts
       ansible.builtin.lineinfile:
         path: /etc/hosts
-        line: "{{ baseip }}.208	scoreboard"
+        line: "{{ baseip }}.{{ item.ip }}	{{ item.hostname }}"
         owner: root
         group: root
         mode: '0644'
-    - name: Ensure packages in /etc/hosts
-      ansible.builtin.lineinfile:
-        path: /etc/hosts
-        line: "{{ baseip }}.209	packages"
-        owner: root
-        group: root
-        mode: '0644'
-    - name: Ensure backup in /etc/hosts
-      ansible.builtin.lineinfile:
-        path: /etc/hosts
-        line: "{{ baseip }}.210	backup"
-        owner: root
-        group: root
-        mode: '0644'
-    - name: Ensure printsrv in /etc/hosts
-      ansible.builtin.lineinfile:
-        path: /etc/hosts
-        line: "{{ baseip }}.211	printsrv"
-        owner: root
-        group: root
-        mode: '0644'
+      loop:
+        - { ip: 208, hostname: scoreboard }
+        - { ip: 209, hostname: packages }
+        - { ip: 210, hostname: backup }
+        - { ip: 211, hostname: printsrv }
     - name: Replace sysopspackages.icpc.global with packages
       ansible.builtin.replace:
         path: /etc/apt/{{ item }}

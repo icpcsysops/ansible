@@ -4,8 +4,14 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    container:
+      image: docker://quay.io/ansible/creator-ee:v0.5.0
+      options: "--entrypoint /bin/bash"
     steps:
       - uses: actions/checkout@v2
-      - name: Run ansible-lint
-        uses: ansible-community/ansible-lint-action@main
+      - name: run ansible lint
+        run: /usr/local/bin/ansible-lint -vvv -c .config/ansible-lint.yml
+        env:
+          # These tell ansible-lint to use github compatible annotation format:
+          GITHUB_ACTIONS: "true"
+          GITHUB_WORKFLOW: "{{ github.workflow.name }}"

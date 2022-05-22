@@ -1,20 +1,21 @@
 ---
-- hosts: all
+- name: system configuration
+  hosts: all
   tasks:
-     - name: Pre-generate the kernel flags for ansible usage
-       set_fact:
-         procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1"
+    - name: Pre-generate the kernel flags for ansible usage
+      set_fact:
+        procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1"
     - name: Ensure /etc/default/grub has proper GRUB_CMDLINE_LINUX_DEFAULT
       ansible.builtin.replace:
         path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
-        line: "GRUB_CMDLINE_LINUX_DEFAULT=\"{{ procline }}\""
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=.*$'
+        replace: "GRUB_CMDLINE_LINUX_DEFAULT=\"{{ procline }}\""
         owner: root
         group: root
         mode: '0644'
       notify:
-        -  update grub
-        -  reboot
+        - update grub
+        - reboot
     - name: Ensure /etc/default/grub has proper GRUB_TIMEOUT
       ansible.builtin.replace:
         path: /etc/default/grub
@@ -24,7 +25,7 @@
         group: root
         mode: '0644'
       notify:
-        -  update grub
+        - update grub
   handlers:
     - name: update grub
       command: /usr/sbin/update-grub
@@ -34,25 +35,31 @@
     - role: stuvusIT.systemd-timesyncd
       timesync_timezone: "{{ timezone }}"
       timesync_ntp_hosts:
-         - "{{ baseip }}.208"
-         - "{{ baseip }}.209"
-         - "{{ baseip }}.210"
+        - "{{ baseip }}.208"
+        - "{{ baseip }}.209"
+        - "{{ baseip }}.210"
       timesync_fallback_ntp_hosts:
         - "{{ baseip }}.208"
         - "{{ baseip }}.209"
         - "{{ baseip }}.210"
       tags: systemd-timesyncd
-- hosts: contestants
+
+- name: configure contestant machines
+  hosts: contestants
   roles:
     - role: cups
     - role: ldapclient
       tags: ldapclient
       when: ldap_domain is defined
-- hosts: ldapserver
+
+- name: configure ldap server
+  hosts: ldapserver
   roles:
     - role: ldapserver
       tags: ldapserver
-- hosts: all:!backup
+
+- name: Send syslogs to `backup`
+  hosts: all:!backup
   tasks:
     - name: point rsyslog to backup
       ansible.builtin.copy:
@@ -70,44 +77,30 @@
       service:
         name: rsyslog
         state: restarted
-- hosts: all
+
+- name: lastminute config for all hosts
+  hosts: all
   tasks:
     - name: Update all packages to their latest version
       apt:
         name: "*"
         state: latest
-        only_update: true
-        update_cache: yes
+        only_upgrade: true
+        update_cache: true
         cache_valid_time: 3600
-        autoremove: yes
-    - name: Ensure scoreboard in /etc/hosts
+        autoremove: true
+    - name: Ensure the necessary hosts are present in /etc/hosts
       ansible.builtin.lineinfile:
         path: /etc/hosts
-        line: "{{ baseip }}.208	scoreboard"
+        line: "{{ baseip }}.{{ item.ip }}	{{ item.hostname }}"
         owner: root
         group: root
         mode: '0644'
-    - name: Ensure packages in /etc/hosts
-      ansible.builtin.lineinfile:
-        path: /etc/hosts
-        line: "{{ baseip }}.209	packages"
-        owner: root
-        group: root
-        mode: '0644'
-    - name: Ensure backup in /etc/hosts
-      ansible.builtin.lineinfile:
-        path: /etc/hosts
-        line: "{{ baseip }}.210	backup"
-        owner: root
-        group: root
-        mode: '0644'
-    - name: Ensure printsrv in /etc/hosts
-      ansible.builtin.lineinfile:
-        path: /etc/hosts
-        line: "{{ baseip }}.211	printsrv"
-        owner: root
-        group: root
-        mode: '0644'
+      loop:
+        - { ip: 208, hostname: scoreboard }
+        - { ip: 209, hostname: packages }
+        - { ip: 210, hostname: backup }
+        - { ip: 211, hostname: printsrv }
     - name: Replace sysopspackages.icpc.global with packages
       ansible.builtin.replace:
         path: /etc/apt/{{ item }}
@@ -148,12 +141,17 @@
         group: root
         mode: '0644'
       notify: glib-compile-schemas
+    - shell: git rev-list --full-history --all --abbrev-commit | head -1
+      become: false
+      register: git_revision
+      delegate_to: 127.0.0.1
+      changed_when: false
     - name: Log version of script on client
       community.general.syslogger:
         ident: "lastminute"
-        msg: "Finished {{ version }}"
+        msg: "Ansible applied {{ version }} - ({{ git_revision.stdout }})"
         priority: "notice"
       changed_when: false
   handlers:
-     - name: glib-compile-schemas
-       command: glib-compile-schemas /usr/share/glib-2.0/schemas
+    - name: glib-compile-schemas
+      command: glib-compile-schemas /usr/share/glib-2.0/schemas

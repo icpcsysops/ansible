@@ -141,10 +141,15 @@
         group: root
         mode: '0644'
       notify: glib-compile-schemas
+    - shell: git rev-list --full-history --all --abbrev-commit | head -1
+      become: false
+      register: git_revision
+      delegate_to: 127.0.0.1
+      changed_when: false
     - name: Log version of script on client
       community.general.syslogger:
         ident: "lastminute"
-        msg: "Finished {{ version }}"
+        msg: "Ansible applied {{ version }} - ({{ git_revision.stdout }})"
         priority: "notice"
       changed_when: false
   handlers:

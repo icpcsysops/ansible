@@ -1,0 +1,8 @@
+---
+exclude_paths:
+  - ../.github/
+  - ../roles/stuvusIT.systemd-timesyncd/
+
+warn_list:
+  # Treat missing meta info in roles as a warning (not failure)
+  - meta-no-info

@@ -3,14 +3,16 @@
   ansible.builtin.copy:
     src: banners/{{ job_sheet }}
     dest: /usr/share/cups/banners/
+    mode: 0644
   when: job_sheet != "none"
 - name: copy cups data
   ansible.builtin.copy:
     src: data/{{ job_sheet }}.pdf
     dest: /usr/share/cups/data/
+    mode: 0644
   when: job_sheet != "none"
 - name: template printers.conf file
-  template:
+  ansible.builtin.template:
     src: printers.conf.j2
     dest: /etc/cups/printers.conf
     mode: 0644

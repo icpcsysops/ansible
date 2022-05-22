@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: system configuration
+  hosts: all
   tasks:
     - name: Pre-generate the kernel flags for ansible usage
       set_fact:
@@ -7,7 +8,7 @@
     - name: Ensure /etc/default/grub has proper GRUB_CMDLINE_LINUX_DEFAULT
       ansible.builtin.replace:
         path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=.*$'
         replace: "GRUB_CMDLINE_LINUX_DEFAULT=\"{{ procline }}\""
         owner: root
         group: root
@@ -24,7 +25,7 @@
         group: root
         mode: '0644'
       notify:
-        -  update grub
+        - update grub
   handlers:
     - name: update grub
       command: /usr/sbin/update-grub
@@ -34,25 +35,31 @@
     - role: stuvusIT.systemd-timesyncd
       timesync_timezone: "{{ timezone }}"
       timesync_ntp_hosts:
-         - "{{ baseip }}.208"
-         - "{{ baseip }}.209"
-         - "{{ baseip }}.210"
+        - "{{ baseip }}.208"
+        - "{{ baseip }}.209"
+        - "{{ baseip }}.210"
       timesync_fallback_ntp_hosts:
         - "{{ baseip }}.208"
         - "{{ baseip }}.209"
         - "{{ baseip }}.210"
       tags: systemd-timesyncd
-- hosts: contestants
+
+- name: configure contestant machines
+  hosts: contestants
   roles:
     - role: cups
     - role: ldapclient
       tags: ldapclient
       when: ldap_domain is defined
-- hosts: ldapserver
+
+- name: configure ldap server
+  hosts: ldapserver
   roles:
     - role: ldapserver
       tags: ldapserver
-- hosts: all:!backup
+
+- name: Send syslogs to `backup`
+  hosts: all:!backup
   tasks:
     - name: point rsyslog to backup
       ansible.builtin.copy:
@@ -70,16 +77,18 @@
       service:
         name: rsyslog
         state: restarted
-- hosts: all
+
+- name: lastminute config for all hosts
+  hosts: all
   tasks:
     - name: Update all packages to their latest version
       apt:
         name: "*"
         state: latest
         only_upgrade: true
-        update_cache: yes
+        update_cache: true
         cache_valid_time: 3600
-        autoremove: yes
+        autoremove: true
     - name: Ensure the necessary hosts are present in /etc/hosts
       ansible.builtin.lineinfile:
         path: /etc/hosts
@@ -139,5 +148,5 @@
         priority: "notice"
       changed_when: false
   handlers:
-     - name: glib-compile-schemas
-       command: glib-compile-schemas /usr/share/glib-2.0/schemas
+    - name: glib-compile-schemas
+      command: glib-compile-schemas /usr/share/glib-2.0/schemas

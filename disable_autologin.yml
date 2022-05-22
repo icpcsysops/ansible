@@ -8,11 +8,11 @@
           # AutomaticLoginEnable = true
           # AutomaticLogin = p
           [security]
-          
+
           [xdmcp]
-          
+
           [chooser]
-          
+
           [debug]
         dest: /etc/gdm3/custom.conf
         owner: root

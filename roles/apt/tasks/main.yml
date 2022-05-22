@@ -1,0 +1,35 @@
+---
+- name: Ensure the necessary hosts are present in /etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ baseip }}.{{ item.ip }}	{{ item.hostname }}" # noqa: no-tabs
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - { ip: 208, hostname: scoreboard }
+    - { ip: 209, hostname: packages }
+    - { ip: 210, hostname: backup }
+    - { ip: 211, hostname: printsrv }
+- name: Replace sysopspackages.icpc.global with packages
+  ansible.builtin.replace:
+    path: /etc/apt/{{ item }}
+    regexp: "sysopspackages.icpc.global"
+    replace: "packages"
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - "sources.list"
+    - "sources.list.d/mono.list"
+    - "sources.list.d/pypy-ubuntu-ppa-buster.list"
+  when: not disable_sources_list_changes
+- name: Update all packages to their latest version
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+    only_upgrade: true
+    update_cache: true
+    cache_valid_time: 3600
+    autoremove: true
+  tags: apt

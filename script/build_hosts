@@ -107,5 +107,7 @@ all:
   vars:
     timezone: {timezone}
     job_sheet: {name}
+    # root_password:
+    disable_sources_list_changes: false
 """
         print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)

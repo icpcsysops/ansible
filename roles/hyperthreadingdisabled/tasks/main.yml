@@ -6,8 +6,6 @@
     url: https://raw.githubusercontent.com/DOMjudge/domjudge-scripts/main/provision-contest/disable-turboboost_ht
     dest: /tmp/turboboost_ht
     mode: 0777
-    owner: root
-    group: root
   when: internet
 
 - name: Install turboboost script

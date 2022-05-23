@@ -79,8 +79,8 @@ judges:
         print_server("authprint", "10.3.3.211", others)
         # print_server("kattis", "10.3.3.212", others)
         # print_server("kattisbackup", "10.3.3.213", others)
-        print_server("squidserver", "10.3.3.214", others)
-        # print_server("pc2-shadowccs", "10.3.3.215", others)
+        # print_server("pc2-shadowccs", "10.3.3.214", others)
+        # print_server("domjudge-shadowccs", "10.3.3.215", others)
         # print_server("domserver", "10.3.3.216", others)
         document = f"""
 others:

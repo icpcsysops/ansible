@@ -70,7 +70,7 @@ judges:
         with open("../list.ccsadmin", "wt") as list_fh:
             for i in range(max_ccsadmin):
                 print_host(i + 1, "-ccsadmin", "10.3.3", list_fh, others, 231)
-        print_server("squidserver", "10.3.3.205", others)
+        print_server("reverseproxy", "10.3.3.205", others)
         # print_server("media", "10.3.3.206", others);
         print_server("cds", "10.3.3.207", others)
         print_server("scoreboard", "10.3.3.208", others)

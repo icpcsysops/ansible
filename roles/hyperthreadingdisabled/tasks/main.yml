@@ -1,10 +1,11 @@
 # Download latest version from DOMjudge repo
 # Alternative is to put the correct file in /tmp and set internet to false
-- name: Download turboboost script  # noqa: risky-file-permissions
+- name: Download turboboost script
   delegate_to: localhost
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/DOMjudge/domjudge-scripts/main/provision-contest/disable-turboboost_ht
     dest: /tmp/turboboost_ht
+    mode: 0777
   when: internet
 
 - name: Install turboboost script

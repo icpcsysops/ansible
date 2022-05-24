@@ -1,0 +1,8 @@
+---
+- name: server configuration
+  include_tasks: server.yml
+  when: reverseproxy_server
+
+- name: client configuration
+  include_tasks: client.yml
+  when: not reverseproxy_server

@@ -3,7 +3,7 @@ exclude_paths:
   - ../.github/
   - ../roles/stuvusIT.systemd-timesyncd/
 
-warn_list:
-  # Treat missing meta info in roles as a warning (not failure)
-  - meta-no-info
-  - package-latest
+skip_list:
+  # completely ignore these two rules
+  - meta-no-info    # nags about missing metadata for roles
+  - package-latest  # nags about not using latest when using apt install

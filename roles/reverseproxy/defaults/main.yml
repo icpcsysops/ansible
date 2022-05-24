@@ -1,0 +1,93 @@
+# Whether this is a client or server proxy configuration
+reverseproxy_server: false
+
+# A list of sites to configure in the nginx proxy. Only these will pass through, all others will fail
+reverseproxy_sites:
+  nac22.kattis.com:
+    - {path: "/"}
+  fonts.gstatic.com:
+    - {path: "/"}
+  fonts.googleapis.com:
+    - {path: "/css", with_args: true, exact: true}
+  ajax.googleapis.com:
+    - {path: "/ajax/libs/jquery/3.5.1/jquery.min.js", exact: true}
+    - {path: "/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js", exact: true}
+    - {path: "/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css", exact: true}
+  cdnjs.cloudflare.com:
+    - {path: "/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css", exact: true}
+    - {path: "/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.woff2", exact: true}
+    - {path: "/ajax/libs/moment.js/2.24.0/moment.min.js", exact: true}
+    - {path: "/ajax/libs/raphael/2.2.8/raphael.min.js", exact: true}
+    - {path: "/ajax/libs/select2/3.5.4/select2.min.js", exact: true}
+    - {path: "/ajax/libs/select2/3.5.4/select2.css", exact: true}
+    - {path: "/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js", exact: true}
+    - {path: "/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css", exact: true}
+    - {path: "/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js", exact: true}
+    - {path: "/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css", exact: true}
+  cdn.jsdelivr.net:
+    - {path: "/npm/daterangepicker/daterangepicker.min.js", exact: true}
+    - {path: "/npm/daterangepicker/daterangepicker.css", exact: true}
+#   # These two are probably analytics/metrics/monitoring stuff that seem unimportant
+#   static.cloudflareinsights.com:
+#     - {path: "/beacon.min.js"}
+#   static.site24x7rum.eu:
+#     - {path: "/beacon/site24x7rum-min.js", with_args: true, exact: true}
+#   # The next entries are for the orange help widget on kattis.com
+#   euc-widget.freshworks.com:
+#     - {path: "/widgets/79000000133.js", exact: true}
+#     - {path: "/widgets/79000000133.json", exact: true, with_args: true, }
+#     - {path: "/widgetBase"}
+#   kattis.freshdesk.com: [{path: "/"}]
+#   support.kattis.com: [{path: "/"}]
+
+
+# this is a snakeoil cert and key from ubuntu (You'll want to override these)
+reverseproxy_cert: |
+  -----BEGIN CERTIFICATE-----
+  MIIC0DCCAbigAwIBAgIUDL4uN7edJv7Xp7YgsBbL0C61weowDQYJKoZIhvcNAQEL
+  BQAwETEPMA0GA1UEAwwGdWJ1bnR1MB4XDTIyMDUyMjIwMzkwNFoXDTMyMDUxOTIw
+  MzkwNFowETEPMA0GA1UEAwwGdWJ1bnR1MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A
+  MIIBCgKCAQEAsWFmeb1X1k0iKAYmPsoG0W6N6K2SMbTmw0O364hU9n0ThKE1kRvT
+  u9A1+DsevqyTMGTD5BcI0Sam0JMQEtbPBj4Cx+lSYHD6pdVhyEUI4myKgADyXugb
+  H+mtXhX36Q9pPfAye+5TbPV476n6pkuKiuh0HHtIX679IeF78ROfk3iKn9eWsvUF
+  q+UsCjXn6G/UUSGQPX5nHFmfSmXcp39vRVGJ0H/i0ZWdBH+KBA5vXpX2iz96AJIE
+  zEH/ydTznRSn03wnJ7p4AdqIxO/V6NlUjR3KwQmiH+3f7dkNxCp/ahF5oZer6p5R
+  mmP4Tetuo9u7RRaKbRl1RKkN0+HHQAVg8wIDAQABoyAwHjAJBgNVHRMEAjAAMBEG
+  A1UdEQQKMAiCBnVidW50dTANBgkqhkiG9w0BAQsFAAOCAQEAg+mr/pQMkk1hiJfB
+  OQ1UP+ZbtAmQbqfLZaMlwmHZ7u+NLR3O94uobR6gEyoAfVq09MfXep5Zta+2vEpp
+  bTOM+7j/edK8QnDlC/l/WmmGrJu8taP9esF3X4gkpdC5j8nJxon7E/p9QKnzCon2
+  tHjjENhbbu4sNUh3KgfFv3wAy2pGIs+eESdBdULQ72IvlV8AroiZfISeMpkNvwiY
+  K4cNYg2PrWrbYMmI7aZxT779V1AVpLzPOb+G52LgZ4yRxxdlwsN6SiQrwdQg3PUF
+  jPri9Oc6EP2H8lTnI4GEVp0uClrEbfuncTu6mahUt68okXp381yeT3zbwawhU+we
+  6jahNQ==
+  -----END CERTIFICATE-----
+
+reverseproxy_key: |
+  -----BEGIN PRIVATE KEY-----
+  MIIEwAIBADANBgkqhkiG9w0BAQEFAASCBKowggSmAgEAAoIBAQCxYWZ5vVfWTSIo
+  BiY+ygbRbo3orZIxtObDQ7friFT2fROEoTWRG9O70DX4Ox6+rJMwZMPkFwjRJqbQ
+  kxAS1s8GPgLH6VJgcPql1WHIRQjibIqAAPJe6Bsf6a1eFffpD2k98DJ77lNs9Xjv
+  qfqmS4qK6HQce0hfrv0h4XvxE5+TeIqf15ay9QWr5SwKNefob9RRIZA9fmccWZ9K
+  Zdynf29FUYnQf+LRlZ0Ef4oEDm9elfaLP3oAkgTMQf/J1POdFKfTfCcnungB2ojE
+  79Xo2VSNHcrBCaIf7d/t2Q3EKn9qEXmhl6vqnlGaY/hN626j27tFFoptGXVEqQ3T
+  4cdABWDzAgMBAAECggEBAKnnqRfdROCx+5Co60NjkopTQjzo3Usdg5jwKaDDctaz
+  0dlN7Zh0NikFdFy0jGuJtGc7bePyKHDmfAz3gQL6nUzWYyWIGW7laUEllkcV0T/J
+  RhT8UyyTWUAFPhoMIu4r49v/UuwgyeppaxDuGXfmjesmY+nQMO/uFuu4J1cxO74t
+  tIJCF1mnIYX+sMWrCcZJZxSCWj/OBZnxVIrP/Bb3m5pC9AgXqAGE807MFhA9Vhs1
+  F6rB2eOg/wWsbG0UC8F17er7mwPndBsGBymbNWuEYfzvtlWal5LXfHL3JSMQPq6q
+  U5G64q5gCrbBl0JgL10vYh9WVGahBZCiqLh4gCTGebECgYEA4WbNYDzSm0Mfxr8B
+  XA+M55qvSalJobPqqjw/HLb9TidnW8ZgPjj8Us8/m1scL3V0krgoeIaoLRqE9pfu
+  GOO3EJtkB7FG0b5elr8mYIqj3IS1jCJ4Z1FeBQ9IBbToCxilZjmQTVNUACy6cWa8
+  8CeLUBjBIlMU1GPG7Y40mmaw9YkCgYEAyXXCfEM0qQC6DCI98Lh/bkoJo0jlQ4Bo
+  mgY5vd43I8WvCeZNoHCY6UxQSSzXW4d0whbm2XTP8K6QWizIKeKf4+QZtp4sl+cf
+  sNtUK1xNF0vEBB5PA3pmFQ2jGdbONNGqLwO7MJGtCxtwbyHXt9qsWVlgw93BQhXe
+  W0K/XWnUP5sCgYEAoTpFoZcgFosXCbTKpi1BXtFYnNoIny/wpUBe7I0/901cM1tc
+  sGVWp20zVE8BhDkB34j2+e9oEIstnK3kU81evvRHwvDddV40jqPAMcI5n50Vt11Y
+  vp6HIBtkKyDR8k340XxPaeA278EOw9r3PtkqX2q1i3XeKmYMfxP/MIpP/fECgYEA
+  i/iTnf6bsehdW1zXKE8nypsKQza8g7/N7WXx7GdebC5HRVuMB7LzqvRou865+lAM
+  4WVEE0ZDy3edt+lxURix+oZbDzSqywe8Twa0XkQNE+iCUlI0l7gNAQeukJ9cOfqK
+  gYvYHRC56AOyhKRA2u7F3HZq8us6AQ5spX+kseR7oY0CgYEAxU2Zlrx7TnUl/BFU
+  9fS1kmC6rl6DFGouh9crXG9/QzkNmEBh6Hpwplla0wj49Yhsj8OQWn/LgUuiEG89
+  kagt89rBXEqH5zAmQ8g4qa13eDrMhq3W8gk3qsmL0Myp6c86qhgqNZKjsAZ7hPS2
+  PTVfBa9sYWGl46Qyw0hJe6pvGjc=
+  -----END PRIVATE KEY-----

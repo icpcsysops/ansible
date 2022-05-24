@@ -7,6 +7,7 @@
       tags: ldapclient
       when: ldap_domain is defined
     - role: hyperthreadingdisabled
+    - role: reverseproxy
 
   tasks:
     - name: remove uid 1000 user
@@ -20,6 +21,13 @@
   roles:
     - role: ldapserver
       tags: ldapserver
+
+- name: configure the squid server
+  hosts: squidserver
+  roles:
+    - role: reverseproxy
+      reverseproxy_server: true
+      tags: reverseproxy
 
 - name: Send syslogs to `backup`
   hosts: all:!backup

@@ -19,9 +19,9 @@ server {
         set $server_host "{{server}}";
 
         {% for item in urls %}
-        location {% if 'exact' in item and item.exact %}={% endif %} {{ item.path }} {
+        location {% if item.exact is defined and item.exact %}={% endif %} {{ item.path }} {
                 proxy_pass https://$server_host
-                        {%- if not ('exact' in item and item.exact) and item.path != '/' -%}
+                        {%- if not (item.exact is defined and item.exact) and item.path != '/' -%}
                                 $request_uri
                         {%- else -%}
                                 {%- if item.path != '/' -%}

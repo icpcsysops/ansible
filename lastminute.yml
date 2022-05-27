@@ -23,8 +23,8 @@
     - role: ldapserver
       tags: ldapserver
 
-- name: configure the squid server
-  hosts: squidserver
+- name: configure the reverse proxy
+  hosts: reverseproxy
   roles:
     - role: reverseproxy
       reverseproxy_server: true

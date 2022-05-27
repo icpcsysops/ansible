@@ -13,9 +13,15 @@
   tasks:
     - name: remove uid 1000 user
       ansible.builtin.user:
-        name: "icpc2021" # TODO update this every year, as I can't just do a uid 1000 delete
+        name: "icpc"
         state: absent
       when: root_password is defined
+    - name: remove uid 1000 user
+      ansible.builtin.user:
+        name: "icpc2021" # TODO change preseed files to just use user icpc
+        state: absent
+      when: root_password is defined
+
 
 - name: configure ldap server
   hosts: ldapserver

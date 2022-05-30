@@ -1,5 +1,6 @@
 ---
 - hosts: contestants
+  gather_facts: false
   tasks:
     - name: enable autologin to user p
       ansible.builtin.copy:
@@ -18,3 +19,13 @@
         owner: root
         group: root
         mode: '0644'
+    - name: check if p is currently running
+      ansible.builtin.command: pgrep --uid p
+      register: p_running
+      ignore_errors: true
+      changed_when: false
+    - name: restart gdm3
+      ansible.builtin.systemd:
+        name: gdm3
+        state: restarted
+      when: p_running.rc != 0

@@ -9,3 +9,12 @@ ldap_organization: ICPC
 
 # Domain name to use as base for LDAP in DNS format
 ldap_domain: icpc.global
+
+######## Windows Client Settings #########
+# presentation client settings
+presclient_version: 2.5.783
+presclient_pass: cds_presentation_user_password
+
+# balloonprinter settings
+balloon_version: 2.5.783
+balloon_pass: cds_ballon_user_password

@@ -11,6 +11,27 @@
     - role: p100
 
   tasks:
+    - name: switch from files to compat in nsswitch
+      tags: nsswitch
+      ansible.builtin.replace:
+        path: /etc/nsswitch.conf
+        regexp: '^{{ item }}(.*)files'
+        replace: "{{ item }}\\1compat"
+        owner: root
+        group: root
+        mode: '0644'
+      loop:
+        - passwd
+        - group
+        - shadow
+      notify:
+        - reboot
+    - name: disable systemd-resolved
+      ansible.builtin.systemd:
+        name: systemd-resolved
+        state: stopped
+        enabled: false
+        masked: true
     - name: remove uid 1000 user
       ansible.builtin.user:
         name: "icpc"
@@ -21,20 +42,48 @@
         name: "icpc2021" # TODO change preseed files to just use user icpc
         state: absent
       when: root_password is defined
-
+    - name: use policykit to disable mounting for teams
+      ansible.builtin.copy:
+        dest: /etc/polkit-1/localauthority/50-local.d/disable-udisks.pkla
+        content: |
+          [Block access to udisks for teams]
+          Identity=unix-user:*
+          Action=org.freedesktop.udisks2.*
+          ResultAny=no
+          ResultInactive=no
+          ResultActive=no
+    - name: gvfs/gvfsd permission tweaking to disable
+      ansible.builtin.file:
+        path: /usr/lib/gvfs/{{ item }}
+        owner: root
+        group: root
+        mode: "0744"
+      loop:
+        - "gvfsd-burn"
+        - "gvfsd-computer"
+        - "gvfsd-localtest"
+    - name: place 21_icpc-disable-automount-schema.gschema.override
+      ansible.builtin.copy:
+        content: |
+          [org.gnome.desktop.media-handling]
+          automount-open=false
+          automount=false
+        dest: /usr/share/glib-2.0/schemas/21_icpc-disable-automount-schema.gschema.override
+        owner: root
+        group: root
+        mode: '0644'
+      notify: glib-compile-schemas
+  handlers:
+    - name: glib-compile-schemas
+      command: glib-compile-schemas /usr/share/glib-2.0/schemas
+    - name: reboot
+      reboot:
 
 - name: configure ldap server
   hosts: ldapserver
   roles:
     - role: ldapserver
       tags: ldapserver
-
-- name: configure the reverse proxy
-  hosts: reverseproxy
-  roles:
-    - role: reverseproxy
-      reverseproxy_server: true
-      tags: reverseproxy
 
 - name: Send syslogs to `backup`
   hosts: all:!backup
@@ -121,28 +170,6 @@
         owner: root
         group: root
         mode: "0700"
-    - name: gvfs/gvfsd permission tweaking to disable
-      ansible.builtin.file:
-        path: /usr/lib/gvfs/{{ item }}
-        owner: root
-        group: root
-        mode: "0744"
-      loop:
-        - "gvfs-udisks2-volume-monitor"
-        - "gvfsd-burn"
-        - "gvfsd-computer"
-        - "gvfsd-localtest"
-    - name: place 21_icpc-disable-automount-schema.gschema.override
-      ansible.builtin.copy:
-        content: |
-          [org.gnome.desktop.media-handling]
-          automount-open=false
-          automount=false
-        dest: /usr/share/glib-2.0/schemas/21_icpc-disable-automount-schema.gschema.override
-        owner: root
-        group: root
-        mode: '0644'
-      notify: glib-compile-schemas
 
     - name: Pre-generate the kernel flags for ansible usage
       set_fact:
@@ -185,5 +212,52 @@
       command: /usr/sbin/update-grub
     - name: reboot
       reboot:
-    - name: glib-compile-schemas
-      command: glib-compile-schemas /usr/share/glib-2.0/schemas
+
+- name: configure the reverse proxy
+  hosts: reverseproxy
+  roles:
+    - role: reverseproxy
+      reverseproxy_server: true
+      tags: reverseproxy
+
+- name: configure the cds
+  hosts: cds
+  roles:
+    - role: cds
+      tags: cds
+
+- name: configure balloonmanager printers
+  hosts: balloonmanager
+  vars:
+    job_sheet: none
+    device_uri: 'printers/balloonprinter'
+    printer_name: balloonprinter
+  roles:
+    - role: cups
+
+- name: configure ccsadmin printers
+  hosts: ccsadmin*
+  vars:
+    job_sheet: none
+    device_uri: 'printers/systemsprinter'
+    printer_name: systemsprinter
+  roles:
+    - role: cups
+
+- name: configure judges printers
+  hosts: judge*
+  vars:
+    job_sheet: none
+    device_uri: 'printers/systemsprinter'
+    printer_name: systemsprinter
+  roles:
+    - role: cups
+
+- name: configure others printers
+  hosts: others:!authprint
+  vars:
+    job_sheet: none
+    device_uri: 'printers/systemsprinter'
+    printer_name: systemsprinter
+  roles:
+    - role: cups

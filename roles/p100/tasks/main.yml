@@ -31,8 +31,9 @@
 - name: Download and install the presentation client
   block:
     - name: Get prerelease version
+      delegate_to: localhost
       ansible.builtin.uri:
-        url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=1
+        url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=3
         method: GET
         return_content: true
         status_code: 200
@@ -42,13 +43,22 @@
 
     - name: Set presentation client latest version
       ansible.builtin.set_fact:
-        pres_version: "{{ latest_presentationclient_release_array.json[0].name | replace('v', '') }}"
+        pres_version: "{{ latest_presentationclient_release_array.json[2].name | replace('v', '') }}"
 
-    - name: Download and unpack the client
+    # fatal: [team52 -> localhost]: FAILED! => {"changed": false, "dest": "/tmp/presentations-2.5.778.zip", "elapsed": 0, "msg": "Request failed", "response": "HTTP Error 404: Not Found", "status_code": 404, "url": "https://github.com/icpctools/icpctools/releases/download/v2.5.778/presentations-2.5.778.zip"}
+
+    - name: Download the client
+      delegate_to: localhost
+      ansible.builtin.get_url:
+        url: https://github.com/icpctools/icpctools/releases/download/v{{ pres_version }}/presentations-{{ pres_version }}.zip
+        dest: /tmp/presentations-{{ pres_version }}.zip
+        mode: '0640'
+
+    - name: Unpack the client
       ansible.builtin.unarchive:
-        src: https://github.com/icpctools/icpctools/releases/download/v{{ pres_version }}/presentations-{{ pres_version }}.zip
+        src: /tmp/presentations-{{ pres_version }}.zip
         dest: /p/
-        remote_src: true
+        remote_src: false
         owner: p
         group: p
       become_user: p

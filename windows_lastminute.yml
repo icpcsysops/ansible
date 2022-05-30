@@ -1,0 +1,10 @@
+---
+# ansible-playbook --limit ballonprinter1 --extra-vars ansible_user=windows_user -e ansible_password=windows_password windows_lastminute.yml
+- name: presentation hosts
+  hosts: presentation_clients
+  roles:
+    - role: presclient
+- name: balloon printer hosts
+  hosts: win_balloonprinters
+  roles:
+    - role: balloonprinter

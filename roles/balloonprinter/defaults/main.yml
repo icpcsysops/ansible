@@ -1,0 +1,4 @@
+balloon_version: 2.5.783 # the version from github icpctools releases
+balloon_user: balloon
+balloon_pass: cds_balloon_password
+balloon_cds_url: https://10.3.3.207/api/contests/

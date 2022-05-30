@@ -62,3 +62,22 @@
       - libpam-ldapd
       - ldap-auth-config
   notify: Restart nscd
+
+- name: Ensure /etc/ldap.conf has ssl start_tls
+  ansible.builtin.replace:
+    path: /etc/ldap.conf
+    regexp: '^#ssl start_tls$'
+    replace: "ssl start_tls"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Ensure /etc/ldap.conf has ssl on
+  ansible.builtin.replace:
+    path: /etc/ldap.conf
+    after: "ssl start_tls"
+    regexp: '^#ssl on$'
+    replace: "ssl on"
+    owner: root
+    group: root
+    mode: '0644'

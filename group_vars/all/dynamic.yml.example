@@ -4,11 +4,20 @@
 # Password for the LDAP admin user
 ldap_admin_password: supersecretpassword
 
+# Password for the LDAP replicator user
+ldap_replicator_password: secretpassword
+
 # Organization to use for LDAP
 ldap_organization: ICPC
 
 # Domain name to use as base for LDAP in DNS format
 ldap_domain: icpc.global
+
+# tls cert file for LDAP
+ldap_tls_cert_file: /etc/ssl/certs/ldap.pem
+
+# tls key file for LDAP
+ldap_tls_key_file: /etc/ssl/private/ldap.key
 
 ######## Windows Client Settings #########
 # presentation client settings

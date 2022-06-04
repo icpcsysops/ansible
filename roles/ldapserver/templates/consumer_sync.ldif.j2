@@ -1,0 +1,25 @@
+dn: cn=module{0},cn=config
+changetype: modify
+add: olcModuleLoad
+olcModuleLoad: syncprov
+
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+add: olcDbIndex
+olcDbIndex: entryUUID eq
+-
+add: olcSyncrepl
+olcSyncrepl: rid=0
+  provider=ldap://{{ hostvars['ldap-server1'].ansible_host }}
+  bindmethod=simple
+  binddn="cn=replicator,{{ ldap_domain_dc }}" credentials="{{ ldap_replicator_password }}"
+  searchbase="{{ ldap_domain_dc }}"
+  logbase="cn=accesslog"
+  logfilter="(&(objectClass=auditWriteObject)(reqResult=0))"
+  schemachecking=on
+  type=refreshAndPersist retry="60 +"
+  syncdata=accesslog
+  starttls=critical tls_reqcert=demand
+-
+add: olcUpdateRef
+olcUpdateRef: ldap://{{ hostvars['ldap-server1'].ansible_host }}

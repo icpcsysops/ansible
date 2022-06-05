@@ -30,11 +30,6 @@
       - ldap-utils
       - python3-ldap
 
-- name: Enable TLS_REQCERT in /etc/ldap/ldap.conf
-  ansible.builtin.lineinfile:
-    path: /etc/ldap/ldap.conf
-    line: "TLS_REQCERT allow"
-
 - name: Add group and people organizational units
   community.general.ldap_entry:
     dn: ou={{ item }},{{ ldap_domain_dc }}
@@ -45,92 +40,70 @@
     - people
     - groups
 
-- name: Place TLS cert
-  ansible.builtin.copy:
-    src: "{{ ldap_tls_cert_file }}"
-    group: openldap
-    mode: preserve
-    dest: /etc/ldap/ldaps.pem
-    remote_src: false
-  when: ldap_tls_cert_file
+- name: TLS bits
+  block:
+    - name: Place TLS cert
+      ansible.builtin.copy:
+        src: "{{ ldap_tls_cert_file }}"
+        group: openldap
+        mode: preserve
+        dest: /etc/ldap/ldaps.pem
+        remote_src: false
 
-- name: Place TLS private key
-  ansible.builtin.copy:
-    src: "{{ ldap_tls_key_file }}"
-    group: openldap
-    mode: 0640
-    dest: /etc/ldap/ldaps.key
-    remote_src: false
-  when: ldap_tls_key_file
+    - name: Place TLS private key
+      ansible.builtin.copy:
+        src: "{{ ldap_tls_key_file }}"
+        group: openldap
+        mode: 0640
+        dest: /etc/ldap/ldaps.key
+        remote_src: false
 
-- name: Ensure cacert.pem
-  ansible.builtin.assemble:
-    src: /etc/ssl/certs/
-    regexp: "ICPC_WF_*"
-    group: openldap
-    mode: 0644
-    dest: /etc/ldap/cacert.pem
+    - name: Ensure cacert.pem
+      ansible.builtin.assemble:
+        src: /etc/ssl/certs/
+        regexp: "ICPC_WF_*"
+        group: openldap
+        mode: 0644
+        dest: /etc/ldap/cacert.pem
+
+    - name: check for certinfo
+      ansible.builtin.shell:
+        cmd: ldapsearch -H ldapi:/// -LLL -Y EXTERNAL -b "cn=config" | grep -q /etc/ldap/ldaps.key
+      register: certinfo_present
+      changed_when: false
+      ignore_errors: true
+
+    - name: Create certinfo
+      ansible.builtin.copy:
+        content: |
+          dn: cn=config
+          add: olcTLSCACertificateFile
+          olcTLSCACertificateFile: /etc/ldap/cacert.pem
+          -
+          add: olcTLSCertificateFile
+          olcTLSCertificateFile: /etc/ldap/ldaps.pem
+          -
+          add: olcTLSCertificateKeyFile
+          olcTLSCertificateKeyFile: /etc/ldap/ldaps.key
+        dest: /tmp/certinfo.ldif
+        mode: 0640
+    - name: Add certinfo.ldif
+      ansible.builtin.command:
+        cmd: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/certinfo.ldif
+      when: certinfo_present.rc != 0
+
+    - name: Ensure TLS in slapd
+      ansible.builtin.lineinfile:
+        path: /etc/default/slapd
+        regexp: '^SLAPD_SERVICES=.*'
+        line: 'SLAPD_SERVICES="ldap:/// ldapi:/// ldaps:///"'
+        owner: root
+        group: root
+        mode: '0644'
+      notify: restart slapd
   when:
     - ldap_tls_cert_file
     - ldap_tls_key_file
-
-- name: check for certinfo
-  ansible.builtin.shell:
-    cmd: ldapsearch -H ldapi:/// -LLL -Y EXTERNAL -b "cn=config" | grep -q /etc/ldap/ldaps.key
-  register: certinfo_present
-  changed_when: false
-  ignore_errors: true
-  when:
-    - ldap_tls_cert_file
-    - ldap_tls_key_file
-
-- name: Create certinfo
-  ansible.builtin.copy:
-    content: |
-      dn: cn=config
-      add: olcTLSCACertificateFile
-      olcTLSCACertificateFile: /etc/ldap/cacert.pem
-      -
-      add: olcTLSCertificateFile
-      olcTLSCertificateFile: /etc/ldap/ldaps.pem
-      -
-      add: olcTLSCertificateKeyFile
-      olcTLSCertificateKeyFile: /etc/ldap/ldaps.key
-    dest: /tmp/certinfo.ldif
-    mode: 0640
-  when:
-    - ldap_tls_cert_file
-    - ldap_tls_key_file
-    - certinfo_present.rc != 0
-
-- name: Add certinfo.ldif
-  ansible.builtin.command:
-    cmd: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/certinfo.ldif
-  when:
-    - ldap_tls_cert_file
-    - ldap_tls_key_file
-    - certinfo_present.rc != 0
-
-- name: Ensure TLS in slapd
-  ansible.builtin.lineinfile:
-    path: /etc/default/slapd
-    regexp: '^SLAPD_SERVICES=.*'
-    line: 'SLAPD_SERVICES="ldap:/// ldapi:/// ldaps:///"'
-    owner: root
-    group: root
-    mode: '0644'
-  when:
-    - ldap_tls_cert_file
-    - ldap_tls_key_file
-  notify: restart slapd
-
-- name: Ensure ldap dirs are present
-  ansible.builtin.file:
-    path: "/var/lib/ldap/accesslog"
-    state: directory
-    owner: openldap
-    mode: 0750
-  when: ldap_provider
 
 - name: provider replicator setup
   community.general.ldap_entry:
@@ -152,89 +125,90 @@
     passwd: "{{ ldap_replicator_password }}"
   when: ldap_replicator_password
 
-- name: Set up the ACL
-  community.general.ldap_attrs:
-    dn: olcDatabase={1}mdb,cn=config
-    attributes:
-      olcAccess:
-        - >-
-          {0}to *
-          by dn.exact="cn=replicator,{{ ldap_domain_dc }}" read
-          by * break
-        - >-
-          {1}to attrs=userPassword
-          by self write
-          by anonymous auth
-          by * none
-        - >-
-          {2}to attrs=shadowLastChange
-          by self write
-          by * read
-        - >-
-          {3}to *
-          by * read
-      olcLimits: |-
-        dn.exact="cn=replicator,{{ ldap_domain_dc }}"
-          time.soft=unlimited time.hard=unlimited
-          size.soft=unlimited size.hard=unlimited
-    state: exact
+- name: LDAP Provider bits
+  block:
+    - name: Ensure ldap dirs are present
+      ansible.builtin.file:
+        path: "/var/lib/ldap/accesslog"
+        state: directory
+        owner: openldap
+        mode: 0750
+    - name: Set up the ACL
+      community.general.ldap_attrs:
+        dn: olcDatabase={1}mdb,cn=config
+        attributes:
+          olcAccess:
+            - >-
+              {0}to *
+              by dn.exact="cn=replicator,{{ ldap_domain_dc }}" read
+              by * break
+            - >-
+              {1}to attrs=userPassword
+              by self write
+              by anonymous auth
+              by * none
+            - >-
+              {2}to attrs=shadowLastChange
+              by self write
+              by * read
+            - >-
+              {3}to *
+              by * read
+          olcLimits: |-
+            dn.exact="cn=replicator,{{ ldap_domain_dc }}"
+              time.soft=unlimited time.hard=unlimited
+              size.soft=unlimited size.hard=unlimited
+        state: exact
+      changed_when: false # This is needed because otherwise this task will report as changed every time
+
+    - name: Check if provider_sync.ldif already done
+      ansible.builtin.command:
+        argv:
+          - ldapsearch
+          - -H
+          - ldapi://
+          - -LLL
+          - -Q
+          - -Y
+          - EXTERNAL
+          - -b
+          - "olcDatabase={2}mdb,cn=config"
+      register: check_provider_sync
+      check_mode: false
+      ignore_errors: true
+      changed_when: false
+    - name: Create provider_sync.ldif
+      ansible.builtin.template:
+        src: templates/provider_sync.ldif.j2
+        mode: 0640
+        dest: /tmp/provider_sync.ldif
+      when: check_provider_sync.rc != 0
+
+    - name: Load provider_sync.ldif
+      ansible.builtin.command:
+        cmd: ldapadd -Q -Y EXTERNAL -H ldapi:/// -f /tmp/provider_sync.ldif
+      when: check_provider_sync.rc != 0
   when: ldap_provider
-  changed_when: false # This is needed because otherwise this task will report as changed every time
 
-- name: Check if provider_sync.ldif already done
-  ansible.builtin.command:
-    argv:
-      - ldapsearch
-      - -H
-      - ldapi://
-      - -LLL
-      - -Q
-      - -Y
-      - EXTERNAL
-      - -b
-      - "olcDatabase={2}mdb,cn=config"
-  register: check_provider_sync
-  check_mode: false
-  ignore_errors: true
-  changed_when: false
-  when: ldap_provider
+- name: LDAP Consumer bits
+  block:
+    - name: Check for consumer_sync
+      ansible.builtin.shell:
+        cmd: ldapsearch -H ldapi:// -LLL -Q -Y EXTERNAL -b "olcDatabase={1}mdb,cn=config" | grep -q logbase
+      register: check_consumer_sync
+      check_mode: false
+      ignore_errors: true
+      changed_when: false
 
-- name: Create provider_sync.ldif
-  ansible.builtin.template:
-    src: templates/provider_sync.ldif.j2
-    mode: 0640
-    dest: /tmp/provider_sync.ldif
-  when:
-    - ldap_provider
-    - check_provider_sync.rc != 0
+    - name: consumer consumer_sync setup
+      ansible.builtin.template:
+        src: templates/consumer_sync.ldif.j2
+        mode: 0640
+        dest: /tmp/consumer_sync.ldif
+      when: check_consumer_sync.rc != 0
 
-- name: Load provider_sync.ldif
-  ansible.builtin.command:
-    cmd: ldapadd -Q -Y EXTERNAL -H ldapi:/// -f /tmp/provider_sync.ldif
-  when:
-    - ldap_provider
-    - check_provider_sync.rc != 0
-
-- name: Check for consumer_sync
-  ansible.builtin.shell:
-    cmd: ldapsearch -H ldapi:// -LLL -Q -Y EXTERNAL -b "olcDatabase={1}mdb,cn=config" | grep -q logbase
-  register: check_consumer_sync
-  check_mode: false
-  ignore_errors: true
-  changed_when: false
-
-- name: consumer consumer_sync setup
-  ansible.builtin.template:
-    src: templates/consumer_sync.ldif.j2
-    mode: 0640
-    dest: /tmp/consumer_sync.ldif
-  when:
-    - not ldap_provider
-    - check_consumer_sync.rc != 0
-
-- name: Load consumer_sync.ldif
-  ansible.builtin.command:
-    cmd: ldapadd -Q -Y EXTERNAL -H ldapi:/// -f /tmp/consumer_sync.ldif
-  when:
-    - not ldap_provider
-    - check_consumer_sync.rc != 0
+    - name: Load consumer_sync.ldif
+      ansible.builtin.command:
+        cmd: ldapadd -Q -Y EXTERNAL -H ldapi:/// -f /tmp/consumer_sync.ldif
+      when: check_consumer_sync.rc != 0
+  when: not ldap_provider

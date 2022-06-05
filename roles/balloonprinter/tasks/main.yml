@@ -21,7 +21,6 @@
     type: dword
     data: 1
 
-# turn off screensaver/disable power saving/screen lock
 - name: turn off screen sleep/disk sleep while on AC
   ansible.builtin.win_command: powercfg -setacvalueindex scheme_balanced {{ item }} 0
   loop:

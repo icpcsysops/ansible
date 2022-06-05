@@ -105,6 +105,7 @@ ldapserver:
   hosts:
     ldap-server1:
       ansible_host: 10.3.3.211
+      ldap_provider: true
     ldap-server2:
       ansible_host: 10.3.3.210
 ntpservers:

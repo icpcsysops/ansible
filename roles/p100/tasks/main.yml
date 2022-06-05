@@ -58,7 +58,6 @@
       ansible.builtin.unarchive:
         src: /tmp/presentations-{{ pres_version }}.zip
         dest: /p/
-        remote_src: false
         owner: p
         group: p
       become_user: p

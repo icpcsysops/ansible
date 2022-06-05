@@ -1,0 +1,36 @@
+- name: install cds package
+  ansible.builtin.apt:
+    pkg: icpc-host-cds
+    state: present
+
+- name: Check if cds is installed
+  ansible.builtin.stat:
+    path: /home/deboer/wlp/bin/server
+  register: cds
+
+- name: Download and install the cds
+  ansible.builtin.unarchive:
+    src: https://github.com/icpctools/icpctools/releases/download/v{{ cds_version }}/wlp.CDS-{{ cds_version }}.zip
+    dest: /home/deboer
+    remote_src: true
+    owner: root
+    group: root
+  when: not cds.stat.exists
+  notify: restart cds
+
+- name: Check if servers exists in repo
+  ansible.builtin.stat:
+    path: /home/deboer/repo/servers
+  register: repo_servers
+
+- name: Move servers from wlp_root to repo
+  ansible.builtin.command: mv /home/deboer/wlp/usr/servers /home/deboer/repo/servers
+  when: not repo_servers.stat.exists
+  notify: restart cds
+
+# in case wlp is upgraded (grumble manually)
+- name: remove servers from wlp_root
+  ansible.builtin.file:
+    path: /home/deboer/wlp/usr/servers
+    state: absent
+  when: repo_servers.stat.exists

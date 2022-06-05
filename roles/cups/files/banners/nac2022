@@ -2,5 +2,5 @@
 Template nac2022.pdf
 Font UseDefault
 Font-size 72
-Show job-originating-user-name job-name time-at-creation time-at-processing
+Show printer-location job-originating-host-name job-originating-user-name job-name time-at-creation time-at-processing
 #job-title printer-name printer-info printer-location printer-make-and-model printer-driver-name printer-driver-version paper-size imageable-area job-id options time-at-creation time-at-processing

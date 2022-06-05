@@ -3,7 +3,7 @@ reverseproxy_server: false
 
 # A list of sites to configure in the nginx proxy. Only these will pass through, all others will fail
 reverseproxy_sites:
-  nac22.kattis.com:
+  nac22.kattis.com:  # NOTE: You'll want to replace this with your kattis instance url
     - {path: "/"}
   fonts.gstatic.com:
     - {path: "/"}
@@ -13,6 +13,7 @@ reverseproxy_sites:
     - {path: "/ajax/libs/jquery/3.5.1/jquery.min.js", exact: true}
     - {path: "/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js", exact: true}
     - {path: "/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css", exact: true}
+    - {path: "/ajax/libs/jqueryui/1.12.1/themes/base/images/"}
   cdnjs.cloudflare.com:
     - {path: "/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css", exact: true}
     - {path: "/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.woff2", exact: true}
@@ -20,25 +21,29 @@ reverseproxy_sites:
     - {path: "/ajax/libs/raphael/2.2.8/raphael.min.js", exact: true}
     - {path: "/ajax/libs/select2/3.5.4/select2.min.js", exact: true}
     - {path: "/ajax/libs/select2/3.5.4/select2.css", exact: true}
+    - {path: "/ajax/libs/select2/3.5.4/"}
     - {path: "/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js", exact: true}
     - {path: "/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css", exact: true}
+    - {path: "/ajax/libs/twitter-bootstrap/3.4.1/"}
     - {path: "/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js", exact: true}
     - {path: "/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css", exact: true}
+    - {path: "/ajax/libs/ace/1.4.5/"}
+    - {path: "/ajax/libs/mathjax/2.7.5/"}
   cdn.jsdelivr.net:
     - {path: "/npm/daterangepicker/daterangepicker.min.js", exact: true}
     - {path: "/npm/daterangepicker/daterangepicker.css", exact: true}
-#   # These two are probably analytics/metrics/monitoring stuff that seem unimportant
-#   static.cloudflareinsights.com:
-#     - {path: "/beacon.min.js"}
-#   static.site24x7rum.eu:
-#     - {path: "/beacon/site24x7rum-min.js", with_args: true, exact: true}
-#   # The next entries are for the orange help widget on kattis.com
-#   euc-widget.freshworks.com:
-#     - {path: "/widgets/79000000133.js", exact: true}
-#     - {path: "/widgets/79000000133.json", exact: true, with_args: true, }
-#     - {path: "/widgetBase"}
-#   kattis.freshdesk.com: [{path: "/"}]
-#   support.kattis.com: [{path: "/"}]
+  # These two are probably analytics/metrics/monitoring stuff that seem unimportant
+  static.cloudflareinsights.com:
+    - {path: "/beacon.min.js"}
+  static.site24x7rum.eu:
+    - {path: "/beacon/site24x7rum-min.js", with_args: true, exact: true}
+  # The next entries are for the orange help widget on kattis.com
+  euc-widget.freshworks.com:
+    - {path: "/widgets/79000000133.js", exact: true}
+    - {path: "/widgets/79000000133.json", exact: true, with_args: true, }
+    - {path: "/widgetBase"}
+  kattis.freshdesk.com: [{path: "/"}]
+  support.kattis.com: [{path: "/"}]
 
 
 # this is a snakeoil cert and key from ubuntu (You'll want to override these)

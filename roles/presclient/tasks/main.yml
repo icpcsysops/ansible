@@ -1,0 +1,63 @@
+# windows updates
+
+- name: set autologin
+  ansible.windows.win_regedit:
+    path: HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon
+    name: "{{ item.name }}"
+    data: "{{ item.value }}"
+    type: "{{ item.type }}"
+  loop:
+    - { name: DefaultUserName, value: "{{ ansible_user }}", type: string }
+    - { name: DefaultPassword, value: "{{ ansible_password }}", type: string } # TODO: mask this out of the ansible output
+    - { name: AutoAdminLogon, value: 1, type: dword }
+
+- name: disable windows updates
+  ansible.windows.win_regedit:
+    path: HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate\AU
+    name: NoAutoUpdate
+    type: dword
+    data: 1
+
+- name: turn off screen sleep/disk sleep while on AC
+  ansible.builtin.win_command: powercfg -setacvalueindex scheme_balanced {{ item }} 0
+  loop:
+    - sub_video videoidle
+    - sub_disk diskidle
+    - sub_sleep standbyidle
+
+- name: set the power plan to balanced (which is what we changed settings for)
+  ansible.builtin.win_power_plan:
+    name: balanced
+
+- name: install jre
+  chocolatey.chocolatey.win_chocolatey:
+    name: openjdk11jre
+    state: present
+
+- name: download presentation client
+  ansible.windows.win_get_url:
+    url: https://github.com/icpctools/icpctools/releases/download/v{{ presclient_version }}/presentations-{{ presclient_version }}.zip
+    dest: /Users/{{ ansible_user }}/Desktop/presentations-{{ presclient_version }}.zip
+
+- name: unzip presentation client
+  community.windows.win_unzip:
+    src: /Users/{{ ansible_user }}/Desktop/presentations-{{ presclient_version }}.zip
+    dest: /Users/{{ ansible_user }}/Desktop/presclient
+    remote_src: true
+
+- name: add bat script to launch the presentation client
+  ansible.windows.win_copy:
+    content: |
+      c:/Users/{{ ansible_user }}/Desktop/presclient/client.bat {{ presclient_cds_url }} {{ presclient_user }} {{ presclient_pass  }} --name {{ inventory_hostname }}
+    dest: /Users/{{ ansible_user }}/Desktop/launch_pres_client.bat
+
+- name: copy a shortcut to launch the presentation client
+  community.windows.win_shortcut:
+    src: "c:/Users/{{ ansible_user }}/Desktop/presclient/client.bat"
+    dest: "c:/Users/{{ ansible_user }}/Desktop/presclient.lnk"
+    arguments: "{{ presclient_cds_url }} {{ presclient_user }} {{ presclient_pass  }} --name {{ inventory_hostname }}"
+
+- name: copy a shortcut to launch the presentation client
+  community.windows.win_shortcut:
+    src: "c:/Users/{{ ansible_user }}/Desktop/presclient.lnk"
+    dest: "%ProgramData%/Microsoft/Windows/Start Menu/Programs/Startup/presclient.lnk"

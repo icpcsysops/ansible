@@ -5,24 +5,24 @@
     dest: /usr/share/cups/banners/
     mode: 0644
   when: job_sheet != "none"
+
 - name: copy cups data
   ansible.builtin.copy:
     src: data/{{ job_sheet }}.pdf
     dest: /usr/share/cups/data/
     mode: 0644
   when: job_sheet != "none"
-- name: check printers.conf for "DeviceURI ipp://printsrv:631/classes/contest"
-  ansible.builtin.command: grep -Fxq "DeviceURI ipp://printsrv:631/classes/contest" /etc/cups/printers.conf
-  register: checkprinters
-  check_mode: false
-  ignore_errors: true
+
+- name: check if the printer exists
+  ansible.builtin.command: lpstat -p {{ printer_name }}
+  register: lpstat
   changed_when: false
-- name: template printers.conf file
-  ansible.builtin.template:
-    src: printers.conf.j2
-    dest: /etc/cups/printers.conf
-    mode: 0644
-    group: root
-    owner: root
-  notify: restart cups
-  when: checkprinters.rc != 0
+  ignore_errors: true
+
+- name: lpadmin add a printer
+  ansible.builtin.command: lpadmin -p {{ printer_name }} -E -v ipp://printsrv:631/{{ device_uri }} -m drv:///sample.drv/generic.ppd -o job-sheets-default={{ job_sheet }},none -L "{{ inventory_hostname }}"
+  when: lpstat.rc != 0
+
+- name: set the printer as default
+  ansible.builtin.command: lpadmin -d {{ printer_name }}
+  when: lpstat.rc != 0

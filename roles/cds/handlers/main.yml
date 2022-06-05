@@ -1,0 +1,6 @@
+---
+- name: restart cds
+  ansible.builtin.service:
+    name: websphere
+    state: restarted
+    enabled: true

@@ -7,3 +7,6 @@ skip_list:
   # completely ignore these two rules
   - meta-no-info    # nags about missing metadata for roles
   - package-latest  # nags about not using latest when using apt install
+
+warn_list:
+  - yaml  # long lines

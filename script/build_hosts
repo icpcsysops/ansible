@@ -41,7 +41,7 @@ if __name__ == "__main__":
     with open("../hosts.yml", "wt") as fh:
         with open("../list.team", "wt") as list_fh:
             for i in range(max_team):
-                print_host(i + 1, "team", "10.0.0", list_fh, contestants)
+                print_host(i + 1, "team", "10.1.1", list_fh, contestants)
         document = f"""
 contestants:
   hosts: {contestants}
@@ -77,6 +77,7 @@ judges:
         print_server("packages", "10.3.3.209", others)
         print_server("backup", "10.3.3.210", others)
         print_server("authprint", "10.3.3.211", others)
+        print_server("balloonmanager", "10.4.4.149", others)
         # print_server("kattis", "10.3.3.212", others)
         # print_server("kattisbackup", "10.3.3.213", others)
         # print_server("pc2-shadowccs", "10.3.3.214", others)

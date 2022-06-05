@@ -51,7 +51,7 @@
 - name: copy a shortcut to launch the balloon client
   community.windows.win_shortcut:
     src: "c:/Users/{{ ansible_user }}/Desktop/balloon/balloon.bat"
-    dest: "c:/Users/{{ ansible_user }}/desktop/balloon.lnk"
+    dest: "c:/Users/{{ ansible_user }}/Desktop/balloon.lnk"
     arguments: "{{ balloon_cds_url }} {{ balloon_user }} {{ balloon_pass  }}"
 
 - name: copy a shortcut to launch the balloon client

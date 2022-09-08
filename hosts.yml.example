@@ -10,3 +10,7 @@ ldapserver:
   hosts:
     ldap-server2:
       ansible_host: 10.0.0.204
+grafana:
+  hosts:
+    backup:
+      ansible_host: 10.3.3.210

@@ -1,0 +1,127 @@
+---
+- name: Add upstream prometheus apt key
+  ansible.builtin.apt_key:
+    url: https://packagecloud.io/the_asten/prometheus/gpgkey
+    state: present
+
+- name: Add upstream prometheus apt repo
+  ansible.builtin.apt_repository:
+    repo: deb https://packagecloud.io/the_asten/prometheus/ubuntu/ focal main
+    state: present
+  register: prometheus_repo
+
+- name: Install dependencies
+  ansible.builtin.apt:
+    state: present
+    install_recommends: false
+    pkg:
+      - nginx
+      - prometheus
+
+# Setup Prometheus, which scrapes all metrics from the monitored machines
+# The client exposes the metrics (on different ports/URIs) and we collect those
+- name: Set up prometheus scrapes
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+    mode: "0644"
+    owner: root
+    group: root
+  notify: Restart prometheus
+
+# Setup loki which gathers our logs
+- name: Install loki
+  ansible.builtin.unarchive:
+    src: https://github.com/grafana/loki/releases/download/v2.5.0/loki-linux-amd64.zip
+    dest: /usr/bin/
+    remote_src: true
+    owner: domjudge
+    group: domjudge
+  when: loki
+
+- name: Dir for loki settings
+  ansible.builtin.file:
+    state: directory
+    path: /etc/grafana/loki/
+    owner: root
+    group: root
+    mode: "0755"
+  when: loki
+
+- name: Set loki settings
+  ansible.builtin.copy:
+    src: loki-local-config.yaml
+    dest: /etc/grafana/loki/
+    owner: root
+    group: root
+    mode: "0644"
+  when: loki
+  notify: Restart loki
+
+- name: Setup loki systemd
+  ansible.builtin.copy:
+    src: loki.service
+    dest: /etc/systemd/system/
+    mode: "0655"
+  when: loki
+  notify: Restart loki
+
+- name: Start loki service
+  ansible.builtin.service:
+    name: loki
+    state: started
+    enabled: true
+  when: loki
+
+## Setup grafana
+- name: Install grafana
+  ansible.builtin.apt:
+    deb: https://dl.grafana.com/enterprise/release/grafana-enterprise_8.4.6_amd64.deb
+    state: present
+  notify: Restart grafana
+
+- name: Configure grafana
+  ansible.posix.synchronize:
+    src: files/grafana/environment
+    dest: /etc/default/grafana-server
+  notify: Restart grafana
+
+- name: Set up grafana datasources
+  ansible.posix.synchronize:
+    src: files/grafana/datasources.yml
+    dest: /etc/grafana/provisioning/datasources/default.yml
+  notify: Restart grafana
+
+- name: Set up grafana dashboards
+  ansible.posix.synchronize:
+    src: files/grafana/dashboards.yml
+    dest: /etc/grafana/provisioning/dashboards/default.yml
+  notify: Restart grafana
+
+- name: Copy grafana dashboards
+  ansible.posix.synchronize:
+    src: dashboards/
+    dest: /etc/grafana/dashboards/
+  notify: Restart grafana
+
+# Setup nginx with selfsigned certificate
+- name: Copy ssl cert
+  ansible.posix.synchronize:
+    src: ssl.crt
+    dest: /etc/ssl/certs/grafana.crt
+  notify: Restart nginx
+
+- name: Copy ssl key
+  ansible.posix.synchronize:
+    src: ssl.key
+    dest: /etc/ssl/private/grafana.key
+  notify: Restart nginx
+
+- name: Copy default nginx config
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-enabled/grafana.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart nginx

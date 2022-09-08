@@ -1,3 +1,4 @@
+---
 # Hosts file for Ansible. Copy this file to `hosts.yml` and change its contents
 contestants:
   hosts:
@@ -7,10 +8,21 @@ ldapserver:
   hosts:
     ldap-server1:
       ansible_host: 10.0.0.203
-  hosts:
     ldap-server2:
       ansible_host: 10.0.0.204
-grafana:
+others:
   hosts:
+    authprint:
+      ansible_host: 10.3.3.211
     backup:
       ansible_host: 10.3.3.210
+    cds:
+      ansible_host: 10.3.3.207
+    packages:
+      ansible_host: 10.3.3.209
+    scoreboard:
+      ansible_host: 10.3.3.208
+    squidserver:
+      ansible_host: 10.3.3.214
+grafana:
+  backup:

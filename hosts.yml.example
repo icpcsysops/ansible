@@ -26,3 +26,4 @@ others:
       ansible_host: 10.3.3.214
 grafana:
   backup:
+    ansible_host: 10.3.3.210

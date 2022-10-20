@@ -8,8 +8,10 @@
       when: ldap_domain is defined
     - role: hyperthreadingdisabled
     - role: reverseproxy
+      when: enable_reverseproxy is defined and enable_reverseproxy
     - role: p100
     - role: ccstools
+    - role: taskset_run_scripts
 
   tasks:
     - name: switch from files to compat in nsswitch

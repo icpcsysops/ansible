@@ -1,21 +1,26 @@
 #!/usr/bin/python3
 
 import yaml
+import argparse
+
+parser = argparse.ArgumentParser(description='script to build hosts.yml')
+parser.add_argument('-w', action='store_true', dest='wf', help='enable world finals mode')
+args = parser.parse_args()
 
 contestants = {}
 judges = {}
 others = {}
-wf = 0
-if wf:
+if args.wf:
     name = "wf2021"
     timezone = "Asia/Dhaka"
     max_team = 152
     max_human_judge = 12
-    max_pc2_autojudge = 0
-    max_kattis_autojudge = 16
-    max_domjudge = 16
-    max_domjudge_ccsadmin = 5
-    max_ccsadmin = 5
+    max_pc2_autojudge = 16
+    max_kattis_autojudge = 0
+    max_domjudge_autojudge = 16
+    max_domjudge_ccsadmin = 7
+    # pc2 for wf2021
+    max_ccsadmin = 4
 else:
     name = "nac2022"
     timezone = "America/New_York"
@@ -23,7 +28,7 @@ else:
     max_human_judge = 12
     max_pc2_autojudge = 0
     max_kattis_autojudge = 0
-    max_domjudge = 0
+    max_domjudge_autojudge = 0
     max_domjudge_ccsadmin = 0
     max_ccsadmin = 0
 
@@ -57,7 +62,7 @@ contestants:
             for i in range(max_pc2_autojudge):
                 print_host(i + 1, "pc2-aj", "10.2.2", list_fh, judges, 143)
         with open("../list.domjudges", "wt") as list_fh:
-            for i in range(max_domjudge):
+            for i in range(max_domjudge_autojudge):
                 print_host(i + 1, "domjudge-judgehost", "10.2.2", list_fh, judges, 192)
         document = f"""
 judges:
@@ -69,7 +74,7 @@ judges:
                 print_host(i + 1, "domjudge-ccsadmin", "10.3.3", list_fh, others, 222)
         with open("../list.ccsadmin", "wt") as list_fh:
             for i in range(max_ccsadmin):
-                print_host(i + 1, "-ccsadmin", "10.3.3", list_fh, others, 231)
+                print_host(i + 1, "ccsadmin", "10.3.3", list_fh, others, 231)
         print_server("reverseproxy", "10.3.3.205", others)
         # print_server("media", "10.3.3.206", others);
         print_server("cds", "10.3.3.207", others)
@@ -80,9 +85,9 @@ judges:
         print_server("balloonmanager", "10.4.4.149", others)
         # print_server("kattis", "10.3.3.212", others)
         # print_server("kattisbackup", "10.3.3.213", others)
-        # print_server("pc2-shadowccs", "10.3.3.214", others)
+        print_server("pc2-shadowccs", "10.3.3.214", others)
         # print_server("domjudge-shadowccs", "10.3.3.215", others)
-        # print_server("domserver", "10.3.3.216", others)
+        print_server("domserver", "10.3.3.216", others)
         document = f"""
 others:
   hosts:
@@ -110,5 +115,6 @@ all:
     job_sheet: {name}
     # root_password:
     disable_sources_list_changes: false
+    enable_reverseproxy: {not args.wf}
 """
         print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)

@@ -1,0 +1,12 @@
+---
+- name: add taskset to run scripts
+  ansible.builtin.lineinfile:
+    path: /usr/local/bin/{{ item }}
+    state: present
+    regexp: '^([ ]*)(java|kotlin|pypy)(.*)$'
+    backrefs: yes
+    line: '\1taskset -c 2 \2\3'
+  loop:
+    - runpython3
+    - runkotlin
+    - runjava

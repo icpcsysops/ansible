@@ -1,0 +1,36 @@
+---
+- name: Check if the latest submit is available
+  delegate_to: localhost
+  stat:
+    path: "{{ role_path }}/files/submit"
+  register: submit
+
+- name: Download latest version
+  delegate_to: localhost
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/DOMjudge/domjudge/main/submit/submit
+    dest: "{{ role_path }}/files/submit"
+    mode: '0755'
+  when: submit.stat.islnk is not defined
+
+- name: Add correct base URL
+  delegate_to: localhost
+  ansible.builtin.lineinfile:
+      path: "{{ role_path }}/files/submit"
+      regexp: "^baseurl.*"
+      line: 'baseurl = "{{ browser_urls|default(["domjudge"]) | first }}"'
+
+- name: Add correct path to python3
+  delegate_to: localhost
+  ansible.builtin.lineinfile:
+      path: "{{ role_path }}/files/submit"
+      regexp: "^#!/usr/bin/env python3$"
+      line: "#!/usr/bin/python3"
+
+- name: Install submit client
+  copy:
+    src: submit
+    dest: /usr/local/bin/submit
+    owner: root
+    group: root
+    mode: 0555

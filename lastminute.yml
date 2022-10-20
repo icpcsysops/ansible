@@ -9,6 +9,7 @@
     - role: hyperthreadingdisabled
     - role: reverseproxy
     - role: p100
+    - role: ccstools
 
   tasks:
     - name: switch from files to compat in nsswitch

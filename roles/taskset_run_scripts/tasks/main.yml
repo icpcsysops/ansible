@@ -4,7 +4,7 @@
     path: /usr/local/bin/{{ item }}
     state: present
     regexp: '^([ ]*)(java|kotlin|pypy)(.*)$'
-    backrefs: yes
+    backrefs: true
     line: '\1taskset -c 2 \2\3'
   loop:
     - runpython3

@@ -55,6 +55,7 @@
           ResultAny=no
           ResultInactive=no
           ResultActive=no
+        mode: 0644
     - name: gvfs/gvfsd permission tweaking to disable
       ansible.builtin.file:
         path: /usr/lib/gvfs/{{ item }}
@@ -78,9 +79,9 @@
       notify: glib-compile-schemas
   handlers:
     - name: glib-compile-schemas
-      command: glib-compile-schemas /usr/share/glib-2.0/schemas
+      ansible.builtin.command: glib-compile-schemas /usr/share/glib-2.0/schemas
     - name: reboot
-      reboot:
+      ansible.builtin.reboot:
 
 - name: configure ldap server
   hosts: ldapserver
@@ -104,7 +105,7 @@
       notify: restart rsyslog
   handlers:
     - name: restart rsyslog
-      service:
+      ansible.builtin.service:
         name: rsyslog
         state: restarted
 
@@ -126,7 +127,7 @@
 
   tasks:
     - name: Pre-generate the kernel flags for ansible usage
-      set_fact:
+      ansible.builtin.set_fact:
         procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1"
     - name: Ensure /etc/default/grub has proper GRUB_CMDLINE_LINUX_DEFAULT
       ansible.builtin.replace:
@@ -175,7 +176,7 @@
         mode: "0700"
 
     - name: Pre-generate the kernel flags for ansible usage
-      set_fact:
+      ansible.builtin.set_fact:
         procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1"
     - name: Ensure /etc/default/grub has proper GRUB_CMDLINE_LINUX_DEFAULT
       ansible.builtin.replace:
@@ -199,7 +200,8 @@
       notify:
         - update grub
 
-    - shell: git rev-list --full-history --all --abbrev-commit | head -1
+    - name: Get GIT revision
+      ansible.builtin.shell: 'set -o pipefail && git rev-list --full-history --all --abbrev-commit | head -1'
       become: false
       register: git_revision
       delegate_to: 127.0.0.1
@@ -212,9 +214,10 @@
       changed_when: false
   handlers:
     - name: update grub
-      command: /usr/sbin/update-grub
+      ansible.builtin.command:
+        command: /usr/sbin/update-grub
     - name: reboot
-      reboot:
+      ansible.builtin.reboot:
 
 - name: configure the reverse proxy
   hosts: reverseproxy

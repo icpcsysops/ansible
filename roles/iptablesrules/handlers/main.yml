@@ -1,0 +1,4 @@
+---
+- name: iptablesload
+  ansible.builtin.shell:
+    cmd: /etc/network/if-pre-up.d/iptablesload

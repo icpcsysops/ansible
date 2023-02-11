@@ -1,0 +1,80 @@
+---
+- name: configure contestant machines to undo challenge
+  hosts: contestants
+  gather_facts: false
+
+  tasks:
+    - name: restore firefox to default
+      ansible.builtin.copy:
+        src: files/firefox.desktop
+        dest: /usr/share/applications/firefox.desktop
+
+    - name: disable DNS bits in resolved.conf
+      ansible.builtin.replace:
+        path: /etc/systemd/resolved.conf
+        regexp: '^[#]?DNS=.*'
+        replace: '#DNS='
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: enable systemd-resolved
+      ansible.builtin.systemd:
+        name: systemd-resolved
+        state: stopped
+        enabled: false
+        masked: true
+
+    - name: firewall blocks #2
+      ansible.builtin.iptables:
+        state: absent
+        chain: OUTPUT
+        protocol: tcp
+        destination: 10.3.3.215/32
+        destination_ports:
+          - "80"
+          - "443"
+          - "53"
+        jump: drop-n-log
+        action: insert
+
+    - name: firewall blocks #1
+      ansible.builtin.iptables:
+        state: absent
+        chain: OUTPUT
+        protocol: tcp
+        destination: 10.3.3.216/31
+        destination_ports:
+          - "80"
+          - "443"
+          - "53"
+        jump: drop-n-log
+        action: insert
+
+
+    - name: firewall additions input
+      ansible.builtin.iptables:
+        state: absent
+        chain: INPUT
+        ctstate: ESTABLISHED,RELATED
+        jump: ACCEPT
+
+    - name: firewall additions output tcp
+      ansible.builtin.iptables:
+        state: absent
+        chain: OUTPUT
+        protocol: tcp
+        destination_ports:
+          - "80"
+          - "443"
+          - "53"
+        jump: ACCEPT
+
+    - name: firewall additions output udp
+      ansible.builtin.iptables:
+        state: absent
+        chain: OUTPUT
+        protocol: udp
+        destination_ports:
+          - "53"
+        jump: ACCEPT

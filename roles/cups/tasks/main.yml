@@ -13,6 +13,20 @@
     mode: 0644
   when: job_sheet != "none"
 
+- name: copy cups end banners
+  ansible.builtin.copy:
+    src: banners/{{ job_sheet_end }}
+    dest: /usr/share/cups/banners/
+    mode: 0644
+  when: job_sheet_end != "none"
+
+- name: copy cups end data
+  ansible.builtin.copy:
+    src: data/{{ job_sheet_end }}.pdf
+    dest: /usr/share/cups/data/
+    mode: 0644
+  when: job_sheet_end != "none"
+
 - name: check if the printer exists
   ansible.builtin.command: lpstat -p {{ printer_name }}
   register: lpstat
@@ -20,7 +34,7 @@
   ignore_errors: true
 
 - name: lpadmin add a printer
-  ansible.builtin.command: lpadmin -p {{ printer_name }} -E -v ipp://printsrv:631/{{ device_uri }} -m drv:///sample.drv/generic.ppd -o job-sheets-default={{ job_sheet }},none -L "{{ inventory_hostname }}"
+  ansible.builtin.command: lpadmin -p {{ printer_name }} -E -v ipp:////printsrv:631/{{ device_uri }} -m drv:///sample.drv/generic.ppd -o job-sheets-default={{ job_sheet }},{{ job_sheet_end }} -L "{{ inventory_hostname }}"
   when: lpstat.rc != 0
 
 - name: set the printer as default

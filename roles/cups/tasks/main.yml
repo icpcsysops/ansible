@@ -1,42 +1,42 @@
 ---
-- name: copy cups banners
+- name: Copy cups banners
   ansible.builtin.copy:
     src: banners/{{ job_sheet }}
     dest: /usr/share/cups/banners/
     mode: 0644
   when: job_sheet != "none"
 
-- name: copy cups data
+- name: Copy cups data
   ansible.builtin.copy:
     src: data/{{ job_sheet }}.pdf
     dest: /usr/share/cups/data/
     mode: 0644
   when: job_sheet != "none"
 
-- name: copy cups end banners
+- name: Copy cups end banners
   ansible.builtin.copy:
     src: banners/{{ job_sheet_end }}
     dest: /usr/share/cups/banners/
     mode: 0644
   when: job_sheet_end != "none"
 
-- name: copy cups end data
+- name: Copy cups end data
   ansible.builtin.copy:
     src: data/{{ job_sheet_end }}.pdf
     dest: /usr/share/cups/data/
     mode: 0644
   when: job_sheet_end != "none"
 
-- name: check if the printer exists
+- name: Check if the printer exists
   ansible.builtin.command: lpstat -p {{ printer_name }}
   register: lpstat
   changed_when: false
   ignore_errors: true
 
-- name: lpadmin add a printer
-  ansible.builtin.command: lpadmin -p {{ printer_name }} -E -v ipp:////printsrv:631/{{ device_uri }} -m drv:///sample.drv/generic.ppd -o job-sheets-default={{ job_sheet }},{{ job_sheet_end }} -L "{{ inventory_hostname }}"
+- name: Lpadmin add a printer
+  ansible.builtin.command: lpadmin -p {{ printer_name }} -E -v ipp:////printsrv:631/{{ device_uri }} -m drv:///sample.drv/generic.ppd -o job-sheets-default={{ job_sheet }},{{ job_sheet_end }} -L "{{ inventory_hostname }}" # noqa: yaml[line-length]
   when: lpstat.rc != 0
 
-- name: set the printer as default
+- name: Set the printer as default
   ansible.builtin.command: lpadmin -d {{ printer_name }}
   when: lpstat.rc != 0

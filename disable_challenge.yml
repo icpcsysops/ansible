@@ -25,7 +25,7 @@
         enabled: false
         masked: true
 
-    - name: firewall blocks #2
+    - name: firewall blocks \#2
       ansible.builtin.iptables:
         state: absent
         chain: OUTPUT
@@ -38,7 +38,7 @@
         jump: drop-n-log
         action: insert
 
-    - name: firewall blocks #1
+    - name: firewall blocks \#1
       ansible.builtin.iptables:
         state: absent
         chain: OUTPUT

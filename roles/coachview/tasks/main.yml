@@ -23,7 +23,7 @@
     group: cv
     mode: 0755
 
-- name: enable autologin to user coachview
+- name: Enable autologin to user coachview
   ansible.builtin.copy:
     content: |
       [daemon]
@@ -47,6 +47,7 @@
   register: coachview
 
 - name: Download and install the coachview once
+  when: not coachview.stat.exists
   block:
     - name: Get prerelease version
       delegate_to: localhost
@@ -78,15 +79,14 @@
         group: cv
       become_user: cv
       become: true
-  when: not coachview.stat.exists
 
-- name: check if coachview is currently running
+- name: Check if coachview is currently running
   ansible.builtin.command: pgrep --uid cv
   register: cv_running
   ignore_errors: true
   changed_when: false
 
-- name: restart gdm3
+- name: Restart gdm3
   ansible.builtin.systemd:
     name: gdm3
     state: restarted

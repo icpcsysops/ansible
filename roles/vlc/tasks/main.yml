@@ -1,5 +1,5 @@
 ---
-- name: deploy icpc_xhost_allow
+- name: Deploy icpc_xhost_allow
   ansible.builtin.copy:
     content: |
       #
@@ -8,27 +8,27 @@
     owner: root
     group: root
     mode: '0644'
-- name: deploy vlc-screen.service
+- name: Deploy vlc-screen.service
   ansible.builtin.copy:
     src: vlc-screen.service
     dest: /lib/systemd/system/vlc-screen.service
     owner: root
     group: root
     mode: 0644
-- name: deploy vlc-webcam.service
+- name: Deploy vlc-webcam.service
   ansible.builtin.copy:
     src: vlc-webcam.service
     dest: /lib/systemd/system/vlc-webcam.service
     owner: root
     group: root
     mode: 0644
-- name: enable and start vlc-screen.service
+- name: Enable and start vlc-screen.service
   ansible.builtin.service:
     name: vlc-screen
-    enabled: yes
+    enabled: true
     state: started
-- name: enable and start vlc-webcam.service
+- name: Enable and start vlc-webcam.service
   ansible.builtin.service:
     name: vlc-webcam
-    enabled: yes
+    enabled: true
     state: started

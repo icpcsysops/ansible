@@ -9,6 +9,5 @@
     - name: gather ip link address
       ansible.builtin.command: "ip link show {{ ifc_name }}"
       register: ip_link
-    - debug: 
+    - debug:
         var: ip_link.stdout_lines
-

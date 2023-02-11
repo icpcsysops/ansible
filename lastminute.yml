@@ -1,9 +1,9 @@
 ---
 # this needs to be first as ldap requires it
- - name: pre-configure apt
-   hosts: all
-   roles:
-     - role: apt
+- name: pre-configure apt
+  hosts: all
+  roles:
+    - role: apt
 
 - name: configure coachview machines
   hosts: coachview*
@@ -22,7 +22,7 @@
       when: enable_reverseproxy is defined and enable_reverseproxy
     - role: p100
     - role: ccstools
-      when: '"{{ ccs }}" == "domjudge"'
+      when: ccs  == "domjudge"
     - role: taskset_run_scripts
     - role: vlc
       when: enable_vlc is defined and enable_vlc
@@ -160,8 +160,9 @@
       tags: systemd-timesyncd
 
   tasks:
-    - name: get file stat to be able to perform a check in the following task
-      local_action: stat path="files/"{{ contest_detail }}".JudgingNotes."{{ papersize }}".pdf"
+    # stat file first
+    - name: get file stat of JudgingNotes to be able to perform a check in the following task
+      local_action: stat path=`files/"{{ contest_detail }}".JudgingNotes."{{ papersize }}".pdf`
       register: judgingnotes
 
     - name: copy JudgingNotes.pdf
@@ -170,8 +171,8 @@
         dest: /usr/share/doc/icpc/JudgingNotes.pdf
       when: judgingnotes.stat.exists
 
-    - name: get file stat to be able to perform a check in the following task
-      local_action: stat path="files/"{{ contest_detail }}".TechNotes."{{ papersize }}".pdf"
+    - name: get file stat of TechNotes to be able to perform a check in the following task
+      local_action: stat path=`files/"{{ contest_detail }}".TechNotes."{{ papersize }}".pdf`
       register: technotes
 
     - name: copy TechNotes.pdf

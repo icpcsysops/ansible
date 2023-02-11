@@ -1,16 +1,16 @@
 ---
-- name: install nginx
+- name: Install nginx
   ansible.builtin.apt:
     pkg: nginx
     state: present
 
-- name: remove default nginx configuration
+- name: Remove default nginx configuration
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/default
     state: absent
   notify: reload nginx
 
-- name: install the ssl data
+- name: Install the ssl data
   ansible.builtin.copy:
     content: "{{ item.content }}"
     dest: /etc/ssl/{{ item.dest }}
@@ -20,7 +20,7 @@
     - { content: "{{ reverseproxy_key }}", dest: reverseproxy.key, mode: "0600" }
     - { content: "{{ reverseproxy_cert }}", dest: reverseproxy.cert, mode: "0644" }
 
-- name: install our kattis reverse proxy config
+- name: Install our kattis reverse proxy config
   ansible.builtin.template:
     src: templates/nginx.conf.j2
     dest: /etc/nginx/sites-available/reverseproxy.conf
@@ -31,7 +31,7 @@
     trim_blocks: true
   notify: reload nginx
 
-- name: enable the reverseproxy nginx config
+- name: Enable the reverseproxy nginx config
   ansible.builtin.file:
     src: /etc/nginx/sites-available/reverseproxy.conf
     dest: /etc/nginx/sites-enabled/reverseproxy

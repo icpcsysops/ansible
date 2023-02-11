@@ -1,5 +1,5 @@
 ---
-- name: add taskset to run scripts
+- name: Add taskset to run scripts
   ansible.builtin.lineinfile:
     path: /usr/local/bin/{{ item }}
     state: present

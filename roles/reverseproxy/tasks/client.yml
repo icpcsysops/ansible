@@ -1,5 +1,5 @@
 ---
-- name: update hosts file so we talk to the proxyserver instead of the real server
+- name: Update hosts file so we talk to the proxyserver instead of the real server
   ansible.builtin.lineinfile:
     path: /etc/hosts
     line: "{{ baseip }}.205	{{ item }}" # noqa: no-tabs

@@ -1,0 +1,152 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# LOGGING / DEBUGGING
+-N accept-in-log
+-A accept-in-log -j LOG --log-level 4 --log-prefix "accept-in-log:"
+-A accept-in-log -j ACCEPT
+-N accept-out-log
+-A accept-out-log -j LOG --log-level 4 --log-prefix "accept-out-log:"
+-A accept-out-log -j ACCEPT
+-N drop-n-log
+-A drop-n-log -j LOG -m limit --limit 5/m --limit-burst 7 --log-level 4 --log-prefix "DENIED:"
+-A drop-n-log -j DROP
+
+# internal interface
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# something on login or usb plugin causes this traffic
+-A OUTPUT -p udp -m udp --dport 137 -j REJECT
+-A OUTPUT -p udp -m udp --dport 1124 -j REJECT
+-A OUTPUT -p udp -m udp --dport 3289 -j REJECT
+-A OUTPUT -p udp -m udp --dport 5353 -j REJECT
+-A OUTPUT -p udp -m udp --dport 8610 -j REJECT
+-A OUTPUT -p udp -m udp --dport 8612 -j REJECT
+# other cups snmp stuff to drop
+-A OUTPUT -p udp -m udp -d 10.3.3.149 --dport 161 -j DROP
+
+# http
+-A INPUT -p tcp --sport 80 -s 10.3.3.208/31 -j ACCEPT
+-A OUTPUT -p tcp --dport 80 -d 10.3.3.208/31 -j ACCEPT
+-A OUTPUT -p tcp --dport 80 -d 10.3.3.215/32 -j ACCEPT
+-A INPUT -p tcp --sport 80 -s 10.3.3.215/32 -j ACCEPT
+
+# https
+# these are the primary ccs ips
+-A INPUT -p tcp --sport 443 -s 10.3.3.215/32 -j ACCEPT
+-A OUTPUT -p tcp --dport 443 -d 10.3.3.215/32 -j ACCEPT
+# these are the shadow failover ips
+#-A INPUT -p tcp --sport 443 -s 10.3.3.208/31 -j ACCEPT
+#-A OUTPUT -p tcp --dport 443 -d 10.3.3.208/31 -j ACCEPT
+
+# packages
+-A INPUT -p tcp --sport 443 -s 10.3.3.209/32 -j ACCEPT
+-A OUTPUT -p tcp --dport 443 -d 10.3.3.209/32 -j ACCEPT
+
+# ntp
+-A INPUT -p tcp --sport 123 -s 10.3.3.208 -j ACCEPT
+-A INPUT -p udp --sport 123 -s 10.3.3.208 -j ACCEPT
+-A OUTPUT -p tcp --dport 123 -d 10.3.3.208 -j ACCEPT
+-A OUTPUT -p udp --dport 123 -d 10.3.3.208 -j ACCEPT
+-A INPUT -p tcp --sport 123 -s 10.3.3.209 -j ACCEPT
+-A INPUT -p udp --sport 123 -s 10.3.3.209 -j ACCEPT
+-A OUTPUT -p tcp --dport 123 -d 10.3.3.209 -j ACCEPT
+-A OUTPUT -p udp --dport 123 -d 10.3.3.209 -j ACCEPT
+-A INPUT -p tcp --sport 123 -s 10.3.3.210 -j ACCEPT
+-A INPUT -p udp --sport 123 -s 10.3.3.210 -j ACCEPT
+-A OUTPUT -p tcp --dport 123 -d 10.3.3.210 -j ACCEPT
+-A OUTPUT -p udp --dport 123 -d 10.3.3.210 -j ACCEPT
+-A INPUT -p tcp --sport 123 -s 10.3.3.254 -j ACCEPT
+-A INPUT -p udp --sport 123 -s 10.3.3.254 -j ACCEPT
+-A OUTPUT -p tcp --dport 123 -d 10.3.3.254 -j ACCEPT
+-A OUTPUT -p udp --dport 123 -d 10.3.3.254 -j ACCEPT
+
+# cds uses https
+-A OUTPUT -p tcp --dport 443 -d 10.3.3.207/32 -j ACCEPT
+-A INPUT -p tcp --sport 443 -s 10.3.3.207/32 -j ACCEPT
+# p100
+-A OUTPUT -p tcp --dport 9443 -d 10.3.3.207/32 -j ACCEPT
+-A INPUT -p tcp --sport 9443 -s 10.3.3.207/32 -j ACCEPT
+
+# ssh inbound
+-A INPUT -p tcp -m tcp --dport 22 -s 10.3.3.208/29 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 22 -d 10.3.3.208/29 -j ACCEPT
+
+# vlc camera inbound
+-A INPUT -p tcp -m tcp --dport 8080 -s 10.3.3.205/32 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 8080 -d 10.3.3.205/32 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 8080 -s 10.3.3.207/32 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 8080 -d 10.3.3.207/32 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 8080 -s 10.3.3.208/28 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 8080 -d 10.3.3.208/28 -j ACCEPT
+
+# vlc screen inbound
+-A INPUT -p tcp -m tcp --dport 9090 -s 10.3.3.205/32 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 9090 -d 10.3.3.205/32 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 9090 -s 10.3.3.207/32 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 9090 -d 10.3.3.207/32 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 9090 -s 10.3.3.208/28 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 9090 -d 10.3.3.208/28 -j ACCEPT
+
+# ssh to backup (used by rsync)
+-A INPUT -p tcp -m tcp --sport 22 -s 10.3.3.213 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --dport 22 -d 10.3.3.213 -j ACCEPT
+-A INPUT -p tcp -m tcp --sport 22 -s 10.3.3.210 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --dport 22 -d 10.3.3.210 -j ACCEPT
+
+# syslog
+-A INPUT -p udp --sport 514 -s 10.3.3.208/29 -j ACCEPT
+-A OUTPUT -p udp --dport 514 -d 10.3.3.208/29 -j ACCEPT
+
+# printing (ipp)
+# to ballonmanager
+-A INPUT -p tcp --sport 631 -s 10.3.3.149 -j ACCEPT
+-A INPUT -p udp --sport 631 -s 10.3.3.149 -j ACCEPT
+-A OUTPUT -p tcp --dport 631 -d 10.3.3.149 -j ACCEPT
+-A OUTPUT -p udp --dport 631 -d 10.3.3.149 -j ACCEPT
+# to authprint
+-A INPUT -p tcp --sport 631 -s 10.3.3.211 -j ACCEPT
+-A INPUT -p udp --sport 631 -s 10.3.3.211 -j ACCEPT
+-A OUTPUT -p tcp --dport 631 -d 10.3.3.211 -j ACCEPT
+-A OUTPUT -p udp --dport 631 -d 10.3.3.211 -j ACCEPT
+
+# printing (ldp)
+-A INPUT -p udp --sport 515 -s 10.3.3.216 -j ACCEPT
+-A INPUT -p tcp --sport 515 -s 10.3.3.216 -j ACCEPT
+-A OUTPUT -p udp --dport 515 -d 10.3.3.216 -j ACCEPT
+-A OUTPUT -p tcp --dport 515 -d 10.3.3.216 -j ACCEPT
+
+# ldap to servers
+-A INPUT -p tcp --sport 389 -s 10.3.3.210/31 -j ACCEPT
+-A OUTPUT -p tcp --dport 389 -d 10.3.3.210/31 -j ACCEPT
+-A INPUT -p tcp --sport 636 -s 10.3.3.210/31 -j ACCEPT
+-A OUTPUT -p tcp --dport 636 -d 10.3.3.210/31 -j ACCEPT
+
+# printing (samba)
+# allow ICMP ping incoming client request from servers
+-A INPUT -p icmp --icmp-type 8 -s 10.3.3.208/29 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+-A OUTPUT -p icmp --icmp-type 0 -d 10.3.3.208/29 -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -p icmp --icmp-type 8 -m state --state NEW,ESTABLISHED,RELATED -j drop-n-log
+-A OUTPUT -p icmp --icmp-type 0 -m state --state ESTABLISHED,RELATED -j drop-n-log
+
+-A INPUT -p icmp --icmp-type 3 -s 10.3.3.210 -j ACCEPT
+
+# disable outgoing ICMP request
+-A OUTPUT -p icmp --icmp-type 8 -j drop-n-log
+
+# ypbind sends this out to find the fastest server
+# unknown state
+-A OUTPUT -p icmp -j ACCEPT
+
+# what else
+# -A INPUT -m state --state ESTABLISHED,RELATED -j accept-in-log
+# -A OUTPUT -m state --state NEW,ESTABLISHED,RELATED -j accept-out-log
+
+# drop rest
+-A OUTPUT -j drop-n-log
+-A INPUT -j drop-n-log
+
+COMMIT

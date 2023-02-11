@@ -1,0 +1,14 @@
+---
+- name: copy iptables.rules to teams
+  ansible.builtin.copy:
+    src: "{{ iptables_base }}.iptables.rules"
+    dest: /etc/iptables.rules
+    owner: root
+    group: root
+    mode: '0644'
+  notify: iptablesload
+
+- name: fix permissions on iptablesload
+  ansible.builtin.file:
+    path: /etc/network/if-pre-up.d/iptablesload
+    mode: "0755"

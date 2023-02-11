@@ -1,3 +1,6 @@
 # from galaxy
+collections:
+ - name: community.general
+
 roles:
  - src: stuvusIT.systemd-timesyncd

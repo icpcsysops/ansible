@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Python3 Standard Library
+Comment=The Python3 Standard Library
+Exec=gnome-www-browser file:///usr/share/doc/python3.7/html/library/index.html
+Icon=/usr/share/doc/python3.8-doc/html/_static/py.png
+Terminal=0
+Type=Application
+Categories=LangDocs;

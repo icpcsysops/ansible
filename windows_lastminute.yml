@@ -1,10 +1,19 @@
 ---
+# on windows boxes
+# set password on account (if none set)
+#   (CTRL-ALT-DELETE, change password)
+# run:
+# elavated powershell
+# bootstrap_windows.ps1
+# on unix side:
 # ansible-playbook --limit ballonprinter1 --extra-vars ansible_user=windows_user -e ansible_password=windows_password windows_lastminute.yml
 - name: presentation hosts
   hosts: presentation_clients
+  gather_facts: false
   roles:
     - role: presclient
 - name: balloon printer hosts
   hosts: win_balloonprinters
+  gather_facts: false
   roles:
     - role: balloonprinter

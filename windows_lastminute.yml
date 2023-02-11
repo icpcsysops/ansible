@@ -1,6 +1,6 @@
 ---
 # on windows boxes
-# set password on account
+# set password on account (if none set)
 #   (CTRL-ALT-DELETE, change password)
 # run:
 # elavated powershell

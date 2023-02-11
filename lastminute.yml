@@ -162,7 +162,7 @@
   tasks:
     # stat file first
     - name: get file stat of JudgingNotes to be able to perform a check in the following task
-      local_action: stat path=`files/"{{ contest_detail }}".JudgingNotes."{{ papersize }}".pdf`
+      stat: path=`files/"{{ contest_detail }}".JudgingNotes."{{ papersize }}".pdf`
       register: judgingnotes
 
     - name: copy JudgingNotes.pdf
@@ -172,7 +172,7 @@
       when: judgingnotes.stat.exists
 
     - name: get file stat of TechNotes to be able to perform a check in the following task
-      local_action: stat path=`files/"{{ contest_detail }}".TechNotes."{{ papersize }}".pdf`
+      stat: path=`files/"{{ contest_detail }}".TechNotes."{{ papersize }}".pdf`
       register: technotes
 
     - name: copy TechNotes.pdf

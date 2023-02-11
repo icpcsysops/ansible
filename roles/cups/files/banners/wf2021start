@@ -1,0 +1,5 @@
+#PDF-BANNER
+Template wf2021start.pdf
+Font UseDefault
+Font-size 72
+Show printer-location job-originating-host-name job-originating-user-name job-name time-at-creation time-at-processing

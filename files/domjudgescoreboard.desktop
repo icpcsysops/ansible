@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Scoreboard
+Comment=DOMjudge Scoreboard
+Exec=gnome-www-browser https://domjudge/public/
+Icon=/usr/share/doc/icpc/Trophy.png
+Terminal=0
+Type=Application
+Categories=Contest

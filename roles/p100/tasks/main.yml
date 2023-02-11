@@ -29,6 +29,7 @@
   register: pres
 
 - name: Download and install the presentation client
+  when: not pres.stat.exists
   block:
     - name: Get prerelease version once
       delegate_to: localhost
@@ -60,4 +61,3 @@
         group: p
       become_user: p
       become: true
-  when: not pres.stat.exists

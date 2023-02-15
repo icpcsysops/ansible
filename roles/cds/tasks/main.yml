@@ -16,7 +16,7 @@
     owner: root
     group: root
   when: not cds.stat.exists
-  notify: restart cds
+  notify: Restart cds
 
 - name: Check if servers exists in repo
   ansible.builtin.stat:

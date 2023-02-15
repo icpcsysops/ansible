@@ -8,14 +8,14 @@
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/default
     state: absent
-  notify: reload nginx
+  notify: Reload nginx
 
 - name: Install the ssl data
   ansible.builtin.copy:
     content: "{{ item.content }}"
     dest: /etc/ssl/{{ item.dest }}
     mode: "{{ item.mode }}"
-  notify: reload nginx
+  notify: Reload nginx
   loop:
     - { content: "{{ reverseproxy_key }}", dest: reverseproxy.key, mode: "0600" }
     - { content: "{{ reverseproxy_cert }}", dest: reverseproxy.cert, mode: "0644" }
@@ -29,11 +29,11 @@
     group: root
     lstrip_blocks: true
     trim_blocks: true
-  notify: reload nginx
+  notify: Reload nginx
 
 - name: Enable the reverseproxy nginx config
   ansible.builtin.file:
     src: /etc/nginx/sites-available/reverseproxy.conf
     dest: /etc/nginx/sites-enabled/reverseproxy
     state: link
-  notify: reload nginx
+  notify: Reload nginx

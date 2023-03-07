@@ -4,12 +4,12 @@
   gather_facts: false
 
   tasks:
-    - name: restore firefox to default
+    - name: Restore firefox to default
       ansible.builtin.copy:
         src: files/firefox.desktop
         dest: /usr/share/applications/firefox.desktop
 
-    - name: disable DNS bits in resolved.conf
+    - name: Disable DNS bits in resolved.conf
       ansible.builtin.replace:
         path: /etc/systemd/resolved.conf
         regexp: '^[#]?DNS=.*'
@@ -18,14 +18,14 @@
         group: root
         mode: '0644'
 
-    - name: enable systemd-resolved
+    - name: Enable systemd-resolved
       ansible.builtin.systemd:
         name: systemd-resolved
         state: stopped
         enabled: false
         masked: true
 
-    - name: firewall blocks \#2
+    - name: Firewall blocks \#2
       ansible.builtin.iptables:
         state: absent
         chain: OUTPUT
@@ -38,7 +38,7 @@
         jump: drop-n-log
         action: insert
 
-    - name: firewall blocks \#1
+    - name: Firewall blocks \#1
       ansible.builtin.iptables:
         state: absent
         chain: OUTPUT
@@ -52,14 +52,14 @@
         action: insert
 
 
-    - name: firewall additions input
+    - name: Firewall additions input
       ansible.builtin.iptables:
         state: absent
         chain: INPUT
         ctstate: ESTABLISHED,RELATED
         jump: ACCEPT
 
-    - name: firewall additions output tcp
+    - name: Firewall additions output tcp
       ansible.builtin.iptables:
         state: absent
         chain: OUTPUT
@@ -70,7 +70,7 @@
           - "53"
         jump: ACCEPT
 
-    - name: firewall additions output udp
+    - name: Firewall additions output udp
       ansible.builtin.iptables:
         state: absent
         chain: OUTPUT

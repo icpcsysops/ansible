@@ -1,5 +1,5 @@
 ---
-- name: gather ip link addresseses
+- name: gather ip link MAC
   hosts: contestants
   gather_facts: false
   vars:

@@ -6,7 +6,7 @@
     # wf2021 value
     ifc_name: enp1s0
   tasks:
-    - name: gather ip link address
+    - name: gather ip link MAC
       ansible.builtin.command: "ip link show {{ ifc_name }}"
       register: ip_link
     - debug:

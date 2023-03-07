@@ -4,12 +4,12 @@
   gather_facts: false
 
   tasks:
-    - name: change firefox to codeforces
+    - name: Change firefox to codeforces
       ansible.builtin.copy:
         src: files/challenge.firefox.desktop
         dest: /usr/share/applications/firefox.desktop
 
-    - name: enable DNS bits in resolved.conf
+    - name: Enable DNS bits in resolved.conf
       ansible.builtin.replace:
         path: /etc/systemd/resolved.conf
         regexp: '^[#]?DNS=.*'
@@ -20,21 +20,21 @@
       notify:
         - systemd-resolved
 
-    - name: enable systemd-resolved
+    - name: Enable systemd-resolved
       ansible.builtin.systemd:
         name: systemd-resolved
         state: started
         enabled: true
         masked: false
 
-    - name: firewall additions input
+    - name: Firewall additions input
       ansible.builtin.iptables:
         chain: INPUT
         ctstate: ESTABLISHED,RELATED
         jump: ACCEPT
         action: insert
 
-    - name: firewall additions output tcp
+    - name: Firewall additions output tcp
       ansible.builtin.iptables:
         chain: OUTPUT
         protocol: tcp
@@ -45,7 +45,7 @@
         jump: ACCEPT
         action: insert
 
-    - name: firewall blocks \#2
+    - name: Firewall blocks \#2
       ansible.builtin.iptables:
         chain: OUTPUT
         protocol: tcp
@@ -57,7 +57,7 @@
         jump: drop-n-log
         action: insert
 
-    - name: firewall blocks \#1
+    - name: Firewall blocks \#1
       ansible.builtin.iptables:
         chain: OUTPUT
         protocol: tcp
@@ -69,7 +69,7 @@
         jump: drop-n-log
         action: insert
 
-    - name: firewall additions output udp
+    - name: Firewall additions output udp
       ansible.builtin.iptables:
         chain: OUTPUT
         protocol: udp

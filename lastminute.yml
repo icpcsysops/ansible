@@ -181,47 +181,43 @@
         dest: /usr/share/doc/icpc/TechNotes.pdf
       when: technotes.stat.exists
 
-    - name: copy domjudge TeamGuide.pdf (if ccs == domjudge)
-      ansible.builtin.copy:
-        src: files/"{{ contest_detail }}-domjudge-team-manual.pdf"
-        dest: /usr/share/doc/icpc/TeamGuide.pdf
+    - name: DOMJudge only bits
       when: '"{{ ccs }}" == "domjudge"'
+      block:
+        - name: copy domjudge TeamGuide.pdf (if ccs == domjudge)
+          ansible.builtin.copy:
+            src: files/"{{ contest_detail }}-domjudge-team-manual.pdf"
+            dest: /usr/share/doc/icpc/TeamGuide.pdf
 
-    # specific bits for domjudge primary
-    - name: add domjudge to /etc/hosts
-      ansible.builtin.lineinfile:
-        path: /etc/hosts
-        line: "{{ baseip }}.{{ item.ip }}   {{ item.hostname }}" # noqa: no-tabs
-        owner: root
-        group: root
-        mode: '0644'
-      loop:
-        - { ip: 215, hostname: domjudge }
-      when: '"{{ ccs }}" == "domjudge"'
+        - name: add domjudge to /etc/hosts
+          ansible.builtin.lineinfile:
+            path: /etc/hosts
+            line: "{{ baseip }}.{{ item.ip }}   {{ item.hostname }}" # noqa: no-tabs
+            owner: root
+            group: root
+            mode: '0644'
+          loop:
+            - { ip: 215, hostname: domjudge }
 
-    - name: change firefox to domjudge
-      ansible.builtin.copy:
-        src: files/domjudge.firefox.desktop
-        dest: /usr/share/applications/firefox.desktop
-      when: '"{{ ccs }}" == "domjudge"'
+        - name: change firefox to domjudge
+          ansible.builtin.copy:
+            src: files/domjudge.firefox.desktop
+            dest: /usr/share/applications/firefox.desktop
 
-    - name: add domjudge doc dir
-      ansible.builtin.file:
-        path: /usr/share/apps/domjudge
-        state: directory
-      when: '"{{ ccs }}" == "domjudge"'
+        - name: add domjudge doc dir
+          ansible.builtin.file:
+            path: /usr/share/apps/domjudge
+            state: directory
 
-    - name: add domjudge png
-      ansible.builtin.copy:
-        src: files/DOMjudgelogo.png
-        dest: /usr/share/apps/domjudge/DOMjudgelogo.png
-      when: '"{{ ccs }}" == "domjudge"'
+        - name: add domjudge png
+          ansible.builtin.copy:
+            src: files/DOMjudgelogo.png
+            dest: /usr/share/apps/domjudge/DOMjudgelogo.png
 
-    - name: add domjudge desktop entry
-      ansible.builtin.copy:
-        src: files/domjudge.desktop
-        dest: /usr/share/applications/domjudge.desktop
-      when: '"{{ ccs }}" == "domjudge"'
+        - name: add domjudge desktop entry
+          ansible.builtin.copy:
+            src: files/domjudge.desktop
+            dest: /usr/share/applications/domjudge.desktop
 
     # local accounts bit
     - name: Create group teams

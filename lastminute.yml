@@ -147,6 +147,7 @@
   collections:
     - community.general
   roles:
+    - role: firefox_desktop
     - role: stuvusIT.systemd-timesyncd
       timesync_timezone: "{{ timezone }}"
       timesync_ntp_hosts:
@@ -198,11 +199,6 @@
             mode: '0644'
           loop:
             - { ip: 215, hostname: domjudge }
-
-        - name: change firefox to domjudge
-          ansible.builtin.copy:
-            src: files/domjudge.firefox.desktop
-            dest: /usr/share/applications/firefox.desktop
 
         - name: add domjudge doc dir
           ansible.builtin.file:

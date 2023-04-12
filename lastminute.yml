@@ -1,4 +1,9 @@
 ---
+- name: configure coachview machines
+  hosts: coachview*
+  roles:
+    - role: coachview
+
 - name: configure contestant machines
   hosts: contestants
   roles:

@@ -3,12 +3,10 @@
   hosts: contestants
   gather_facts: false
 
-  tasks:
-    - name: Restore firefox to default
-      ansible.builtin.copy:
-        src: files/firefox.desktop
-        dest: /usr/share/applications/firefox.desktop
+  roles:
+    - role: firefox_desktop
 
+  tasks:
     - name: Disable DNS bits in resolved.conf
       ansible.builtin.replace:
         path: /etc/systemd/resolved.conf

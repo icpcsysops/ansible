@@ -1,0 +1,7 @@
+---
+- name: Update firefox.desktop file with firefox_default var
+  ansible.builtin.template:
+    src: firefox.desktop.j2
+    dest: /usr/share/applications/firefox.desktop
+    owner: root
+    group: root

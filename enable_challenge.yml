@@ -2,13 +2,13 @@
 - name: configure contestant machines for challenge
   hosts: contestants
   gather_facts: false
+  vars:
+    firefox_default: https://icpcdhaka.contest.codeforces.com/
+
+  roles:
+    - role: firefox_desktop
 
   tasks:
-    - name: Change firefox to codeforces
-      ansible.builtin.copy:
-        src: files/challenge.firefox.desktop
-        dest: /usr/share/applications/firefox.desktop
-
     - name: Enable DNS bits in resolved.conf
       ansible.builtin.replace:
         path: /etc/systemd/resolved.conf

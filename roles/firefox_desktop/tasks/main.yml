@@ -5,3 +5,4 @@
     dest: /usr/share/applications/firefox.desktop
     owner: root
     group: root
+    mode: 0644

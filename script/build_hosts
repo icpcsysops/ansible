@@ -11,8 +11,9 @@ contestants = {}
 judges = {}
 others = {}
 if args.wf:
-    name = "wf2021"
-    timezone = "Asia/Dhaka"
+    name = "wf2023"
+    detail = "2023Sharm"
+    timezone = "Africa/Cairo"
     max_team = 152
     max_human_judge = 12
     max_pc2_autojudge = 16
@@ -21,8 +22,13 @@ if args.wf:
     max_domjudge_ccsadmin = 7
     # pc2 for wf2021
     max_ccsadmin = 4
+    job_sheet_start = f"{name}end"
+    job_sheet_end = "wf2023end"
+    papersize = "A4"
+    enable_vlc = True
 else:
-    name = "nac2022"
+    name = "nac2023"
+    detail = "2023Florida"
     timezone = "America/New_York"
     max_team = 53
     max_human_judge = 12
@@ -31,6 +37,10 @@ else:
     max_domjudge_autojudge = 0
     max_domjudge_ccsadmin = 0
     max_ccsadmin = 0
+    job_sheet_start = name
+    job_sheet_end = none
+    papersize = "letter"
+    enable_vlc = False
 
 
 def print_host(num, hostname, ip, list_fh, group, base_ip=0):
@@ -112,9 +122,15 @@ ntpservers:
 all:
   vars:
     timezone: {timezone}
-    job_sheet: {name}
-    # root_password:
+    job_sheet: {job_sheet_start}
+    job_sheet_end: {job_sheet_end}
+    root_password:  REPLACEME_root_password_or_crypt
     disable_sources_list_changes: false
     enable_reverseproxy: {not args.wf}
+    contest:  {name}
+    contest_detail: REPLCACEME_detail
+    papersize:  {papersize}
+    enable_vlc: {enable_vlc}
+
 """
         print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)

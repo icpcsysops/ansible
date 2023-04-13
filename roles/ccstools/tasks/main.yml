@@ -18,7 +18,7 @@
   ansible.builtin.lineinfile:
     path: "{{ role_path }}/files/submit"
     regexp: "^baseurl.*"
-    line: 'baseurl = "{{ browser_urls | default(["domjudge"]) | first }}"'
+    line: 'baseurl = "{{ browser_urls | default(["https://domjudge"]) | first }}"'
 
 - name: Add correct path to python3
   delegate_to: localhost

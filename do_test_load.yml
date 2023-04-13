@@ -1,0 +1,12 @@
+---
+- name: run ab on hosts
+  gather_facts: false
+  hosts: contestants
+
+  tasks:
+    - name: run apache-util
+      ansible.builtin.command: "ab -n 1000 -c 100 https://icpcdhaka.contest.codeforces.com/static/js/jquery-1.8.3.js"
+      register: ab
+
+    - debug:
+        var: ab.stdout_lines

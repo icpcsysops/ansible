@@ -1,5 +1,5 @@
 ---
-- name: configure contestant machines to undo challenge
+- name: Configure contestant machines to undo challenge
   hosts: contestants
   gather_facts: false
 
@@ -23,18 +23,21 @@
         enabled: false
         masked: true
 
-    - name: Firewall blocks \#2
+    - name: Firewall blocks domjudge {{ item }}
       ansible.builtin.iptables:
         state: absent
         chain: OUTPUT
         protocol: tcp
-        destination: 10.3.3.215/32
+        destination: "{{ item }}"
         destination_ports:
           - "80"
           - "443"
           - "53"
         jump: drop-n-log
         action: insert
+      loop:
+        - "10.3.3.215/32"
+        - "10.3.3.216/32"
 
     - name: Firewall blocks \#1
       ansible.builtin.iptables:

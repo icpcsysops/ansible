@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# Purpose: run coachview
+#
+
+export ROOTDIR=$( dirname "${BASH_SOURCE}[0]" )
+cd $ROOTDIR
+
+# additions for run
+DISPLAY=:0
+export DISPLAY
+umask 0077
+ulimit -c unlimited
+xset -dpms s off s noblank s 0 0 s noexpose
+gsettings set org.gnome.settings-daemon.plugins.power active false
+gsettings set org.gnome.desktop.screensaver idle-activation-enabled false
+gsettings set org.gnome.desktop.session idle-delay 0
+# end additions for run
+
+/cv/coachView.sh {{ coachview_cds_url }} {{ coachview_user }} {{ coachview_pass }}

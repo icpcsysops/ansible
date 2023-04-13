@@ -1,0 +1,93 @@
+- name: Create coachview user
+  ansible.builtin.user:
+    name: cv
+    home: /cv
+    uid: 17263
+    shell: "/usr/bin/bash"
+
+- name: Add run script for coachview
+  ansible.builtin.template:
+    src: coachview_run.sh.j2
+    dest: /cv/run
+    owner: cv
+    group: cv
+    mode: 0755
+
+- name: Add .xsessionrc script for coachview
+  ansible.builtin.copy:
+    content: |
+      /cv/run
+      exit 0
+    dest: /cv/.xsessionrc
+    owner: cv
+    group: cv
+    mode: 0755
+
+- name: enable autologin to user coachview
+  ansible.builtin.copy:
+    content: |
+      [daemon]
+      AutomaticLoginEnable = true
+      AutomaticLogin = cv
+      [security]
+
+      [xdmcp]
+
+      [chooser]
+
+      [debug]
+    dest: /etc/gdm3/custom.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Check if coachview is installed
+  ansible.builtin.stat:
+    path: /cv/coachview.sh
+  register: coachview
+
+- name: Download and install the coachview once
+  block:
+    - name: Get prerelease version
+      delegate_to: localhost
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=3
+        method: GET
+        return_content: true
+        status_code: 200
+        body_format: json
+      register: latest_coachview_release_array
+      when: not coachview.stat.exists
+
+    - name: Set coachview latest version
+      ansible.builtin.set_fact:
+        coachview_version: "{{ latest_coachview_release_array.json[0].name | replace('v', '') }}"
+
+    - name: Download the coachview once
+      delegate_to: localhost
+      ansible.builtin.get_url:
+        url: https://github.com/icpctools/icpctools/releases/download/v{{ coachview_version }}/coachview-{{ coachview_version }}.zip
+        dest: /tmp/coachview-{{ coachview_version }}.zip
+        mode: '0640'
+
+    - name: Unpack the client
+      ansible.builtin.unarchive:
+        src: /tmp/coachview-{{ coachview_version }}.zip
+        dest: /cv/
+        owner: cv
+        group: cv
+      become_user: cv
+      become: true
+  when: not coachview.stat.exists
+
+- name: check if coachview is currently running
+  ansible.builtin.command: pgrep --uid cv
+  register: cv_running
+  ignore_errors: true
+  changed_when: false
+
+- name: restart gdm3
+  ansible.builtin.systemd:
+    name: gdm3
+    state: restarted
+  when: cv_running.rc != 0

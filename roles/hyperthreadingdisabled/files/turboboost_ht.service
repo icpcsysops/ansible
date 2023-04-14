@@ -8,3 +8,5 @@ WantedBy=multi-user.target
 ExecStart=/usr/sbin/disable_turboboost_ht
 Type=oneshot
 RemainAfterExit=yes
+Restart=on-failure
+RestartSec=3

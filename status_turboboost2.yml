@@ -1,0 +1,10 @@
+- name: turboboost status
+  hosts: contestants
+  gather_facts: false
+  tasks:
+    - name: check systemctl status turboboost_ht
+      ansible.builtin.command: cat /proc/cpuinfo
+      register: turboboost_ht
+
+    - debug:
+        var: turboboost_ht.stdout_lines

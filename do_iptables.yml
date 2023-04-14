@@ -1,0 +1,6 @@
+---
+- name: configure contestant machines
+  hosts: contestants
+  gather_facts: false
+  roles:
+    - role: iptablesrules

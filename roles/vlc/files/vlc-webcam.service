@@ -1,0 +1,15 @@
+[Unit]
+Description=VLC Webcam streaming
+After=network.target
+
+[Service]
+User=camera
+Type=simple
+CPUAffinity=8,10
+ExecStart=/usr/bin/cvlc --play-and-exit v4l2:///dev/video0:chroma=mjpg:width=1280:height=720 :input-slave=alsa://hw:1,0 --sout '#transcode{vcodec=h264,venc=x264{keyint=2},acodec=mpga,vb=0}:standard{access=http,mux=ts,dst=:8080,name=stream,mime=video/ts}'
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

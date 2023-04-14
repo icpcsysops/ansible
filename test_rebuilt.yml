@@ -1,0 +1,8 @@
+- name: test for a fresh rebuild
+  hosts: contestants
+  gather_facts: false
+  tasks:
+    - name: test for icpc2021 account
+      ansible.builtin.getent:
+        database: passwd
+        key: icpc

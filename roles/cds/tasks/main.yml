@@ -1,4 +1,4 @@
-- name: install cds package
+- name: Install cds package
   ansible.builtin.apt:
     pkg: icpc-host-cds
     state: present
@@ -16,7 +16,7 @@
     owner: root
     group: root
   when: not cds.stat.exists
-  notify: restart cds
+  notify: Restart cds
 
 - name: Check if servers exists in repo
   ansible.builtin.stat:
@@ -29,7 +29,7 @@
   notify: restart cds
 
 # in case wlp is upgraded (grumble manually)
-- name: remove servers from wlp_root
+- name: Remove servers from wlp_root
   ansible.builtin.file:
     path: /home/deboer/wlp/usr/servers
     state: absent

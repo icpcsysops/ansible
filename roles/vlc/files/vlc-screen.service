@@ -1,0 +1,15 @@
+[Unit]
+Description=VLC Screen streaming
+After=network.target multi-user.target
+
+[Service]
+User=camera
+Type=simple
+Environment=DISPLAY=:1.0
+CPUAffinity=6
+ExecStart=/usr/bin/vlc -I dummy -q --play-and-exit screen:// --screen-fps=10 --sout "#transcode{venc=x264{keyint=2},vcodec=h264,vb=0}:standard{access=http,mux=ts,dst=:9090/}"
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

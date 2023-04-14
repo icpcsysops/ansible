@@ -1,4 +1,10 @@
 ---
+# this needs to be first as ldap requires it
+- name: pre-configure apt
+  hosts: all
+  roles:
+    - role: apt
+
 - name: configure coachview machines
   hosts: coachview*
   roles:
@@ -16,9 +22,26 @@
       when: enable_reverseproxy is defined and enable_reverseproxy
     - role: p100
     - role: ccstools
+      when: ccs  == "domjudge"
     - role: taskset_run_scripts
+    - role: vlc
+      when: enable_vlc is defined and enable_vlc
+    - role: iptablesrules
 
   tasks:
+    - name: python3.7.12 docs
+      ansible.builtin.unarchive:
+        src: files/python3.7-html.tar.gz
+        dest: /
+
+    - name: py3 docs desktop
+      ansible.builtin.copy:
+        src: "files/{{ item }}"
+        dest: "/usr/share/applications/{{ item }}"
+      loop:
+        - py3langref.desktop
+        - py3stdlib.desktop
+
     - name: switch from files to compat in nsswitch
       tags: nsswitch
       ansible.builtin.replace:
@@ -34,22 +57,27 @@
         - shadow
       notify:
         - reboot
+      when: ldap_domain is defined
     - name: disable systemd-resolved
       ansible.builtin.systemd:
         name: systemd-resolved
         state: stopped
         enabled: false
         masked: true
-    - name: remove uid 1000 user
+
+    - name: remove icpc user
       ansible.builtin.user:
         name: "icpc"
         state: absent
       when: root_password is defined
-    - name: remove uid 1000 user
-      ansible.builtin.user:
-        name: "icpc2021" # TODO change preseed files to just use user icpc
-        state: absent
-      when: root_password is defined
+
+    - name: workaround nautilus auto-mounting
+      ansible.builtin.file:
+        path: /media
+        owner: root
+        group: root
+        mode: "0700"
+
     - name: use policykit to disable mounting for teams
       ansible.builtin.copy:
         dest: /etc/polkit-1/localauthority/50-local.d/disable-udisks.pkla
@@ -116,8 +144,10 @@
 
 - name: lastminute config for all hosts
   hosts: all
+  collections:
+    - community.general
   roles:
-    - role: apt
+    - role: firefox_desktop
     - role: stuvusIT.systemd-timesyncd
       timesync_timezone: "{{ timezone }}"
       timesync_ntp_hosts:
@@ -131,9 +161,81 @@
       tags: systemd-timesyncd
 
   tasks:
+    # stat file first
+    - name: get file stat of JudgingNotes to be able to perform a check in the following task
+      stat: path=`files/"{{ contest_detail }}".JudgingNotes."{{ papersize }}".pdf`
+      register: judgingnotes
+
+    - name: copy JudgingNotes.pdf
+      ansible.builtin.copy:
+        src: 'files/"{{ contest_detail }}".JudgingNotes."{{ papersize }}".pdf'
+        dest: /usr/share/doc/icpc/JudgingNotes.pdf
+      when: judgingnotes.stat.exists
+
+    - name: get file stat of TechNotes to be able to perform a check in the following task
+      stat: path=`files/"{{ contest_detail }}".TechNotes."{{ papersize }}".pdf`
+      register: technotes
+
+    - name: copy TechNotes.pdf
+      ansible.builtin.copy:
+        src: 'files/"{{ contest_detail }}".TechNotes."{{ papersize }}".pdf'
+        dest: /usr/share/doc/icpc/TechNotes.pdf
+      when: technotes.stat.exists
+
+    - name: DOMJudge only bits
+      when: '"{{ ccs }}" == "domjudge"'
+      block:
+        - name: copy domjudge TeamGuide.pdf (if ccs == domjudge)
+          ansible.builtin.copy:
+            src: files/"{{ contest_detail }}-domjudge-team-manual.pdf"
+            dest: /usr/share/doc/icpc/TeamGuide.pdf
+
+        - name: add domjudge to /etc/hosts
+          ansible.builtin.lineinfile:
+            path: /etc/hosts
+            line: "{{ baseip }}.{{ item.ip }}   {{ item.hostname }}" # noqa: no-tabs
+            owner: root
+            group: root
+            mode: '0644'
+          loop:
+            - { ip: 215, hostname: domjudge }
+
+        - name: add domjudge doc dir
+          ansible.builtin.file:
+            path: /usr/share/apps/domjudge
+            state: directory
+
+        - name: add domjudge png
+          ansible.builtin.copy:
+            src: files/DOMjudgelogo.png
+            dest: /usr/share/apps/domjudge/DOMjudgelogo.png
+
+        - name: add domjudge desktop entry
+          ansible.builtin.copy:
+            src: files/domjudge.desktop
+            dest: /usr/share/applications/domjudge.desktop
+
+    # local accounts bit
+    - name: Create group teams
+      ansible.builtin.group:
+        name: teams
+        gid: 3000
+
+    - name: copy the per contest bits
+      ansible.builtin.copy:
+        src: "{{ contest }}.teams.tar.gz"
+        dest: "/root/{{ contest }}.teams.tar.gz"
+    # this should be fixed in the icpc2021 package
+    - name: enable Evince and Evince-preview desktop files
+      ansible.builtin.file:
+        name: /usr/share/applications/org.gnome.{{ item }}.desktop
+        mode: 0644
+      loop:
+        - Evince
+        - Evince-previewer
     - name: Pre-generate the kernel flags for ansible usage
       ansible.builtin.set_fact:
-        procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1"
+        procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1 i915.force_probe=4690"
     - name: Ensure /etc/default/grub has proper GRUB_CMDLINE_LINUX_DEFAULT
       ansible.builtin.replace:
         path: /etc/default/grub
@@ -173,44 +275,18 @@
         - root_password is defined
         - '"$6$" not in root_password'
 
-    - name: workaround nautilus auto-mounting
-      ansible.builtin.file:
-        path: /media
-        owner: root
-        group: root
-        mode: "0700"
-
-    - name: Pre-generate the kernel flags for ansible usage
-      ansible.builtin.set_fact:
-        procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1"
-    - name: Ensure /etc/default/grub has proper GRUB_CMDLINE_LINUX_DEFAULT
-      ansible.builtin.replace:
-        path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=.*'
-        replace: "GRUB_CMDLINE_LINUX_DEFAULT=\"{{ procline }}\""
-        owner: root
-        group: root
-        mode: '0644'
-      notify:
-        - update grub
-        - reboot
-    - name: Ensure /etc/default/grub has proper GRUB_TIMEOUT
-      ansible.builtin.replace:
-        path: /etc/default/grub
-        regexp: "GRUB_TIMEOUT=.*"
-        replace: "GRUB_TIMEOUT=3"
-        owner: root
-        group: root
-        mode: '0644'
-      notify:
-        - update grub
-
     - name: Get GIT revision
-      ansible.builtin.shell: 'set -o pipefail && git rev-list --full-history --all --abbrev-commit | head -1'
+      ansible.builtin.shell: |
+          set -o pipefail
+          git rev-list --full-history --all --abbrev-commit | head -1
+          exit 0
+      args:
+        executable: /bin/bash
       become: false
       register: git_revision
       delegate_to: 127.0.0.1
       changed_when: false
+
     - name: Log version of script on client
       community.general.syslogger:
         ident: "lastminute"
@@ -219,8 +295,7 @@
       changed_when: false
   handlers:
     - name: update grub
-      ansible.builtin.command:
-        command: /usr/sbin/update-grub
+      ansible.builtin.command: /usr/sbin/update-grub
     - name: reboot
       ansible.builtin.reboot:
 

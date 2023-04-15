@@ -1,3 +1,4 @@
 ---
 - name: Run iptablesload
   ansible.builtin.command: /etc/network/if-pre-up.d/iptablesload
+  changed_when: false

@@ -26,6 +26,7 @@
 - name: Move servers from wlp_root to repo
   ansible.builtin.command: mv /home/deboer/wlp/usr/servers /home/deboer/repo/servers
   when: not repo_servers.stat.exists
+  changed_when: false
   notify: restart cds
 
 # in case wlp is upgraded (grumble manually)

@@ -1,8 +1,9 @@
 ---
+- name: Playbook to enable autologin
 - hosts: contestants
   gather_facts: false
   tasks:
-    - name: enable autologin to user p
+    - name: Enable autologin to user p
       ansible.builtin.copy:
         content: |
           [daemon]
@@ -19,12 +20,12 @@
         owner: root
         group: root
         mode: '0644'
-    - name: check if p is currently running
+    - name: Check if p is currently running
       ansible.builtin.command: pgrep --uid p
       register: p_running
       ignore_errors: true
       changed_when: false
-    - name: restart gdm3
+    - name: Restart gdm3
       ansible.builtin.systemd:
         name: gdm3
         state: restarted

@@ -1,5 +1,5 @@
 ---
-- name: configure contestant machines
+- name: Configure contestant machines
   hosts: contestants
   gather_facts: false
   roles:

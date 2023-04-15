@@ -1,8 +1,9 @@
 ---
-- hosts: contestants
+- name: Disable autologin
+  hosts: contestants
   gather_facts: false
   tasks:
-    - name: disable autologin to user p
+    - name: Disable autologin to user p
       ansible.builtin.copy:
         content: |
           [daemon]

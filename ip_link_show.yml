@@ -1,13 +1,15 @@
 ---
-- name: gather ip link MAC
+- name: Gather ip link MAC
   hosts: contestants
   gather_facts: false
   vars:
     # wf2021 value
     ifc_name: enp1s0
   tasks:
-    - name: gather ip link MAC
+    - name: Gather ip link MAC
       ansible.builtin.command: "ip link show {{ ifc_name }}"
       register: ip_link
-    - debug:
+      changed_when: false
+    - name: Output ip link
+      ansible.builtin.debug:
         var: ip_link.stdout_lines

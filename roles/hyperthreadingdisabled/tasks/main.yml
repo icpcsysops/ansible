@@ -5,7 +5,7 @@
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/DOMjudge/domjudge-scripts/main/provision-contest/disable-turboboost_ht
     dest: /tmp/turboboost_ht
-    mode: 0777
+    mode: '0777'
   when: internet
 
 - name: Install turboboost script
@@ -14,7 +14,7 @@
     dest: /usr/sbin/disable_turboboost_ht
     owner: root
     group: root
-    mode: 0755
+    mode: '0755'
 
 - name: Set hyperthreading service
   ansible.builtin.copy:
@@ -22,7 +22,7 @@
     dest: /lib/systemd/system/turboboost_ht.service
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
 
 - name: Disable hyperthreading
   ansible.builtin.systemd:

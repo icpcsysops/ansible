@@ -11,7 +11,7 @@
     dest: /p/run
     owner: p
     group: p
-    mode: 0755
+    mode: '0755'
 
 - name: Add .xsessionrc script for p
   ansible.builtin.copy:
@@ -21,7 +21,7 @@
     dest: /p/.xsessionrc
     owner: p
     group: p
-    mode: 0755
+    mode: '0755'
 
 - name: Check if presclient is installed
   ansible.builtin.stat:

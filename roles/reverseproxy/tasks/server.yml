@@ -24,7 +24,7 @@
   ansible.builtin.template:
     src: templates/nginx.conf.j2
     dest: /etc/nginx/sites-available/reverseproxy.conf
-    mode: 0644
+    mode: '0644'
     owner: root
     group: root
     lstrip_blocks: true

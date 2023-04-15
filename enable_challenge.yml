@@ -1,0 +1,76 @@
+---
+- name: Configure contestant machines for challenge
+  hosts: contestants
+  gather_facts: false
+  vars:
+    firefox_default: https://icpcdhaka.contest.codeforces.com/
+
+  roles:
+    - role: firefox_desktop
+
+  tasks:
+    - name: Enable DNS bits in resolved.conf
+      ansible.builtin.replace:
+        path: /etc/systemd/resolved.conf
+        regexp: '^[#]?DNS=.*'
+        replace: 'DNS=8.8.8.8 8.8.4.4'
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - Systemd-resolved
+
+    - name: Enable systemd-resolved
+      ansible.builtin.systemd:
+        name: systemd-resolved
+        state: started
+        enabled: true
+        masked: false
+
+    - name: Firewall additions input
+      ansible.builtin.iptables:
+        chain: INPUT
+        ctstate: ESTABLISHED,RELATED
+        jump: ACCEPT
+        action: insert
+
+    - name: Firewall additions output tcp
+      ansible.builtin.iptables:
+        chain: OUTPUT
+        protocol: tcp
+        destination_ports:
+          - "80"
+          - "443"
+          - "53"
+        jump: ACCEPT
+        action: insert
+
+    - name: Firewall block domjudge {{ item }}
+      ansible.builtin.iptables:
+        chain: OUTPUT
+        protocol: tcp
+        destination: "{{ item }}"
+        destination_ports:
+          - "80"
+          - "443"
+          - "53"
+        jump: drop-n-log
+        action: insert
+      loop:
+        - "10.3.3.215/32"
+        - "10.3.3.216/32"
+
+    - name: Firewall additions output udp
+      ansible.builtin.iptables:
+        chain: OUTPUT
+        protocol: udp
+        destination_ports:
+          - "53"
+        jump: ACCEPT
+        action: insert
+
+  handlers:
+    - name: Systemd-resolved
+      ansible.builtin.service:
+        name: systemd-resolved
+        state: restarted

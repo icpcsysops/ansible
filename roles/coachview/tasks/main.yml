@@ -11,7 +11,7 @@
     dest: /cv/run
     owner: cv
     group: cv
-    mode: 0755
+    mode: '0755'
 
 - name: Add .xsessionrc script for coachview
   ansible.builtin.copy:
@@ -21,9 +21,9 @@
     dest: /cv/.xsessionrc
     owner: cv
     group: cv
-    mode: 0755
+    mode: '0755'
 
-- name: enable autologin to user coachview
+- name: Enable autologin to user coachview
   ansible.builtin.copy:
     content: |
       [daemon]
@@ -47,6 +47,7 @@
   register: coachview
 
 - name: Download and install the coachview once
+  when: not coachview.stat.exists
   block:
     - name: Get prerelease version
       delegate_to: localhost
@@ -57,7 +58,6 @@
         status_code: 200
         body_format: json
       register: latest_coachview_release_array
-      when: not coachview.stat.exists
 
     - name: Set coachview latest version
       ansible.builtin.set_fact:
@@ -78,15 +78,14 @@
         group: cv
       become_user: cv
       become: true
-  when: not coachview.stat.exists
 
-- name: check if coachview is currently running
+- name: Check if coachview is currently running
   ansible.builtin.command: pgrep --uid cv
   register: cv_running
   ignore_errors: true
   changed_when: false
 
-- name: restart gdm3
+- name: Restart gdm3
   ansible.builtin.systemd:
     name: gdm3
     state: restarted

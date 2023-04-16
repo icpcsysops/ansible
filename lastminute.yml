@@ -1,16 +1,16 @@
 ---
 # this needs to be first as ldap requires it
-- name: pre-configure apt
+- name: Pre-configure apt
   hosts: all
   roles:
     - role: apt
 
-- name: configure coachview machines
+- name: Configure coachview machines
   hosts: coachview*
   roles:
     - role: coachview
 
-- name: configure contestant machines
+- name: Configure contestant machines
   hosts: contestants
   roles:
     - role: cups
@@ -29,20 +29,21 @@
     - role: iptablesrules
 
   tasks:
-    - name: python3.7.12 docs
+    - name: Install python3.7.12 docs
       ansible.builtin.unarchive:
         src: files/python3.7-html.tar.gz
         dest: /
 
-    - name: py3 docs desktop
+    - name: Install py3 docs desktop
       ansible.builtin.copy:
         src: "files/{{ item }}"
         dest: "/usr/share/applications/{{ item }}"
+        mode: '0644'
       loop:
         - py3langref.desktop
         - py3stdlib.desktop
 
-    - name: switch from files to compat in nsswitch
+    - name: Switch from files to compat in nsswitch
       tags: nsswitch
       ansible.builtin.replace:
         path: /etc/nsswitch.conf
@@ -56,29 +57,29 @@
         - group
         - shadow
       notify:
-        - reboot
+        - Reboot
       when: ldap_domain is defined
-    - name: disable systemd-resolved
+    - name: Disable systemd-resolved
       ansible.builtin.systemd:
         name: systemd-resolved
         state: stopped
         enabled: false
         masked: true
 
-    - name: remove icpc user
+    - name: Remove icpc user
       ansible.builtin.user:
         name: "icpc"
         state: absent
       when: root_password is defined
 
-    - name: workaround nautilus auto-mounting
+    - name: Workaround nautilus auto-mounting
       ansible.builtin.file:
         path: /media
         owner: root
         group: root
         mode: "0700"
 
-    - name: use policykit to disable mounting for teams
+    - name: Use policykit to disable mounting for teams
       ansible.builtin.copy:
         dest: /etc/polkit-1/localauthority/50-local.d/disable-udisks.pkla
         content: |
@@ -88,8 +89,8 @@
           ResultAny=no
           ResultInactive=no
           ResultActive=no
-        mode: 0644
-    - name: gvfs/gvfsd permission tweaking to disable
+        mode: '0644'
+    - name: Fix gvfs/gvfsd permission tweaking to disable
       ansible.builtin.file:
         path: /usr/lib/gvfs/{{ item }}
         owner: root
@@ -99,7 +100,7 @@
         - "gvfsd-burn"
         - "gvfsd-computer"
         - "gvfsd-localtest"
-    - name: place 21_icpc-disable-automount-schema.gschema.override
+    - name: Place 21_icpc-disable-automount-schema.gschema.override
       ansible.builtin.copy:
         content: |
           [org.gnome.desktop.media-handling]
@@ -109,14 +110,15 @@
         owner: root
         group: root
         mode: '0644'
-      notify: glib-compile-schemas
+      notify: Glib-compile-schemas
   handlers:
-    - name: glib-compile-schemas
+    - name: Glib-compile-schemas
       ansible.builtin.command: glib-compile-schemas /usr/share/glib-2.0/schemas
-    - name: reboot
+      changed_when: false
+    - name: Reboot
       ansible.builtin.reboot:
 
-- name: configure ldap server
+- name: Configure ldap server
   hosts: ldapserver
   roles:
     - role: ldapserver
@@ -125,7 +127,7 @@
 - name: Send syslogs to `backup`
   hosts: all:!backup
   tasks:
-    - name: point rsyslog to backup
+    - name: Point rsyslog to backup
       ansible.builtin.copy:
         content: |
           # ship the important logs to backup
@@ -135,17 +137,15 @@
         owner: root
         group: root
         mode: '0644'
-      notify: restart rsyslog
+      notify: Restart rsyslog
   handlers:
-    - name: restart rsyslog
+    - name: Restart rsyslog
       ansible.builtin.service:
         name: rsyslog
         state: restarted
 
-- name: lastminute config for all hosts
+- name: Lastminute config for all hosts
   hosts: all
-  collections:
-    - community.general
   roles:
     - role: firefox_desktop
     - role: stuvusIT.systemd-timesyncd
@@ -162,35 +162,38 @@
 
   tasks:
     # stat file first
-    - name: get file stat of JudgingNotes to be able to perform a check in the following task
-      stat: path=`files/"{{ contest_detail }}".JudgingNotes."{{ papersize }}".pdf`
+    - name: Get file stat of JudgingNotes to be able to perform a check in the following task
+      ansible.builtin.stat: path=`files/"{{ contest_detail }}".JudgingNotes."{{ papersize }}".pdf`
       register: judgingnotes
 
-    - name: copy JudgingNotes.pdf
+    - name: Copy JudgingNotes.pdf
       ansible.builtin.copy:
         src: 'files/"{{ contest_detail }}".JudgingNotes."{{ papersize }}".pdf'
         dest: /usr/share/doc/icpc/JudgingNotes.pdf
+        mode: '0644'
       when: judgingnotes.stat.exists
 
-    - name: get file stat of TechNotes to be able to perform a check in the following task
-      stat: path=`files/"{{ contest_detail }}".TechNotes."{{ papersize }}".pdf`
+    - name: Get file stat of TechNotes to be able to perform a check in the following task
+      ansible.builtin.stat: path=`files/"{{ contest_detail }}".TechNotes."{{ papersize }}".pdf`
       register: technotes
 
-    - name: copy TechNotes.pdf
+    - name: Copy TechNotes.pdf
       ansible.builtin.copy:
         src: 'files/"{{ contest_detail }}".TechNotes."{{ papersize }}".pdf'
         dest: /usr/share/doc/icpc/TechNotes.pdf
+        mode: '0644'
       when: technotes.stat.exists
 
     - name: DOMJudge only bits
-      when: '"{{ ccs }}" == "domjudge"'
+      when: ccs == "domjudge"
       block:
-        - name: copy domjudge TeamGuide.pdf (if ccs == domjudge)
+        - name: Copy domjudge TeamGuide.pdf (if ccs == domjudge)
           ansible.builtin.copy:
             src: files/"{{ contest_detail }}-domjudge-team-manual.pdf"
             dest: /usr/share/doc/icpc/TeamGuide.pdf
+            mode: '0644'
 
-        - name: add domjudge to /etc/hosts
+        - name: Add domjudge to /etc/hosts
           ansible.builtin.lineinfile:
             path: /etc/hosts
             line: "{{ baseip }}.{{ item.ip }}   {{ item.hostname }}" # noqa: no-tabs
@@ -200,20 +203,23 @@
           loop:
             - { ip: 215, hostname: domjudge }
 
-        - name: add domjudge doc dir
+        - name: Add domjudge doc dir
           ansible.builtin.file:
             path: /usr/share/apps/domjudge
             state: directory
+            mode: '0755'
 
-        - name: add domjudge png
+        - name: Add domjudge png
           ansible.builtin.copy:
             src: files/DOMjudgelogo.png
             dest: /usr/share/apps/domjudge/DOMjudgelogo.png
+            mode: '0644'
 
-        - name: add domjudge desktop entry
+        - name: Add domjudge desktop entry
           ansible.builtin.copy:
             src: files/domjudge.desktop
             dest: /usr/share/applications/domjudge.desktop
+            mode: '0644'
 
     # local accounts bit
     - name: Create group teams
@@ -221,15 +227,16 @@
         name: teams
         gid: 3000
 
-    - name: copy the per contest bits
+    - name: Copy the per contest bits
       ansible.builtin.copy:
         src: "{{ contest }}.teams.tar.gz"
         dest: "/root/{{ contest }}.teams.tar.gz"
+        mode: '0600'
     # this should be fixed in the icpc2021 package
-    - name: enable Evince and Evince-preview desktop files
+    - name: Enable Evince and Evince-preview desktop files
       ansible.builtin.file:
         name: /usr/share/applications/org.gnome.{{ item }}.desktop
-        mode: 0644
+        mode: '0644'
       loop:
         - Evince
         - Evince-previewer
@@ -245,8 +252,8 @@
         group: root
         mode: '0644'
       notify:
-        - update grub
-        - reboot
+        - Update grub
+        - Reboot
     - name: Ensure /etc/default/grub has proper GRUB_TIMEOUT
       ansible.builtin.replace:
         path: /etc/default/grub
@@ -256,9 +263,9 @@
         group: root
         mode: '0644'
       notify:
-        - update grub
+        - Update grub
 
-    - name: update root password (if root_password already crypted)
+    - name: Update root password (if root_password already crypted)
       ansible.builtin.user:
         name: "root"
         state: present
@@ -266,7 +273,7 @@
       when:
         - root_password is defined
         - '"$6$" in root_password'
-    - name: update root password (if root_password is cleartext)
+    - name: Update root password (if root_password is cleartext)
       ansible.builtin.user:
         name: "root"
         state: present
@@ -294,25 +301,26 @@
         priority: "notice"
       changed_when: false
   handlers:
-    - name: update grub
+    - name: Update grub
       ansible.builtin.command: /usr/sbin/update-grub
-    - name: reboot
+      changed_when: false
+    - name: Reboot
       ansible.builtin.reboot:
 
-- name: configure the reverse proxy
+- name: Configure the reverse proxy
   hosts: reverseproxy
   roles:
     - role: reverseproxy
       reverseproxy_server: true
       tags: reverseproxy
 
-- name: configure the cds
+- name: Configure the cds
   hosts: cds
   roles:
     - role: cds
       tags: cds
 
-- name: configure balloonmanager printers
+- name: Configure balloonmanager printers
   hosts: balloonmanager
   vars:
     job_sheet: none
@@ -321,7 +329,7 @@
   roles:
     - role: cups
 
-- name: configure ccsadmin printers
+- name: Configure ccsadmin printers
   hosts: ccsadmin*
   vars:
     job_sheet: none
@@ -330,7 +338,7 @@
   roles:
     - role: cups
 
-- name: configure judges printers
+- name: Configure judges printers
   hosts: judge*
   vars:
     job_sheet: none
@@ -339,7 +347,7 @@
   roles:
     - role: cups
 
-- name: configure others printers
+- name: Configure others printers
   hosts: others:!authprint
   vars:
     job_sheet: none

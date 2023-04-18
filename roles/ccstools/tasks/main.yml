@@ -33,4 +33,4 @@
     dest: /usr/local/bin/submit
     owner: root
     group: root
-    mode: 0555
+    mode: '0555'

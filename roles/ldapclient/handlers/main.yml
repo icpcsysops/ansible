@@ -11,6 +11,7 @@
       mv /var/lib/dpkg/info/nslcd.config /var/lib/dpkg/info/nslcd.config.ansible-tmp &&
       dpkg-reconfigure -f noninteractive nslcd &&
       mv /var/lib/dpkg/info/nslcd.config.ansible-tmp /var/lib/dpkg/info/nslcd.config
+  changed_when: false
 
 - name: Reconfigure ldap-auth-config
   ansible.builtin.shell:
@@ -18,3 +19,4 @@
       mv /var/lib/dpkg/info/ldap-auth-config.config /var/lib/dpkg/info/ldap-auth-config.config.ansible-tmp &&
       dpkg-reconfigure -f noninteractive ldap-auth-config &&
       mv /var/lib/dpkg/info/ldap-auth-config.config.ansible-tmp /var/lib/dpkg/info/ldap-auth-config.config
+  changed_when: false

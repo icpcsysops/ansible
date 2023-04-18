@@ -14,14 +14,14 @@
     dest: /lib/systemd/system/vlc-screen.service
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
 - name: Deploy vlc-webcam.service
   ansible.builtin.copy:
     src: vlc-webcam.service
     dest: /lib/systemd/system/vlc-webcam.service
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
 - name: Enable and start vlc-screen.service
   ansible.builtin.service:
     name: vlc-screen

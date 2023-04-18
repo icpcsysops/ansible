@@ -1,14 +1,12 @@
 ---
-- name: creates the users on the named hosts
+- name: Creates the users on the named hosts with locked passwords
   gather_facts: false
   hosts: contestants
 
   tasks:
-    # This will create the local user
-    - name: lock the user
+    - name: Ensure and lock the user
       ansible.builtin.user:
         name: "{{ inventory_hostname }}"
-        # password: "{{ lookup('users', inventory_hostname) | password_hash('sha512') }}"
         password: "*LOCKD*"
         shell: /bin/bash
         groups: teams

@@ -1,8 +1,9 @@
 ---
-- hosts: contestants
+- name: Checking to see if vlc-webcam is running
+  hosts: contestants
   gather_facts: false
   tasks:
-    - name: ensure vlc-webcam is running
+    - name: Ensure vlc-webcam is running
       ansible.builtin.service:
         name: vlc-webcam
         state: started

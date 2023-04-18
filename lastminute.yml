@@ -160,26 +160,32 @@
         - "{{ baseip }}.210"
       tags: systemd-timesyncd
 
+  vars:
+    judging_notes: "{{ 'files/%s.JudgingNotes.%s.pdf'|format(contest_detail, papersize) }}"
+    tech_notes: "{{ 'files/%s.TechNotes.%s.pdf'|format(contest_detail, papersize) }}"
+
   tasks:
     # stat file first
     - name: Get file stat of JudgingNotes to be able to perform a check in the following task
-      ansible.builtin.stat: path=`files/"{{ contest_detail }}".JudgingNotes."{{ papersize }}".pdf`
+      ansible.builtin.stat:
+        path: "{{ judging_notes }}"
       register: judgingnotes
 
     - name: Copy JudgingNotes.pdf
       ansible.builtin.copy:
-        src: 'files/"{{ contest_detail }}".JudgingNotes."{{ papersize }}".pdf'
+        src: "{{ judging_notes }}"
         dest: /usr/share/doc/icpc/JudgingNotes.pdf
         mode: '0644'
       when: judgingnotes.stat.exists
 
     - name: Get file stat of TechNotes to be able to perform a check in the following task
-      ansible.builtin.stat: path=`files/"{{ contest_detail }}".TechNotes."{{ papersize }}".pdf`
+      ansible.builtin.stat:
+        path: "{{ tech_notes }}"
       register: technotes
 
     - name: Copy TechNotes.pdf
       ansible.builtin.copy:
-        src: 'files/"{{ contest_detail }}".TechNotes."{{ papersize }}".pdf'
+        src: "{{ tech_notes }}"
         dest: /usr/share/doc/icpc/TechNotes.pdf
         mode: '0644'
       when: technotes.stat.exists

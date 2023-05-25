@@ -42,6 +42,9 @@ cmd.exe /c winrm set winrm/config/service '@{AllowUnencrypted="true"}'
 cmd.exe /c winrm set winrm/config/service/auth '@{Basic="true"}'
 # Win RM client auth Basic
 cmd.exe /c winrm set winrm/config/client/auth '@{Basic="true"}'
+# Win RM set listening port (this is the default, but be explicit)
+cmd.exe /c winrm set winrm/config/listener?Address=*+Transport=HTTP '@{Port="5985"}'
+
 # Stop Win RM Service
 cmd.exe /c net stop winrm
 # Configure winrm to autostart
@@ -50,5 +53,5 @@ cmd.exe /c sc config winrm start= auto
 cmd.exe /c net start winrm
 
 # open port 5985 in the firewall
-cmd.exe /c netsh firewall add portopening TCP 5895 "Port 5895"
-cmd.exe /c netsh advfirewall firewall set rule group="remote administration" new enable=yes Execution Policy 64 Bit
+cmd.exe /c netsh advfirewall firewall add rule name="Port 5895" protocol=TCP localport=5895 dir=in action=allow
+Enable-NetFirewallRule -DisplayGroup 'Windows Remote Management'

@@ -3,6 +3,8 @@
 #   This needs to be executed from an elevated PowerShell prompt
 #   The account on the Windows box that ansible connects as needs to have a password
 #
+#   To run this, you need to run `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force`
+#
 # Exit on errors
 $ErrorActionPreference='Stop'
 
@@ -28,7 +30,7 @@ cmd.exe /c powershell -Command "Set-ExecutionPolicy -ExecutionPolicy RemoteSigne
 C:\Windows\SysWOW64\cmd.exe /c powershell -Command "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force"
 
 # Disable Network prompt
-cmd.exe /c reg add /force "HKLM\System\CurrentControlSet\Control\Network\NewNetworkWindowOff"
+cmd.exe /c reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Network\NewNetworkWindowOff" /f
 
 # Set quickconfig for winrmm
 cmd.exe /c winrm quickconfig -q
@@ -41,7 +43,10 @@ cmd.exe /c winrm set winrm/config/service '@{AllowUnencrypted="true"}'
 # Win RM auth Basic
 cmd.exe /c winrm set winrm/config/service/auth '@{Basic="true"}'
 # Win RM client auth Basic
-cmd.exe /c winrm set winrm/config/client/auth '@e /c w '@{Port="5985"}'
+cmd.exe /c winrm set winrm/config/client/auth '@{Basic="true"}'
+# Win RM set listening port (this is the default, but be explicit)
+cmd.exe /c winrm set winrm/config/listener?Address=*+Transport=HTTP '@{Port="5985"}'
+
 # Stop Win RM Service
 cmd.exe /c net stop winrm
 # Configure winrm to autostart
@@ -50,5 +55,5 @@ cmd.exe /c sc config winrm start= auto
 cmd.exe /c net start winrm
 
 # open port 5985 in the firewall
-cmd.exe /c netsh firewall add portopening TCP 5895 "Port 5895"
-cmd.exe /c netsh advfirewall firewall set rule group="remote administration" new enable=yes Execution Policy 64 Bit
+cmd.exe /c netsh advfirewall firewall add rule name="Port 5895" protocol=TCP localport=5895 dir=in action=allow
+Enable-NetFirewallRule -DisplayGroup 'Windows Remote Management'

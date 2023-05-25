@@ -28,7 +28,7 @@ cmd.exe /c powershell -Command "Set-ExecutionPolicy -ExecutionPolicy RemoteSigne
 C:\Windows\SysWOW64\cmd.exe /c powershell -Command "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force"
 
 # Disable Network prompt
-cmd.exe /c reg add /force "HKLM\System\CurrentControlSet\Control\Network\NewNetworkWindowOff"
+cmd.exe /c reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Network\NewNetworkWindowOff" /f
 
 # Set quickconfig for winrmm
 cmd.exe /c winrm quickconfig -q
@@ -41,7 +41,7 @@ cmd.exe /c winrm set winrm/config/service '@{AllowUnencrypted="true"}'
 # Win RM auth Basic
 cmd.exe /c winrm set winrm/config/service/auth '@{Basic="true"}'
 # Win RM client auth Basic
-cmd.exe /c winrm set winrm/config/client/auth '@e /c w '@{Port="5985"}'
+cmd.exe /c winrm set winrm/config/client/auth '@{Basic="true"}'
 # Stop Win RM Service
 cmd.exe /c net stop winrm
 # Configure winrm to autostart

@@ -55,5 +55,5 @@ cmd.exe /c sc config winrm start= auto
 cmd.exe /c net start winrm
 
 # open port 5985 in the firewall
-cmd.exe /c netsh advfirewall firewall add rule name="Port 5895" protocol=TCP localport=5895 dir=in action=allow
+cmd.exe /c netsh advfirewall firewall add rule name="Port 5985" protocol=TCP localport=5985 dir=in action=allow
 Enable-NetFirewallRule -DisplayGroup 'Windows Remote Management'

@@ -25,6 +25,13 @@
     - sub_disk diskidle
     - sub_sleep standbyidle
 
+- name: Turn off screen sleep/disk sleep while on DC/Battery
+  ansible.windows.win_command: powercfg -setdcvalueindex scheme_balanced {{ item }} 0
+  loop:
+    - sub_video videoidle
+    - sub_disk diskidle
+    - sub_sleep standbyidle
+
 - name: Set the power plan to balanced (which is what we changed settings for)
   community.windows.win_power_plan:
     name: balanced

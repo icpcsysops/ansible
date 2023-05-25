@@ -4,28 +4,28 @@
     src: banners/{{ job_sheet }}
     dest: /usr/share/cups/banners/
     mode: '0644'
-  when: job_sheet != "none"
+  when: job_sheet is not none
 
 - name: Copy cups data
   ansible.builtin.copy:
     src: data/{{ job_sheet }}.pdf
     dest: /usr/share/cups/data/
     mode: '0644'
-  when: job_sheet != "none"
+  when: job_sheet is not none
 
 - name: Copy cups end banners
   ansible.builtin.copy:
     src: banners/{{ job_sheet_end }}
     dest: /usr/share/cups/banners/
     mode: '0644'
-  when: job_sheet_end != "none"
+  when: job_sheet_end is not none
 
 - name: Copy cups end data
   ansible.builtin.copy:
     src: data/{{ job_sheet_end }}.pdf
     dest: /usr/share/cups/data/
     mode: '0644'
-  when: job_sheet_end != "none"
+  when: job_sheet_end is not none
 
 - name: Check if the printer exists
   ansible.builtin.command: lpstat -p {{ printer_name }}

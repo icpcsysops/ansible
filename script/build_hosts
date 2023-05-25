@@ -38,7 +38,7 @@ else:
     max_domjudge_ccsadmin = 0
     max_ccsadmin = 0
     job_sheet_start = name
-    job_sheet_end = None
+    job_sheet_end = "null"
     papersize = "letter"
     enable_vlc = False
 

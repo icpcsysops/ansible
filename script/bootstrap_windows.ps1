@@ -3,6 +3,8 @@
 #   This needs to be executed from an elevated PowerShell prompt
 #   The account on the Windows box that ansible connects as needs to have a password
 #
+#   To run this, you need to run `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force`
+#
 # Exit on errors
 $ErrorActionPreference='Stop'
 

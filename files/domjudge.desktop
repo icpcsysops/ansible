@@ -1,15 +1,6 @@
 [Desktop Entry]
-BinaryPattern=
-Protocols=
-Comment=DOMjudge
-Name=DOMjudge
-Exec=gnome-www-browser https://domjudge/
-Icon=/usr/share/apps/domjudge/DOMjudgelogo.png
-TerminalOptions=
-Path=
+Version=1.0
 Type=Application
-Terminal=0
-MapNotify=false
-Encoding=UTF-8
-X-Desktop-File-Install-Version=0.1
-Categories=Contest
+Name=DOMjudge
+Exec=/usr/bin/firefox https://domjudge/
+Icon=firefox

@@ -323,7 +323,7 @@
       reverseproxy_server: true
       tags: reverseproxy
 
-- name: Configure the cds
+- name: Configure the cds instances (new style)
   hosts: cds
   roles:
     - role: cds

@@ -1,0 +1,15 @@
+[Unit]
+Description=CDS
+
+[Service]
+User=cds
+Restart=always
+ExecStart=/srv/cds/wlp/bin/server run {{ cds_instance_name }}
+TimeoutStopSec=20s
+Environment=WLP_OUTPUT_DIR=/var/lib/cds
+Environment=WLP_USER_DIR=/srv/cds/wlp/usr
+Environment=JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target

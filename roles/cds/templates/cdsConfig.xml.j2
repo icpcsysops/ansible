@@ -1,0 +1,9 @@
+<cds>
+    {% for contest in cds_contests %}
+    <contest location="/srv/cds/contests/{{ contest.path }}" recordReactions="false">
+      {% if 'ccs' in contest %}
+        <ccs url="{{ contest.ccs.url }}" user="{{ contest.ccs.username }}" password="{{ contest.ccs.password }}" />
+      {% endif %}
+    </contest>
+    {% endfor %}
+</cds>

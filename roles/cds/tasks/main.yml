@@ -1,37 +1,92 @@
-- name: Install cds package
-  ansible.builtin.apt:
-    pkg: icpc-host-cds
-    state: present
+---
+- name: Create cds user
+  ansible.builtin.user:
+    name: cds
+    home: /srv/cds
+    shell: "/usr/bin/bash"
 
-- name: Check if cds is installed
-  ansible.builtin.stat:
-    path: /home/deboer/wlp/bin/server
-  register: cds
+- name: Create CDS directories
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: cds
+    group: cds
+    mode: 0755
+  with_items:
+    - /srv/cds
+    - /var/lib/cds
 
-- name: Download and install the cds
-  ansible.builtin.unarchive:
+- name: Get the CDS release
+  uri:
+    url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=1
+    method: GET
+    return_content: true
+    status_code: 200
+    body_format: json
+  register: latest_cds_release_array
+  check_mode: no
+
+- name: Set CDS latest version
+  set_fact:
+    cds_version: "{{ latest_cds_release_array.json[0].name | replace('v', '') }}"
+
+- name: Set CDS minor version
+  set_fact:
+    cds_version_minor: "{{ cds_version | regex_replace('\\.\\d+$', '') }}"
+
+- name: Check if CDS is installed
+  stat:
+    path: /srv/cds/wlp/usr/servers
+  register: cds_pkg
+  check_mode: no
+- name: Check if CDS.war exists
+  stat:
+    path: /srv/cds/CDS.war
+  register: cds_war
+  check_mode: no
+
+- name: Download and unpack full CDS
+  unarchive:
     src: https://github.com/icpctools/icpctools/releases/download/v{{ cds_version }}/wlp.CDS-{{ cds_version }}.zip
-    dest: /home/deboer
+    dest: /srv/cds
     remote_src: true
-    owner: root
-    group: root
-  when: not cds.stat.exists
-  notify: Restart cds
+    owner: cds
+    group: cds
+  when: not cds_pkg.stat.exists
 
-- name: Check if servers exists in repo
-  ansible.builtin.stat:
-    path: /home/deboer/repo/servers
-  register: repo_servers
+- name: Download and unpack CDS WAR
+  unarchive:
+    src: https://github.com/icpctools/icpctools/releases/download/v{{ cds_version }}/CDS-{{ cds_version }}.zip
+    dest: /root
+    remote_src: true
 
-- name: Move servers from wlp_root to repo
-  ansible.builtin.command: mv /home/deboer/wlp/usr/servers /home/deboer/repo/servers
-  when: not repo_servers.stat.exists
-  changed_when: false
-  notify: restart cds
+- name: Copy new CDS war
+  copy:
+    src: /root/CDS-{{ cds_version_minor }}/CDS.war
+    dest: /srv/cds/CDS.war
+    remote_src: true
+    owner: cds
+    group: cds
+    mode: 0644
+    force: true
+  when: not cds_war.stat.exists
+  register: updated_war
 
-# in case wlp is upgraded (grumble manually)
-- name: Remove servers from wlp_root
-  ansible.builtin.file:
-    path: /home/deboer/wlp/usr/servers
-    state: absent
-  when: repo_servers.stat.exists
+- name: Create contests config directory
+  file:
+    path: /srv/cds/contests
+    state: directory
+    owner: cds
+    group: cds
+    mode: 0755
+
+- include_tasks: cds_instance.yml
+  vars:
+    cds_name: "{{ outeritem.key }}"
+    cds_instance: "{{ outeritem.value }}"
+    needs_restart: updated_war.changed
+  with_dict: "{{ CDS }}"
+  loop_control:
+    loop_var: outeritem
+
+

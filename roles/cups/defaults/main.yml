@@ -1,5 +1,5 @@
 ---
-job_sheet: "none"
-job_sheet_end: "none"
+job_sheet: null
+job_sheet_end: null
 device_uri: "classes/contest"
 printer_name: "contest"

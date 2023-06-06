@@ -1,6 +1,6 @@
 ---
 - name: Playbook to enable autologin
-- hosts: contestants
+  hosts: contestants
   gather_facts: false
   tasks:
     - name: Enable autologin to user p
@@ -25,6 +25,11 @@
       register: p_running
       ignore_errors: true
       changed_when: false
+    - name: Clear /tmp/org.icpc.tools.cache* dir
+      ansible.builtin.file:
+        path: /tmp/org.icpc.tools.cache*
+        state: absent
+      when: p_running.rc != 0
     - name: Restart gdm3
       ansible.builtin.systemd:
         name: gdm3

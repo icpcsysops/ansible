@@ -2,7 +2,7 @@
 reverseproxy_server: false
 
 # A list of sites to configure in the nginx proxy. Only these will pass through, all others will fail
-reverseproxy_sites:
+reverseproxy_sites_kattis:
   nac22.kattis.com:  # NOTE: You'll want to replace this with your kattis instance url
     - {path: "/"}
   fonts.gstatic.com:
@@ -45,6 +45,11 @@ reverseproxy_sites:
   kattis.freshdesk.com: [{path: "/"}]
   support.kattis.com: [{path: "/"}]
 
+
+# or for domjudge much simplier
+reverseproxy_sites:
+  domjudge.nac.icpc.global:
+    - {path: "/"}
 
 # this is a snakeoil cert and key from ubuntu (You'll want to override these)
 reverseproxy_cert: |

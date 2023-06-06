@@ -1,11 +1,11 @@
 server_names_hash_bucket_size 128;
 resolver 8.8.8.8 ipv6=off;
 
-{% for server,urls in reverseproxy_sites.items() %}
+{% for server,config in reverseproxy_sites.items() %}
 server {
         listen 80;
         listen 443 ssl;
-        server_name {{server}};
+        server_name {{ server }};
         ssl_certificate /etc/ssl/reverseproxy.cert;
         ssl_certificate_key /etc/ssl/reverseproxy.key;
 
@@ -16,11 +16,11 @@ server {
 
         # Set the hostname as a variable, this forces nginx to do a dns lookup
         # otherwise it only looks it up when it starts and never refreshes it
-        set $server_host "{{server}}";
+        set $server_host "{{config.scheme|default('https')}}://{{config.backend_host|default(server)}}{% if 'port' in config %}{{ ":" + config.port }}{%endif%}";
 
-        {% for item in urls %}
+        {% for item in config.paths|default(['/']) %}
         location {% if item.exact is defined and item.exact %}={% endif %} {{ item.path }} {
-                proxy_pass https://$server_host
+                proxy_pass $server_host
                         {%- if not (item.exact is defined and item.exact) and item.path != '/' -%}
                                 $request_uri
                         {%- else -%}
@@ -32,6 +32,9 @@ server {
                         ;
                 proxy_ssl_server_name on;
                 proxy_set_header Host $host;
+		{% if 'forwarded_for_header' in config %}
+		proxy_set_header {{config.forwarded_for_header}} $remote_addr;
+		{% endif %}
         }
         {% endfor %}
 }

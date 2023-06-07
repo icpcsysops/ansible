@@ -1,32 +1,4 @@
 ---
-- name: Copy cups banners
-  ansible.builtin.copy:
-    src: banners/{{ job_sheet }}
-    dest: /usr/share/cups/banners/
-    mode: '0644'
-  when: job_sheet is not none
-
-- name: Copy cups data
-  ansible.builtin.copy:
-    src: data/{{ job_sheet }}.pdf
-    dest: /usr/share/cups/data/
-    mode: '0644'
-  when: job_sheet is not none
-
-- name: Copy cups end banners
-  ansible.builtin.copy:
-    src: banners/{{ job_sheet_end }}
-    dest: /usr/share/cups/banners/
-    mode: '0644'
-  when: job_sheet_end is not none
-
-- name: Copy cups end data
-  ansible.builtin.copy:
-    src: data/{{ job_sheet_end }}.pdf
-    dest: /usr/share/cups/data/
-    mode: '0644'
-  when: job_sheet_end is not none
-
 - name: Check if the printer exists
   ansible.builtin.command: lpstat -p {{ printer_name }}
   register: lpstat
@@ -34,7 +6,6 @@
   ignore_errors: true
 
 - name: Lpadmin add a printer
-  # ansible.builtin.command: lpadmin -p {{ printer_name }} -E -v ipp:////printsrv:631/{{ device_uri }} -m drv:///sample.drv/generic.ppd -o job-sheets-default={{ job_sheet|default("none") }},{{ job_sheet_end|default("none") }} -L "{{ inventory_hostname }}" # noqa: yaml[line-length]
   # use keith's icpc-banner instead (on the server side)
   ansible.builtin.command: lpadmin -p {{ printer_name }} -E -v ipp://printsrv:631/{{ device_uri }} -m everywhere -L "{{ inventory_hostname }}"
   when: lpstat.rc != 0

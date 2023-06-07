@@ -7,7 +7,8 @@
 # bootstrap_windows.ps1
 # on unix side:
 # ansible-playbook --limit ballonprinter1 --extra-vars ansible_user=windows_user -e ansible_password=windows_password windows_lastminute.yml
-# Also need (or put in inventory.yml): -e ansible_connection=winrm -e ansible_winrm_scheme=http -e ansible_winrm_transport=basic -e ansible_port=5985 
+# Also need (or put in inventory.yml): -e ansible_connection=winrm -e ansible_winrm_scheme=http -e ansible_winrm_transport=basic -e ansible_port=5985
+# this was done to group_vars/windows.yml
 - name: Presentation hosts
   hosts: presentation_clients
   gather_facts: false

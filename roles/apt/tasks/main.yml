@@ -22,7 +22,9 @@
   loop:
     - "sources.list"
     - "sources.list.d/mono.list"
-    - "sources.list.d/pypy-ubuntu-ppa-buster.list"
+    - "sources.list.d/vscode.list"
+    - "sources.list.d/pypy-ubuntu-ppa-jammy.list"
+    - "sources.list.d/mozillateam-ubuntu-ppa-jammy.list"
   when: not disable_sources_list_changes
 - name: Update all packages to their latest version
   ansible.builtin.apt:

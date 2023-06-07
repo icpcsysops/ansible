@@ -1,42 +1,51 @@
-
+---
 aggregators:
   click:
     type: click
     input:
       - mouse
   modifier:
+    # settings:
+    #   interval: 10
     type: modifier
     input:
       - keyboard
       - click
-#    settings:
-#      interval: 10
   metrics:
     type: metrics
     input:
-     - mouse
+      - mouse
     settings:
       interval: 60
       omitEmpty: true
 
 outputs:
-#  websocket:
-#    type: websocket
-#    settings:
-#      host: :8080
-#      username: mart
-#      password: mart
-#  logFile:
-#    type: file
-#    settings:
-#      location: "keys.log"
-#  std:
-#    type: stdout
-#    inputs:
-#      - modifier
-#      - metrics
-#    settings:
-#      format: xml
+  #  websocket:
+  #    type: websocket
+  #    settings:
+  #      host: :8080
+  #      username: mart
+  #      password: mart
+  #  logFile:
+  #    type: file
+  #    settings:
+  #      location: "keys.log"
+  #  std:
+  #    type: stdout
+  #    inputs:
+  #      - modifier
+  #      - metrics
+  #    settings:
+  #      format: xml
+  #  stdJson:
+  #    type: rest
+  #    inputs:
+  #      - modifier
+  #      - metrics
+  #    settings:
+  #      method: POST
+  #      url: http://logger.progcont
+  #      encoder: json
   log:
     type: file
     inputs:
@@ -45,15 +54,6 @@ outputs:
     settings:
       encoder: "json"
       location: "/root/keys.log"
-#  stdJson:
-#    type: rest
-#    inputs:
-#      - modifier
-#      - metrics
-#    settings:
-#      method: POST
-#      url: http://logger.progcont
-#      encoder: json
 
 keys:
   - name: "KEY_RESERVED"
@@ -808,8 +808,6 @@ keys:
   - name: "KEY_MICMUTE"
     human: "KEY_MICMUTE"
     code: 248
-
-
   - name: "MOUSE_LEFT"
     human: "MOUSE_LEFT"
     code: 65500

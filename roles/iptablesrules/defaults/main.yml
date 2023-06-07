@@ -1,2 +1,6 @@
 ---
 iptables_base: team
+# override this to 10.3.3.205 if using reverseproxy
+# override this to 10.3.3.218 for domjudge-wf47
+# override this to (refer to hosts.txt for other ips)
+ccs_ip: 10.3.3.215

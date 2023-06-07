@@ -1,7 +1,7 @@
 ---
 - name: Copy iptables.rules to teams
-  ansible.builtin.copy:
-    src: "{{ iptables_base }}.iptables.rules"
+  ansible.builtin.template:
+    src: "{{ iptables_base }}.iptables.rules.j2"
     dest: /etc/iptables.rules
     owner: root
     group: root

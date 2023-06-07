@@ -27,30 +27,25 @@
 -A OUTPUT -p udp -m udp --dport 8612 -j REJECT
 # other cups snmp stuff to drop
 -A OUTPUT -p udp -m udp -d 10.3.3.149 --dport 161 -j DROP
+# some app is triggering these
+-A OUTPUT -p udp -m udp --dport 53 --d 10.0.0.1 -j DROP
+-A OUTPUT -p udp -m udp --dport 53 --d 10.1.1.1 -j DROP
 
-# http
+# http to/from scoreboard
 -A INPUT -p tcp --sport 80 -s 10.3.3.208/31 -j ACCEPT
 -A OUTPUT -p tcp --dport 80 -d 10.3.3.208/31 -j ACCEPT
--A OUTPUT -p tcp --dport 80 -d 10.3.3.215/32 -j ACCEPT
--A INPUT -p tcp --sport 80 -s 10.3.3.215/32 -j ACCEPT
 
-# https
-# these are the primary ccs ips
--A INPUT -p tcp --sport 443 -s 10.3.3.215/32 -j ACCEPT
--A OUTPUT -p tcp --dport 443 -d 10.3.3.215/32 -j ACCEPT
-# these are the shadow failover ips
-#-A INPUT -p tcp --sport 443 -s 10.3.3.208/31 -j ACCEPT
-#-A OUTPUT -p tcp --dport 443 -d 10.3.3.208/31 -j ACCEPT
+# https to/from ccs primary
+-A INPUT -p tcp --sport 443 -s {{ ccs_ip }}/32 -j ACCEPT
+-A OUTPUT -p tcp --dport 443 -d {{ ccs_ip }}/32 -j ACCEPT
 
-# packages
+# https to/from packages
 -A INPUT -p tcp --sport 443 -s 10.3.3.209/32 -j ACCEPT
 -A OUTPUT -p tcp --dport 443 -d 10.3.3.209/32 -j ACCEPT
 
 # ntp
--A INPUT -p tcp --sport 123 -s 10.3.3.208 -j ACCEPT
--A INPUT -p udp --sport 123 -s 10.3.3.208 -j ACCEPT
--A OUTPUT -p tcp --dport 123 -d 10.3.3.208 -j ACCEPT
--A OUTPUT -p udp --dport 123 -d 10.3.3.208 -j ACCEPT
+-A INPUT -p tcp --sport 123 -s 10.3.3.207 -j ACCEPT
+-A INPUT -p udp --sport 123 -s 10.3.3.207 -j ACCEPT
 -A INPUT -p tcp --sport 123 -s 10.3.3.209 -j ACCEPT
 -A INPUT -p udp --sport 123 -s 10.3.3.209 -j ACCEPT
 -A OUTPUT -p tcp --dport 123 -d 10.3.3.209 -j ACCEPT
@@ -67,7 +62,7 @@
 # cds uses https
 -A OUTPUT -p tcp --dport 443 -d 10.3.3.207/32 -j ACCEPT
 -A INPUT -p tcp --sport 443 -s 10.3.3.207/32 -j ACCEPT
-# p100
+# p100 uses https on port 9443
 -A OUTPUT -p tcp --dport 9443 -d 10.3.3.207/32 -j ACCEPT
 -A INPUT -p tcp --sport 9443 -s 10.3.3.207/32 -j ACCEPT
 

@@ -197,6 +197,7 @@
       when: ccs == "domjudge"
       block:
         - name: Is contest_detail TeamGuide.pdf available?
+          delegate_to: localhost
           ansible.builtin.stat:
             path: files/"{{ contest_detail }}-domjudge-team-manual.pdf"
           register: domjudge_team_manual

@@ -2,11 +2,11 @@
 # These tasks configure the CDS
 #
 
-#WLP_USER_DIR = the place where we put each instance (cds/live/p100)
-#WLP_OUTPUT_DIR = the place it writes random temp files and whatnot
+# WLP_USER_DIR = the place where we put each instance (cds/live/p100)
+# WLP_OUTPUT_DIR = the place it writes random temp files and whatnot
 
-- name: set facts from the include context
-  set_fact:
+- name: Set facts from the include context
+  ansible.builtin.set_fact:
     cds_instance_name: "{{ cds_name }}"
     cds_http_port: "{{ cds_instance.http_port }}"
     cds_https_port: "{{ cds_instance.https_port }}"
@@ -15,86 +15,93 @@
     cds_needs_restart: "{{ needs_restart }}"
 
 - name: Create CDS directories
-  file:
-    path: /var/lib/cds/{{cds_instance_name}}
+  ansible.builtin.file:
+    path: /var/lib/cds/{{ cds_instance_name }}
     state: directory
     owner: cds
     group: cds
-    mode: 0755
+    mode: '0755'
 
-
-- name: make sure directories exist
-  file:
+- name: Make sure directories exist
+  ansible.builtin.file:
     state: directory
     owner: cds
     group: cds
-    mode: 0755
+    mode: '0755'
     path: /srv/cds/wlp/usr/servers/{{ cds_instance_name }}/{{ item }}
   with_items:
     - apps
     - config
 
-- name: symlink CDS war to the instance
-  file:
+- name: Symlink CDS war to the instance
+  ansible.builtin.file:
     state: link
     force: true
     src: /srv/cds/CDS.war
     dest: /srv/cds/wlp/usr/servers/{{ cds_instance_name }}/apps/CDS.war
 
 - name: Populate CDS server.xml
-  template:
+  ansible.builtin.template:
     src: server.xml.j2
     dest: /srv/cds/wlp/usr/servers/{{ cds_instance_name }}/server.xml
     owner: cds
     group: cds
-    mode: 0644
+    mode: '0644'
   register: server_updated
-- set_fact:
-    cds_needs_restart: "{{ cds_needs_restart|bool or server_updated.changed }}"
+
+- name: Update cds_needs_restart (after server.xml)
+  ansible.builtin.set_fact:
+    cds_needs_restart: "{{ cds_needs_restart | bool or server_updated.changed }}"
 
 - name: Populate CDS accounts.yaml
-  template:
+  ansible.builtin.template:
     src: accounts.yaml.j2
     dest: /srv/cds/wlp/usr/servers/{{ cds_instance_name }}/config/accounts.yaml
     owner: cds
     group: cds
-    mode: 0600
+    mode: '0600'
   register: accounts_updated
-- set_fact:
-    cds_needs_restart: "{{ cds_needs_restart|bool or accounts_updated.changed }}"
+
+- name: Update cds_needs_restart (after accounts.yaml)
+  ansible.builtin.set_fact:
+    cds_needs_restart: "{{ cds_needs_restart | bool or accounts_updated.changed }}"
 
 - name: Populate CDS cdsConfig.xml
-  template:
+  ansible.builtin.template:
     src: cdsConfig.xml.j2
     dest: /srv/cds/wlp/usr/servers/{{ cds_instance_name }}/config/cdsConfig.xml
     owner: cds
     group: cds
-    mode: 0600
+    mode: '0600'
   register: cds_config_updated
-- set_fact:
-    cds_needs_restart: "{{ cds_needs_restart|bool or cds_config_updated.changed }}"
+
+- name: Update cds_needs_restart (after cdsConfig.xml)
+  ansible.builtin.set_fact:
+    cds_needs_restart: "{{ cds_needs_restart | bool or cds_config_updated.changed }}"
 
 - name: Create contest specific directory
-  file:
+  ansible.builtin.file:
     path: /srv/cds/contests/{{ item.path }}
     state: directory
     owner: cds
     group: cds
-    mode: 0755
+    mode: '0755'
   loop: "{{ cds_contests }}"
 
 - name: Copy cds systemd unit file
-  template:
+  ansible.builtin.template:
     src: templates/cds.service.j2
-    dest: /etc/systemd/system/{{cds_instance_name}}.service
-    mode: 0644
+    dest: /etc/systemd/system/{{ cds_instance_name }}.service
+    mode: '0644'
   register: unit_updated
-- set_fact:
-    cds_needs_restart: "{{ cds_needs_restart|bool or unit_updated.changed }}"
+
+- name: "Update cds_needs_restart: after service for {{ cds_instance_name }}"
+  ansible.builtin.set_fact:
+    cds_needs_restart: "{{ cds_needs_restart | bool or unit_updated.changed }}"
 
 - name: Restart+enable cds instance
-  systemd:
-    name: "{{cds_instance_name}}"
+  ansible.builtin.systemd:
+    name: "{{ cds_instance_name }}"
     enabled: true
     state: restarted
     daemon_reload: true

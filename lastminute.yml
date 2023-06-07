@@ -196,11 +196,17 @@
     - name: DOMJudge only bits
       when: ccs == "domjudge"
       block:
+        - name: Is contest_detail TeamGuide.pdf available?
+          ansible.builtin.stat:
+            path: files/"{{ contest_detail }}-domjudge-team-manual.pdf"
+          register: domjudge_team_manual
+
         - name: Copy domjudge TeamGuide.pdf (if ccs == domjudge)
           ansible.builtin.copy:
             src: files/"{{ contest_detail }}-domjudge-team-manual.pdf"
             dest: /usr/share/doc/icpc/TeamGuide.pdf
             mode: '0644'
+          when: domjudge_team_manual.stat.exists
 
         - name: Add domjudge to /etc/hosts
           ansible.builtin.lineinfile:
@@ -210,7 +216,9 @@
             group: root
             mode: '0644'
           loop:
+            # TODO make this 215 configurable
             - { ip: 215, hostname: domjudge }
+          when: enable_reverseproxy is not defined or not enable_reverseproxy
 
         - name: Add domjudge doc dir
           ansible.builtin.file:

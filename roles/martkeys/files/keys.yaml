@@ -1,0 +1,821 @@
+
+aggregators:
+  click:
+    type: click
+    input:
+      - mouse
+  modifier:
+    type: modifier
+    input:
+      - keyboard
+      - click
+#    settings:
+#      interval: 10
+  metrics:
+    type: metrics
+    input:
+     - mouse
+    settings:
+      interval: 60
+      omitEmpty: true
+
+outputs:
+#  websocket:
+#    type: websocket
+#    settings:
+#      host: :8080
+#      username: mart
+#      password: mart
+#  logFile:
+#    type: file
+#    settings:
+#      location: "keys.log"
+#  std:
+#    type: stdout
+#    inputs:
+#      - modifier
+#      - metrics
+#    settings:
+#      format: xml
+  log:
+    type: file
+    inputs:
+      - modifier
+      - metrics
+    settings:
+      encoder: "json"
+      location: "/root/keys.log"
+#  stdJson:
+#    type: rest
+#    inputs:
+#      - modifier
+#      - metrics
+#    settings:
+#      method: POST
+#      url: http://logger.progcont
+#      encoder: json
+
+keys:
+  - name: "KEY_RESERVED"
+    human: "KEY_RESERVED"
+    code: 0
+  - name: "KEY_ESC"
+    human: "KEY_ESC"
+    code: 1
+  - name: "KEY_1"
+    human: "1"
+    code: 2
+  - name: "KEY_2"
+    human: "2"
+    code: 3
+  - name: "KEY_3"
+    human: "3"
+    code: 4
+  - name: "KEY_4"
+    human: "4"
+    code: 5
+  - name: "KEY_5"
+    human: "5"
+    code: 6
+  - name: "KEY_6"
+    human: "6"
+    code: 7
+  - name: "KEY_7"
+    human: "7"
+    code: 8
+  - name: "KEY_8"
+    human: "8"
+    code: 9
+  - name: "KEY_9"
+    human: "9"
+    code: 10
+  - name: "KEY_0"
+    human: "0"
+    code: 11
+  - name: "KEY_MINUS"
+    human: "-"
+    code: 12
+  - name: "KEY_EQUAL"
+    human: "="
+    code: 13
+  - name: "KEY_BACKSPACE"
+    human: "<backspace>"
+    code: 14
+  - name: "KEY_TAB"
+    human: "tab"
+    code: 15
+  - name: "KEY_Q"
+    human: "Q"
+    code: 16
+  - name: "KEY_W"
+    human: "W"
+    code: 17
+  - name: "KEY_E"
+    human: "E"
+    code: 18
+  - name: "KEY_R"
+    human: "R"
+    code: 19
+  - name: "KEY_T"
+    human: "T"
+    code: 20
+  - name: "KEY_Y"
+    human: "Y"
+    code: 21
+  - name: "KEY_U"
+    human: "U"
+    code: 22
+  - name: "KEY_I"
+    human: "I"
+    code: 23
+  - name: "KEY_O"
+    human: "O"
+    code: 24
+  - name: "KEY_P"
+    human: "P"
+    code: 25
+  - name: "KEY_LEFTBRACE"
+    human: "["
+    code: 26
+  - name: "KEY_RIGHTBRACE"
+    human: "]"
+    code: 27
+  - name: "KEY_ENTER"
+    human: "KEY_ENTER"
+    code: 28
+  - name: "KEY_LEFTCTRL"
+    human: "ctrl"
+    code: 29
+    modifier: true
+  - name: "KEY_A"
+    human: "A"
+    code: 30
+  - name: "KEY_S"
+    human: "S"
+    code: 31
+  - name: "KEY_D"
+    human: "D"
+    code: 32
+  - name: "KEY_F"
+    human: "F"
+    code: 33
+  - name: "KEY_G"
+    human: "G"
+    code: 34
+  - name: "KEY_H"
+    human: "H"
+    code: 35
+  - name: "KEY_J"
+    human: "J"
+    code: 36
+  - name: "KEY_K"
+    human: "K"
+    code: 37
+  - name: "KEY_L"
+    human: "L"
+    code: 38
+  - name: "KEY_SEMICOLON"
+    human: ";"
+    code: 39
+  - name: "KEY_APOSTROPHE"
+    human: "'"
+    code: 40
+  - name: "KEY_GRAVE"
+    human: "~"
+    code: 41
+  - name: "KEY_LEFTSHIFT"
+    human: "shift"
+    code: 42
+    modifier: true
+  - name: "KEY_BACKSLASH"
+    human: "\\"
+    code: 43
+  - name: "KEY_Z"
+    human: "Z"
+    code: 44
+  - name: "KEY_X"
+    human: "X"
+    code: 45
+  - name: "KEY_C"
+    human: "C"
+    code: 46
+  - name: "KEY_V"
+    human: "V"
+    code: 47
+  - name: "KEY_B"
+    human: "B"
+    code: 48
+  - name: "KEY_N"
+    human: "N"
+    code: 49
+  - name: "KEY_M"
+    human: "M"
+    code: 50
+  - name: "KEY_COMMA"
+    human: ","
+    code: 51
+  - name: "KEY_DOT"
+    human: "."
+    code: 52
+  - name: "KEY_SLASH"
+    human: "/"
+    code: 53
+  - name: "KEY_RIGHTSHIFT"
+    human: "shift"
+    code: 54
+    modifier: true
+  - name: "KEY_KPASTERISK"
+    human: "*"
+    code: 55
+  - name: "KEY_LEFTALT"
+    human: "alt"
+    code: 56
+    modifier: true
+  - name: "KEY_SPACE"
+    human: "KEY_SPACE"
+    code: 57
+  - name: "KEY_CAPSLOCK"
+    human: "KEY_CAPSLOCK"
+    code: 58
+  - name: "KEY_F1"
+    human: "F1"
+    code: 59
+  - name: "KEY_F2"
+    human: "F2"
+    code: 60
+  - name: "KEY_F3"
+    human: "F3"
+    code: 61
+  - name: "KEY_F4"
+    human: "F4"
+    code: 62
+  - name: "KEY_F5"
+    human: "F5"
+    code: 63
+  - name: "KEY_F6"
+    human: "F6"
+    code: 64
+  - name: "KEY_F7"
+    human: "F7"
+    code: 65
+  - name: "KEY_F8"
+    human: "F8"
+    code: 66
+  - name: "KEY_F9"
+    human: "F9"
+    code: 67
+  - name: "KEY_F10"
+    human: "F10"
+    code: 68
+  - name: "KEY_NUMLOCK"
+    human: "KEY_NUMLOCK"
+    code: 69
+  - name: "KEY_SCROLLLOCK"
+    human: "KEY_SCROLLLOCK"
+    code: 70
+  - name: "KEY_KP7"
+    human: "KEY_KP7"
+    code: 71
+  - name: "KEY_KP8"
+    human: "KEY_KP8"
+    code: 72
+  - name: "KEY_KP9"
+    human: "KEY_KP9"
+    code: 73
+  - name: "KEY_KPMINUS"
+    human: "KEY_KPMINUS"
+    code: 74
+  - name: "KEY_KP4"
+    human: "KEY_KP4"
+    code: 75
+  - name: "KEY_KP5"
+    human: "KEY_KP5"
+    code: 76
+  - name: "KEY_KP6"
+    human: "KEY_KP6"
+    code: 77
+  - name: "KEY_KPPLUS"
+    human: "KEY_KPPLUS"
+    code: 78
+  - name: "KEY_KP1"
+    human: "KEY_KP1"
+    code: 79
+  - name: "KEY_KP2"
+    human: "KEY_KP2"
+    code: 80
+  - name: "KEY_KP3"
+    human: "KEY_KP3"
+    code: 81
+  - name: "KEY_KP0"
+    human: "KEY_KP0"
+    code: 82
+  - name: "KEY_KPDOT"
+    human: "KEY_KPDOT"
+    code: 83
+  - name: "KEY_ZENKAKUHANKAKU"
+    human: "KEY_ZENKAKUHANKAKU"
+    code: 85
+  - name: "KEY_102ND"
+    human: "KEY_102ND"
+    code: 86
+  - name: "KEY_F11"
+    human: "F11"
+    code: 87
+  - name: "KEY_F12"
+    human: "F12"
+    code: 88
+  - name: "KEY_RO"
+    human: "KEY_RO"
+    code: 89
+  - name: "KEY_KATAKANA"
+    human: "KEY_KATAKANA"
+    code: 90
+  - name: "KEY_HIRAGANA"
+    human: "KEY_HIRAGANA"
+    code: 91
+  - name: "KEY_HENKAN"
+    human: "KEY_HENKAN"
+    code: 92
+  - name: "KEY_KATAKANAHIRAGANA"
+    human: "KEY_KATAKANAHIRAGANA"
+    code: 93
+  - name: "KEY_MUHENKAN"
+    human: "KEY_MUHENKAN"
+    code: 94
+  - name: "KEY_KPJPCOMMA"
+    human: "KEY_KPJPCOMMA"
+    code: 95
+  - name: "KEY_KPENTER"
+    human: "KEY_KPENTER"
+    code: 96
+  - name: "KEY_RIGHTCTRL"
+    human: "ctrl"
+    code: 97
+    modifier: true
+  - name: "KEY_KPSLASH"
+    human: "KEY_KPSLASH"
+    code: 98
+  - name: "KEY_SYSRQ"
+    human: "KEY_SYSRQ"
+    code: 99
+  - name: "KEY_RIGHTALT"
+    human: "KEY_RIGHTALT"
+    code: 100
+    modifier: true
+  - name: "KEY_LINEFEED"
+    human: "KEY_LINEFEED"
+    code: 101
+  - name: "KEY_HOME"
+    human: "KEY_HOME"
+    code: 102
+  - name: "KEY_UP"
+    human: "KEY_UP"
+    code: 103
+  - name: "KEY_PAGEUP"
+    human: "KEY_PAGEUP"
+    code: 104
+  - name: "KEY_LEFT"
+    human: "KEY_LEFT"
+    code: 105
+  - name: "KEY_RIGHT"
+    human: "KEY_RIGHT"
+    code: 106
+  - name: "KEY_END"
+    human: "KEY_END"
+    code: 107
+  - name: "KEY_DOWN"
+    human: "KEY_DOWN"
+    code: 108
+  - name: "KEY_PAGEDOWN"
+    human: "KEY_PAGEDOWN"
+    code: 109
+  - name: "KEY_INSERT"
+    human: "KEY_INSERT"
+    code: 110
+  - name: "KEY_DELETE"
+    human: "KEY_DELETE"
+    code: 111
+  - name: "KEY_MACRO"
+    human: "KEY_MACRO"
+    code: 112
+  - name: "KEY_MUTE"
+    human: "KEY_MUTE"
+    code: 113
+  - name: "KEY_VOLUMEDOWN"
+    human: "KEY_VOLUMEDOWN"
+    code: 114
+  - name: "KEY_VOLUMEUP"
+    human: "KEY_VOLUMEUP"
+    code: 115
+  - name: "KEY_POWER"
+    human: "KEY_POWER"
+    code: 116
+  - name: "KEY_KPEQUAL"
+    human: "KEY_KPEQUAL"
+    code: 117
+  - name: "KEY_KPPLUSMINUS"
+    human: "KEY_KPPLUSMINUS"
+    code: 118
+  - name: "KEY_PAUSE"
+    human: "KEY_PAUSE"
+    code: 119
+  - name: "KEY_SCALE"
+    human: "KEY_SCALE"
+    code: 120
+  - name: "KEY_KPCOMMA"
+    human: "KEY_KPCOMMA"
+    code: 121
+  - name: "KEY_HANGEUL"
+    human: "KEY_HANGEUL"
+    code: 122
+  - name: "KEY_HANGUEL"
+    human: "KEY_HANGUEL"
+    code: 122
+  - name: "KEY_HANJA"
+    human: "KEY_HANJA"
+    code: 123
+  - name: "KEY_YEN"
+    human: "KEY_YEN"
+    code: 124
+  - name: "KEY_LEFTMETA"
+    human: "KEY_LEFTMETA"
+    modifier: true
+    code: 125
+  - name: "KEY_RIGHTMETA"
+    human: "KEY_RIGHTMETA"
+    modifier: true
+    code: 126
+  - name: "KEY_COMPOSE"
+    human: "KEY_COMPOSE"
+    code: 127
+  - name: "KEY_STOP"
+    human: "KEY_STOP"
+    code: 128
+  - name: "KEY_AGAIN"
+    human: "KEY_AGAIN"
+    code: 129
+  - name: "KEY_PROPS"
+    human: "KEY_PROPS"
+    code: 130
+  - name: "KEY_UNDO"
+    human: "KEY_UNDO"
+    code: 131
+  - name: "KEY_FRONT"
+    human: "KEY_FRONT"
+    code: 132
+  - name: "KEY_COPY"
+    human: "KEY_COPY"
+    code: 133
+  - name: "KEY_OPEN"
+    human: "KEY_OPEN"
+    code: 134
+  - name: "KEY_PASTE"
+    human: "KEY_PASTE"
+    code: 135
+  - name: "KEY_FIND"
+    human: "KEY_FIND"
+    code: 136
+  - name: "KEY_CUT"
+    human: "KEY_CUT"
+    code: 137
+  - name: "KEY_HELP"
+    human: "KEY_HELP"
+    code: 138
+  - name: "KEY_MENU"
+    human: "KEY_MENU"
+    code: 139
+  - name: "KEY_CALC"
+    human: "KEY_CALC"
+    code: 140
+  - name: "KEY_SETUP"
+    human: "KEY_SETUP"
+    code: 141
+  - name: "KEY_SLEEP"
+    human: "KEY_SLEEP"
+    code: 142
+  - name: "KEY_WAKEUP"
+    human: "KEY_WAKEUP"
+    code: 143
+  - name: "KEY_FILE"
+    human: "KEY_FILE"
+    code: 144
+  - name: "KEY_SENDFILE"
+    human: "KEY_SENDFILE"
+    code: 145
+  - name: "KEY_DELETEFILE"
+    human: "KEY_DELETEFILE"
+    code: 146
+  - name: "KEY_XFER"
+    human: "KEY_XFER"
+    code: 147
+  - name: "KEY_PROG1"
+    human: "KEY_PROG1"
+    code: 148
+  - name: "KEY_PROG2"
+    human: "KEY_PROG2"
+    code: 149
+  - name: "KEY_WWW"
+    human: "KEY_WWW"
+    code: 150
+  - name: "KEY_MSDOS"
+    human: "KEY_MSDOS"
+    code: 151
+  - name: "KEY_COFFEE"
+    human: "KEY_COFFEE"
+    code: 152
+  - name: "KEY_SCREENLOCK"
+    human: "KEY_SCREENLOCK"
+    code: 152
+  - name: "KEY_ROTATE_DISPLAY"
+    human: "KEY_ROTATE_DISPLAY"
+    code: 153
+  - name: "KEY_DIRECTION"
+    human: "KEY_DIRECTION"
+    code: 153
+  - name: "KEY_CYCLEWINDOWS"
+    human: "KEY_CYCLEWINDOWS"
+    code: 154
+  - name: "KEY_MAIL"
+    human: "KEY_MAIL"
+    code: 155
+  - name: "KEY_BOOKMARKS"
+    human: "KEY_BOOKMARKS"
+    code: 156
+  - name: "KEY_COMPUTER"
+    human: "KEY_COMPUTER"
+    code: 157
+  - name: "KEY_BACK"
+    human: "KEY_BACK"
+    code: 158
+  - name: "KEY_FORWARD"
+    human: "KEY_FORWARD"
+    code: 159
+  - name: "KEY_CLOSECD"
+    human: "KEY_CLOSECD"
+    code: 160
+  - name: "KEY_EJECTCD"
+    human: "KEY_EJECTCD"
+    code: 161
+  - name: "KEY_EJECTCLOSECD"
+    human: "KEY_EJECTCLOSECD"
+    code: 162
+  - name: "KEY_NEXTSONG"
+    human: "KEY_NEXTSONG"
+    code: 163
+  - name: "KEY_PLAYPAUSE"
+    human: "KEY_PLAYPAUSE"
+    code: 164
+  - name: "KEY_PREVIOUSSONG"
+    human: "KEY_PREVIOUSSONG"
+    code: 165
+  - name: "KEY_STOPCD"
+    human: "KEY_STOPCD"
+    code: 166
+  - name: "KEY_RECORD"
+    human: "KEY_RECORD"
+    code: 167
+  - name: "KEY_REWIND"
+    human: "KEY_REWIND"
+    code: 168
+  - name: "KEY_PHONE"
+    human: "KEY_PHONE"
+    code: 169
+  - name: "KEY_ISO"
+    human: "KEY_ISO"
+    code: 170
+  - name: "KEY_CONFIG"
+    human: "KEY_CONFIG"
+    code: 171
+  - name: "KEY_HOMEPAGE"
+    human: "KEY_HOMEPAGE"
+    code: 172
+  - name: "KEY_REFRESH"
+    human: "KEY_REFRESH"
+    code: 173
+  - name: "KEY_EXIT"
+    human: "KEY_EXIT"
+    code: 174
+  - name: "KEY_MOVE"
+    human: "KEY_MOVE"
+    code: 175
+  - name: "KEY_EDIT"
+    human: "KEY_EDIT"
+    code: 176
+  - name: "KEY_SCROLLUP"
+    human: "KEY_SCROLLUP"
+    code: 177
+  - name: "KEY_SCROLLDOWN"
+    human: "KEY_SCROLLDOWN"
+    code: 178
+  - name: "KEY_KPLEFTPAREN"
+    human: "KEY_KPLEFTPAREN"
+    code: 179
+  - name: "KEY_KPRIGHTPAREN"
+    human: "KEY_KPRIGHTPAREN"
+    code: 180
+  - name: "KEY_NEW"
+    human: "KEY_NEW"
+    code: 181
+  - name: "KEY_REDO"
+    human: "KEY_REDO"
+    code: 182
+  - name: "KEY_F13"
+    human: "F13"
+    code: 183
+  - name: "KEY_F14"
+    human: "F14"
+    code: 184
+  - name: "KEY_F15"
+    human: "F15"
+    code: 185
+  - name: "KEY_F16"
+    human: "F16"
+    code: 186
+  - name: "KEY_F17"
+    human: "F17"
+    code: 187
+  - name: "KEY_F18"
+    human: "F18"
+    code: 188
+  - name: "KEY_F19"
+    human: "F19"
+    code: 189
+  - name: "KEY_F20"
+    human: "F20"
+    code: 190
+  - name: "KEY_F21"
+    human: "F21"
+    code: 191
+  - name: "KEY_F22"
+    human: "F22"
+    code: 192
+  - name: "KEY_F23"
+    human: "F23"
+    code: 193
+  - name: "KEY_F24"
+    human: "F24"
+    code: 194
+  - name: "KEY_PLAYCD"
+    human: "KEY_PLAYCD"
+    code: 200
+  - name: "KEY_PAUSECD"
+    human: "KEY_PAUSECD"
+    code: 201
+  - name: "KEY_PROG3"
+    human: "KEY_PROG3"
+    code: 202
+  - name: "KEY_PROG4"
+    human: "KEY_PROG4"
+    code: 203
+  - name: "KEY_DASHBOARD"
+    human: "KEY_DASHBOARD"
+    code: 204
+  - name: "KEY_SUSPEND"
+    human: "KEY_SUSPEND"
+    code: 205
+  - name: "KEY_CLOSE"
+    human: "KEY_CLOSE"
+    code: 206
+  - name: "KEY_PLAY"
+    human: "KEY_PLAY"
+    code: 207
+  - name: "KEY_FASTFORWARD"
+    human: "KEY_FASTFORWARD"
+    code: 208
+  - name: "KEY_BASSBOOST"
+    human: "KEY_BASSBOOST"
+    code: 209
+  - name: "KEY_PRINT"
+    human: "KEY_PRINT"
+    code: 210
+  - name: "KEY_HP"
+    human: "KEY_HP"
+    code: 211
+  - name: "KEY_CAMERA"
+    human: "KEY_CAMERA"
+    code: 212
+  - name: "KEY_SOUND"
+    human: "KEY_SOUND"
+    code: 213
+  - name: "KEY_QUESTION"
+    human: "KEY_QUESTION"
+    code: 214
+  - name: "KEY_EMAIL"
+    human: "KEY_EMAIL"
+    code: 215
+  - name: "KEY_CHAT"
+    human: "KEY_CHAT"
+    code: 216
+  - name: "KEY_SEARCH"
+    human: "KEY_SEARCH"
+    code: 217
+  - name: "KEY_CONNECT"
+    human: "KEY_CONNECT"
+    code: 218
+  - name: "KEY_FINANCE"
+    human: "KEY_FINANCE"
+    code: 219
+  - name: "KEY_SPORT"
+    human: "KEY_SPORT"
+    code: 220
+  - name: "KEY_SHOP"
+    human: "KEY_SHOP"
+    code: 221
+  - name: "KEY_ALTERASE"
+    human: "KEY_ALTERASE"
+    code: 222
+  - name: "KEY_CANCEL"
+    human: "KEY_CANCEL"
+    code: 223
+  - name: "KEY_BRIGHTNESSDOWN"
+    human: "KEY_BRIGHTNESSDOWN"
+    code: 224
+  - name: "KEY_BRIGHTNESSUP"
+    human: "KEY_BRIGHTNESSUP"
+    code: 225
+  - name: "KEY_MEDIA"
+    human: "KEY_MEDIA"
+    code: 226
+  - name: "KEY_SWITCHVIDEOMODE"
+    human: "KEY_SWITCHVIDEOMODE"
+    code: 227
+  - name: "KEY_KBDILLUMTOGGLE"
+    human: "KEY_KBDILLUMTOGGLE"
+    code: 228
+  - name: "KEY_KBDILLUMDOWN"
+    human: "KEY_KBDILLUMDOWN"
+    code: 229
+  - name: "KEY_KBDILLUMUP"
+    human: "KEY_KBDILLUMUP"
+    code: 230
+  - name: "KEY_SEND"
+    human: "KEY_SEND"
+    code: 231
+  - name: "KEY_REPLY"
+    human: "KEY_REPLY"
+    code: 232
+  - name: "KEY_FORWARDMAIL"
+    human: "KEY_FORWARDMAIL"
+    code: 233
+  - name: "KEY_SAVE"
+    human: "KEY_SAVE"
+    code: 234
+  - name: "KEY_DOCUMENTS"
+    human: "KEY_DOCUMENTS"
+    code: 235
+  - name: "KEY_BATTERY"
+    human: "KEY_BATTERY"
+    code: 236
+  - name: "KEY_BLUETOOTH"
+    human: "KEY_BLUETOOTH"
+    code: 237
+  - name: "KEY_WLAN"
+    human: "KEY_WLAN"
+    code: 238
+  - name: "KEY_UWB"
+    human: "KEY_UWB"
+    code: 239
+  - name: "KEY_UNKNOWN"
+    human: "KEY_UNKNOWN"
+    code: 240
+  - name: "KEY_VIDEO_NEXT"
+    human: "KEY_VIDEO_NEXT"
+    code: 241
+  - name: "KEY_VIDEO_PREV"
+    human: "KEY_VIDEO_PREV"
+    code: 242
+  - name: "KEY_BRIGHTNESS_CYCLE"
+    human: "KEY_BRIGHTNESS_CYCLE"
+    code: 243
+  - name: "KEY_BRIGHTNESS_AUTO"
+    human: "KEY_BRIGHTNESS_AUTO"
+    code: 244
+  - name: "KEY_BRIGHTNESS_ZERO"
+    human: "KEY_BRIGHTNESS_ZERO"
+    code: 224
+  - name: "KEY_DISPLAY_OFF"
+    human: "KEY_DISPLAY_OFF"
+    code: 245
+  - name: "KEY_WWAN"
+    human: "KEY_WWAN"
+    code: 246
+  - name: "KEY_WIMAX"
+    human: "KEY_WIMAX"
+    code: 246
+  - name: "KEY_RFKILL"
+    human: "KEY_RFKILL"
+    code: 247
+  - name: "KEY_MICMUTE"
+    human: "KEY_MICMUTE"
+    code: 248
+
+
+  - name: "MOUSE_LEFT"
+    human: "MOUSE_LEFT"
+    code: 65500
+  - name: "MOUSE_RIGHT"
+    human: "MOUSE_RIGHT"
+    code: 65501
+  - name: "MOUSE_MIDDLE"
+    human: "MOUSE_MIDDLE"
+    code: 65502

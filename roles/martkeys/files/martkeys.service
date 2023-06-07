@@ -1,0 +1,15 @@
+[Unit]
+Description=MarkKeys
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+WorkingDirectory=/root
+ExecStart=/root/martkeys
+
+[Install]
+WantedBy=multi-user.target

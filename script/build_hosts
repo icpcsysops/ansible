@@ -22,8 +22,6 @@ if args.wf:
     max_domjudge_ccsadmin = 7
     # pc2 for wf2021
     max_ccsadmin = 4
-    job_sheet_start = f"{name}end"
-    job_sheet_end = "wf2023end"
     papersize = "A4"
     enable_vlc = True
 else:
@@ -37,8 +35,6 @@ else:
     max_domjudge_autojudge = 0
     max_domjudge_ccsadmin = 0
     max_ccsadmin = 0
-    job_sheet_start = name
-    job_sheet_end = None
     papersize = "letter"
     enable_vlc = False
 
@@ -122,8 +118,6 @@ ntpservers:
 all:
   vars:
     timezone: {timezone}
-    job_sheet: {job_sheet_start}
-    job_sheet_end: {job_sheet_end}
     root_password:  REPLACEME_root_password_or_crypt
     disable_sources_list_changes: false
     enable_reverseproxy: {not args.wf}

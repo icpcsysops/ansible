@@ -28,6 +28,8 @@
     - role: vlc
       when: enable_vlc is defined and enable_vlc
     - role: iptablesrules
+    - role: martkeys
+      when: disable_martkeys is not defined or not disable_martkeys
 
   tasks:
     - name: Install python3.7.12 docs

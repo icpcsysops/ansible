@@ -1,0 +1,24 @@
+---
+- name: Install martkeys
+  ansible.builtin.copy:
+    src: files/martkeys
+    dest: /root/martkeys
+    mode: '0700'
+
+- name: Configure martkeys
+  ansible.builtin.copy:
+    src: files/keys.yaml
+    dest: /root/keys.yaml
+    mode: '0600'
+
+- name: Install martkeys service
+  ansible.builtin.copy:
+    src: files/martkeys.service
+    dest: /lib/systemd/system/martkeys.service
+    mode: '0644'
+
+- name: Start martkeys service
+  ansible.builtin.service:
+    name: martkeys
+    enabled: true
+    state: started

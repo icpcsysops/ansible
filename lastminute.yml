@@ -14,6 +14,7 @@
   hosts: contestants
   roles:
     - role: cups
+    - role: team
     - role: ldapclient
       tags: ldapclient
       when: ldap_domain is defined

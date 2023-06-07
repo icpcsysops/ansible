@@ -90,9 +90,9 @@
           ResultInactive=no
           ResultActive=no
         mode: '0644'
-    - name: Fix gvfs/gvfsd permission tweaking to disable
+    - name: Fix gvfsd permission tweaking to disable
       ansible.builtin.file:
-        path: /usr/lib/gvfs/{{ item }}
+        path: /usr/libexec/{{ item }}
         owner: root
         group: root
         mode: "0744"

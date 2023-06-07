@@ -1,0 +1,8 @@
+---
+- name: install s.py script to help us spy on active windows/processes
+  ansible.builtin.copy:
+    src: files/s.py
+    dest: /usr/local/bin/s.py
+    mode: 0755
+    group: root
+    owner: root

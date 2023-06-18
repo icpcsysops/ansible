@@ -1,0 +1,25 @@
+<server description="ICPC contest data server">
+    <featureManager>
+       <feature>jsp-2.3</feature>
+       <feature>jndi-1.0</feature>
+       <feature>websocket-1.1</feature>
+       <feature>appSecurity-3.0</feature>
+       <feature>servlet-4.0</feature>
+       <feature>cdi-2.0</feature>
+    </featureManager>
+
+    <!-- If you have root access, change port numbers to httpPort="80" httpsPort="443" -->
+    <httpEndpoint host="*" httpPort="{{ cds_http_port }}" httpsPort="{{ cds_https_port }}" id="defaultHttpEndpoint">
+       <tcpOptions soReuseAddr="true"/>
+       <httpOptions ThrowIOEForInboundConnections="true"/>
+    </httpEndpoint>
+
+    <httpSession invalidationTimeout="8h" idReuse="true"/>
+
+    <keyStore id="defaultKeyStore" password="{xor}FhwPHAswMDMs" />
+
+    <jndiEntry jndiName="icpc.cds.config" value="${server.config.dir}/config"/>
+
+    <webApplication id="CDS" location="CDS.war" name="CDS" contextRoot="/"/>
+</server>
+

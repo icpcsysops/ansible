@@ -1,0 +1,17 @@
+---
+- name: Reboot to a netboot
+  gather_facts: false
+  hosts: contestants
+
+  tasks:
+    - name: Install efibootmgr
+      ansible.builtin.package:
+        name: efibootmgr
+        state: present
+
+    - name: Efibootmgr to force a netboot
+      ansible.builtin.command: efibootmgr -n 1
+      changed_when: false
+
+    - name: Reboot
+      ansible.builtin.reboot:

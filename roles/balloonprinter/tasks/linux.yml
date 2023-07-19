@@ -1,0 +1,104 @@
+- name: Create balloonprinter user
+  ansible.builtin.user:
+    name: balloonprinter
+    home: /home/balloonprinter
+    uid: 17263
+    shell: "/usr/bin/bash"
+
+- name: Add run script for balloonprinter
+  ansible.builtin.template:
+    src: balloonprinter_run.sh.j2
+    dest: /home/balloonprinter/run
+    owner: balloonprinter
+    group: balloonprinter
+    mode: '0755'
+
+- name: ensure autostart directory exists
+  ansible.builtin.file:
+    state: directory
+    path: /home/balloonprinter/.config/autostart
+    owner: balloonprinter
+    group: balloonprinter
+
+- name: copy icon
+  ansible.builtin.copy:
+    src: files/balloonIcon.png
+    dest: /home/balloonprinter/icon.png
+
+- name: create shortcut on the desktop for balloon printer
+  ansible.builtin.copy:
+    dest: /home/balloonprinter/Desktop/Balloons.desktop
+    mode: 0755
+    owner: balloonprinter
+    group: balloonprinter
+    content: |
+      [Desktop Entry]
+      Version=1.0
+      Type=Application
+      Name=Balloon Printer
+      Exec=/home/balloonprinter/run
+      Icon=/home/balloonprinter/icon.png
+
+- name: set the balloon printer up to autostart (as a symlink)
+  ansible.builtin.file:
+    src: /home/balloonprinter/Desktop/Balloons.desktop
+    dest: /home/balloonprinter/.config/autostart/Balloons.desktop
+    state: link
+    owner: balloonprinter
+    group: balloonprinter
+
+- name: Enable autologin to user balloonprinter
+  ansible.builtin.copy:
+    content: |
+      [daemon]
+      AutomaticLoginEnable = true
+      AutomaticLogin = balloonprinter
+      [security]
+
+      [xdmcp]
+
+      [chooser]
+
+      [debug]
+    dest: /etc/gdm3/custom.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Check if balloon is installed
+  ansible.builtin.stat:
+    path: /home/balloonprinter/balloon.sh
+  register: balloon
+
+- name: Download and install the balloon util once
+  #when: not balloon.stat.exists
+  block:
+    - name: Get prerelease version
+      delegate_to: localhost
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=3
+        method: GET
+        return_content: true
+        status_code: 200
+        body_format: json
+      register: latest_balloon_release_array
+
+    - name: Set balloon latest version
+      ansible.builtin.set_fact:
+        balloon_version: "{{ latest_balloon_release_array.json[0].name | replace('v', '') }}"
+
+    - name: Download the coachview once
+      delegate_to: localhost
+      ansible.builtin.get_url:
+        url: https://github.com/icpctools/icpctools/releases/download/v{{ balloon_version }}/balloonUtil-{{ balloon_version }}.zip
+        dest: /tmp/balloon-{{ balloon_version }}.zip
+        mode: '0640'
+
+    - name: Unpack the client
+      ansible.builtin.unarchive:
+        src: /tmp/balloon-{{ balloon_version }}.zip
+        dest: /home/balloonprinter/
+        owner: balloonprinter
+        group: balloonprinter
+      become_user: balloonprinter
+      become: true

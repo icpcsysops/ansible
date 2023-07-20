@@ -13,22 +13,24 @@
     group: balloonprinter
     mode: '0755'
 
-- name: ensure autostart directory exists
+- name: Ensure autostart directory exists
   ansible.builtin.file:
     state: directory
     path: /home/balloonprinter/.config/autostart
     owner: balloonprinter
     group: balloonprinter
+    mode: '0700'
 
-- name: copy icon
+- name: Copy icon
   ansible.builtin.copy:
     src: files/balloonIcon.png
     dest: /home/balloonprinter/icon.png
+    mode: '0644'
 
-- name: create shortcut on the desktop for balloon printer
+- name: Create shortcut on the desktop for balloon printer
   ansible.builtin.copy:
     dest: /home/balloonprinter/Desktop/Balloons.desktop
-    mode: 0755
+    mode: '0755'
     owner: balloonprinter
     group: balloonprinter
     content: |
@@ -39,7 +41,7 @@
       Exec=/home/balloonprinter/run
       Icon=/home/balloonprinter/icon.png
 
-- name: set the balloon printer up to autostart (as a symlink)
+- name: Set the balloon printer up to autostart (as a symlink)
   ansible.builtin.file:
     src: /home/balloonprinter/Desktop/Balloons.desktop
     dest: /home/balloonprinter/.config/autostart/Balloons.desktop
@@ -71,7 +73,7 @@
   register: balloon
 
 - name: Download and install the balloon util once
-  #when: not balloon.stat.exists
+  # when: not balloon.stat.exists
   block:
     - name: Get prerelease version
       delegate_to: localhost

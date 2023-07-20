@@ -1,5 +1,7 @@
 ---
-- include_tasks: linux.yml
+- name: Check for not windows, include linux.yml
+  ansible.builtin.include_tasks: linux.yml
   when: ansible_os_family != 'Windows'
-- include_tasks: windows.yml
+- name: Check for windows, include windows.yml
+  ansible.builtin.include_tasks: windows.yml
   when: ansible_os_family == 'Windows'

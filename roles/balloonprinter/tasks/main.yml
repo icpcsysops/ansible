@@ -1,60 +1,7 @@
-# windows updates
-#
-#
-#
-
-- name: Set autologin
-  ansible.windows.win_regedit:
-    path: HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon
-    name: "{{ item.name }}"
-    data: "{{ item.value }}"
-    type: "{{ item.type }}"
-  loop:
-    - { name: DefaultUserName, value: "{{ ansible_user }}", type: string }
-    - { name: DefaultPassword, value: "{{ ansible_password }}", type: string }
-    - { name: AutoAdminLogon, value: 1, type: dword }
-
-- name: Disable windows updates
-  ansible.windows.win_regedit:
-    path: HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate\AU
-    name: NoAutoUpdate
-    type: dword
-    data: 1
-
-- name: Turn off screen sleep/disk sleep while on AC
-  ansible.windows.win_command: powercfg -setacvalueindex scheme_balanced {{ item }} 0
-  loop:
-    - sub_video videoidle
-    - sub_disk diskidle
-    - sub_sleep standbyidle
-
-- name: Set the power plan to balanced (which is what we changed settings for)
-  community.windows.win_power_plan:
-    name: balanced
-
-- name: Install jre
-  chocolatey.chocolatey.win_chocolatey:
-    name: openjdk11jre
-    state: present
-
-- name: Download balloon client
-  ansible.windows.win_get_url:
-    url: https://github.com/icpctools/icpctools/releases/download/v{{ balloon_version }}/balloonUtil-{{ balloon_version }}.zip
-    dest: /Users/{{ ansible_user }}/Desktop/balloonUtil-{{ balloon_version }}.zip
-
-- name: Unzip balloon client
-  community.windows.win_unzip:
-    src: /Users/{{ ansible_user }}/Desktop/balloonUtil-{{ balloon_version }}.zip
-    dest: /Users/{{ ansible_user }}/Desktop/balloon
-    remote_src: true
-
-- name: Copy a shortcut to launch the balloon client
-  community.windows.win_shortcut:
-    src: "c:/Users/{{ ansible_user }}/Desktop/balloon/balloon.bat"
-    dest: "c:/Users/{{ ansible_user }}/Desktop/balloon.lnk"
-    arguments: "{{ balloon_cds_url }} {{ balloon_user }} {{ balloon_pass }}"
-
-- name: Copy a shortcut to launch the balloon client
-  community.windows.win_shortcut:
-    src: "c:/Users/{{ ansible_user }}/Desktop/balloon.lnk"
-    dest: "%ProgramData%/Microsoft/Windows/Start Menu/Programs/Startup/balloon.lnk"
+---
+- name: Check for not windows, include linux.yml
+  ansible.builtin.include_tasks: linux.yml
+  when: ansible_os_family != 'Windows'
+- name: Check for windows, include windows.yml
+  ansible.builtin.include_tasks: windows.yml
+  when: ansible_os_family == 'Windows'

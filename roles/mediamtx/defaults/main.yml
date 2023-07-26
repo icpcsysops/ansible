@@ -1,0 +1,5 @@
+---
+## Only define if you want a specific version
+# mediamtx_version: 0.23.3 # the version from https://github.com/bluenviron/mediamtx/releases
+# change to false if not on intel cpu
+mediamtx_on_intel: true

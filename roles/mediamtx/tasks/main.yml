@@ -1,0 +1,66 @@
+---
+- name: Ensure intel-media-va-driver-non-free is installed
+  ansible.builtin.package:
+    name: intel-media-va-driver-non-free
+    state: present
+  when: mediamtx_on_intel
+
+- name: Ensure ffmpeg is installed
+  ansible.builtin.package:
+    name: ffmpeg
+    state: present
+
+- name: Download and install the mediamtx client
+  when: not mediamtx.stat.exists
+  block:
+    - name: Get prerelease version once
+      delegate_to: localhost
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/bluenviron/mediamtx/releases?per_page=3
+        method: GET
+        return_content: true
+        status_code: 200
+        body_format: json
+      register: latest_mediamtx_release_array
+      when: not mediamtx.stat.exists
+
+    - name: Set mediamtx client latest version
+      ansible.builtin.set_fact:
+        mediamtx_version: "{{ latest_mediamtx_release_array.json[0].name | replace('v', '') }}"
+
+    - name: Download the mediamtx once
+      delegate_to: localhost
+      ansible.builtin.get_url:
+        # https://github.com/bluenviron/mediamtx/releases/download/v0.23.8/mediamtx_v0.23.8_linux_amd64.tar.gz
+        url: https://github.com/bluenviron/mediamtx/releases/download/v{{ mediamtx_version }}/mediamtx_{{ mediamtx_version }}_linux_amd64.tar.gz
+        dest: /tmp/mediamtx-{{ mediamtx_version }}_linux_amd64.tar.gz
+        mode: '0640'
+
+- name: Unpack the mediamtx
+  ansible.builtin.unarchive:
+    src: /tmp/mediamtx-{{ mediamtx_version }}_linux_amd64.tar.gz
+    dest: /usr/local/bin/
+    owner: root
+    group: root
+
+- name: Deploy template to targets
+  ansible.builtin.template:
+    src: mediamtx.yml.j2
+    dest: /etc/mediamtx.yml
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Deploy mediamtx service
+  ansible.builtin.copy:
+    src: mediamtx.service
+    dest: /lib/systemd/system/mediamtx.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Run mediamtx
+  ansible.builtin.systemd:
+    state: started
+    daemon_reload: true
+    name: mediamtx

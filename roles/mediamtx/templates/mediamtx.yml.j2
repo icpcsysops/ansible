@@ -1,0 +1,93 @@
+###############################################
+
+logLevel: info
+logDestinations: [stdout]
+logFile: mediamtx.log
+
+readTimeout: 10s
+writeTimeout: 10s
+readBufferCount: 512
+udpMaxPayloadSize: 1472
+
+externalAuthenticationURL:
+
+api: no
+apiAddress: 127.0.0.1:9997
+
+metrics: no
+metricsAddress: 127.0.0.1:9998
+
+pprof: no
+pprofAddress: 127.0.0.1:9999
+
+runOnConnect:
+runOnConnectRestart: no
+
+###############################################
+
+rtspDisable: no
+protocols: [udp, multicast, tcp]
+encryption: "no"
+rtspAddress: :8554
+rtspsAddress: :8322
+rtpAddress: :8000
+rtcpAddress: :8001
+multicastIPRange: 224.1.0.0/16
+multicastRTPPort: 8002
+multicastRTCPPort: 8003
+serverKey: server.key
+serverCert: server.crt
+authMethods: [basic]
+
+###############################################
+
+rtmpDisable: no
+rtmpAddress: :1935
+rtmpEncryption: "no"
+rtmpsAddress: :1936
+rtmpServerKey: server.key
+rtmpServerCert: server.crt
+
+###############################################
+
+hlsDisable: no
+hlsAddress: :8888
+hlsEncryption: no
+hlsServerKey: server.key
+hlsServerCert: server.crt
+hlsAlwaysRemux: no
+hlsVariant: lowLatency
+hlsSegmentCount: 7
+hlsSegmentDuration: 1s
+hlsPartDuration: 200ms
+hlsSegmentMaxSize: 50M
+hlsAllowOrigin: '*'
+hlsTrustedProxies: []
+hlsDirectory: ''
+
+###############################################
+
+webrtcDisable: no
+webrtcAddress: :8889
+webrtcEncryption: no
+webrtcServerKey: server.key
+webrtcServerCert: server.crt
+webrtcAllowOrigin: '*'
+webrtcTrustedProxies: []
+webrtcICEServers: [stun:stun.l.google.com:19302]
+webrtcICEHostNAT1To1IPs: []
+webrtcICEUDPMuxAddress:
+webrtcICETCPMuxAddress:
+
+###############################################
+
+paths:
+  desktop:
+    runOnDemandRestart: yes
+    runOnDemand: ffmpeg -f x11grab -framerate 30 -video_size 1920x1080 -i :1.0 {% if $mediamtx_on_intel %}-c:v h264_qsv {% endif %}-g 30 -preset veryfast -b:v 5M -f rtsp rtsp://localhost:$RTSP_PORT/$RTSP_PATH
+  camera:
+    runOnDemandRestart: yes
+    runOnDemand: ffmpeg -f v4l2 -video_size 1920x1080 -framerate 30 -c:v mjpeg_qsv -input_format mjpeg -i /dev/video2 {% if $mediamtx_on_intel %}-c:v h264_qsv {% endif %}-preset veryfast -g 30 -b:v 5M -f rtsp rtsp://localhost:$RTSP_PORT/$RTSP_PATH
+
+  test:
+    source: publisher

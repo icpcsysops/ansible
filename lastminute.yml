@@ -15,6 +15,7 @@
   roles:
     - role: cups
     - role: team
+    - role: mediamtx
     - role: ldapclient
       tags: ldapclient
       when: ldap_domain is defined

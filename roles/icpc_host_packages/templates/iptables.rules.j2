@@ -1,0 +1,82 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# LOGGING / DEBUGGING
+-N accept-in-log
+-A accept-in-log -j LOG --log-level 4 --log-prefix "accept-in-log:"
+-A accept-in-log -j ACCEPT
+-N accept-out-log
+-A accept-out-log -j LOG --log-level 4 --log-prefix "accept-out-log:"
+-A accept-out-log -j ACCEPT
+-N drop-n-log
+-A drop-n-log -j LOG -m limit --limit 5/m --limit-burst 7 --log-level 4 --log-prefix "DENIED:"
+-A drop-n-log -j DROP
+
+# internal interface
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# open up server to server communication
+-A OUTPUT -d 10.3.3.208/29 -j ACCEPT
+-A INPUT -s 10.3.3.208/29 -j ACCEPT
+
+# ssh inbound (servers and vpn)
+-A INPUT -p tcp -m tcp --dport 22 -s 10.3.3.208/29 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 22 -d 10.3.3.208/29 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 22 -s 10.5.5.0/24 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 22 -d 10.5.5.0/24 -j ACCEPT
+
+# https inbound
+-A INPUT -p tcp --dport 443 -j ACCEPT
+-A OUTPUT -p tcp --sport 443 -j ACCEPT
+
+# ntp in
+-A OUTPUT -p tcp --sport 123 -j ACCEPT
+-A OUTPUT -p udp --sport 123 -j ACCEPT
+-A INPUT -p tcp --dport 123 -j ACCEPT
+-A INPUT -p udp --dport 123 -j ACCEPT
+# ntp out
+-A OUTPUT -p tcp --dport 123 -j ACCEPT
+-A OUTPUT -p udp --dport 123 -j ACCEPT
+-A INPUT -p tcp --sport 123 -j ACCEPT
+-A INPUT -p udp --sport 123 -j ACCEPT
+
+# syslog
+-A INPUT -p tcp --dport 514 -d 10.3.3.208/29 -j ACCEPT
+-A INPUT -p udp --dport 514 -d 10.3.3.208/29 -j ACCEPT
+-A OUTPUT -p tcp --sport 514 -s 10.3.3.208/29 -j ACCEPT
+-A OUTPUT -p udp --sport 514 -s 10.3.3.208/29 -j ACCEPT
+
+# printing (ipp)
+-A OUTPUT -p tcp --sport 631 -s 10.3.3.211 -j ACCEPT
+-A OUTPUT -p udp --sport 631 -s 10.3.3.211 -j ACCEPT
+-A INPUT -p tcp --dport 631 -d 10.3.3.211 -j ACCEPT
+-A INPUT -p udp --dport 631 -d 10.3.3.211 -j ACCEPT
+-A OUTPUT -p tcp --sport 631 -s 10.0.0.0/8 -j ACCEPT
+-A OUTPUT -p udp --sport 631 -s 10.0.0.0/8 -j ACCEPT
+-A INPUT -p tcp --dport 631 -d 10.0.0.0/8 -j ACCEPT
+-A INPUT -p udp --dport 631 -d 10.0.0.0/8 -j ACCEPT
+
+# allow ICMP ping incoming client request from servers
+-A INPUT -p icmp --icmp-type 8 -s 10.3.3.208/29 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+-A OUTPUT -p icmp --icmp-type 0 -d 10.3.3.208/29 -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -p icmp --icmp-type 8 -s 10.4.4.200/29 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+-A OUTPUT -p icmp --icmp-type 0 -d 10.4.4.200/29 -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# disable outgoing ICMP request
+-A OUTPUT -p icmp --icmp-type 8 -j drop-n-log
+
+# go ahead and send destination unreachable message
+-A INPUT -p icmp --icmp-type 3 -j ACCEPT
+
+# what else
+# -A INPUT -m state --state ESTABLISHED,RELATED -j accept-in-log
+# -A OUTPUT -m state --state NEW,ESTABLISHED,RELATED -j accept-out-log
+
+# drop rest
+-A OUTPUT -j drop-n-log
+-A INPUT -j drop-n-log
+
+COMMIT

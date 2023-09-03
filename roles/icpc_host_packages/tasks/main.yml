@@ -1,0 +1,116 @@
+---
+- name: Enable DNS bits in resolved.conf
+  ansible.builtin.replace:
+    path: /etc/systemd/resolved.conf
+    regexp: '^[#]?DNS=.*'
+    replace: 'DNS=8.8.8.8 8.8.4.4'
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Systemd-resolved
+
+- name: Update ntp.conf
+  ansible.builtin.copy:
+    src: ntp.conf.new
+    dest: /etc/ntp.conf
+    mode: '0644'
+  notify:
+    - NTP
+
+- name: Update iptables.rules
+  ansible.builtin.template:
+    src: templates/iptables.rules.j2
+    dest: /etc/iptables.rules
+    mode: '0644'
+  notify:
+    - IptablesLoad
+
+- name: Ensure required packages are installed
+  ansible.builtin.apt:
+    pkg:
+      - apache2
+      - iptables
+      - bash
+      - ssl-cert
+      - ntp
+      - awscli
+    state: installed
+
+- name: Configure apache2
+  notify:
+    - Apache2
+  block:
+    - name: Install packages.pem
+      ansible.builtin.copy:
+        src: /root/ca/intermediate/certs/packages.cert.pem
+        dest: /etc/ssl/certs/packages.pem
+        mode: '0644'
+
+    - name: Install packages.key
+      ansible.builtin.copy:
+        src: /root/ca/intermediate/private/packages.key.pem
+        dest: /etc/ssl/private/packages.key
+        group: ssl-cert
+        mode: '0640'
+
+    - name: Install sites-available/packages.conf
+      ansible.builtin.copy:
+        src: sites.packages.conf
+        dest: /etc/apache2/sites-available/packages.conf
+        mode: '0644'
+
+    - name: Install conf-available/packages.conf
+      ansible.builtin.copy:
+        src: conf.packages.conf
+        dest: /etc/apache2/conf-available/packages.conf
+        mode: '0644'
+
+    - name: Ensure we are not listening on port 80
+      ansible.builtin.lineinfile:
+        path: /etc/apache2/ports.conf
+        regexp: '^Listen 80'
+        line: "# Listen 80"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Check if ssl is enabled in apache2 mods
+      ansible.builtin.command: /usr/sbin/a2query -q -m ssl
+      changed_when: false
+      register: a2_ssl
+
+    - name: Enable ssl mod
+      ansible.builtin.command: /usr/sbin/a2enmod -q ssl
+      changed_when: false
+      when: a2_ssl.rc == 0
+
+    - name: Check if packages is enabled in apache2 site
+      ansible.builtin.command: /usr/sbin/a2query -q -s packages
+      changed_when: false
+      register: a2_site
+
+    - name: Enable packages site
+      ansible.builtin.command: /usr/sbin/a2ensite -q packages
+      changed_when: false
+      when: a2_site.rc == 0
+
+    - name: Check if packages is enabled in apache2 conf
+      ansible.builtin.command: /usr/sbin/a2query -q -c packages
+      changed_when: false
+      register: a2_conf
+
+    - name: Enable packages conf
+      ansible.builtin.command: /usr/sbin/a2enconf -q packages
+      changed_when: false
+      when: a2_conf.rc == 0
+
+    - name: Check if 000-default is enabled in apache2 conf
+      ansible.builtin.command: /usr/sbin/a2query -q -c 000-default
+      changed_when: false
+      register: default_conf
+
+    - name: Remove 000-default
+      ansible.builtin.command: /usr/sbin/a2dissite -q 000-default
+      changed_when: false
+      when: default_conf.rc == 1

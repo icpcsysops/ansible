@@ -5,6 +5,11 @@
   roles:
     - role: apt
 
+- name: Configure packages machines
+  hosts: packages
+  roles:
+    - role: icpc_host_packages
+
 - name: Configure coachview machines
   hosts: coachview*
   roles:

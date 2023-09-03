@@ -1,0 +1,97 @@
+#!/usr/bin/perl
+
+use File::Temp qw/ tempdir /;
+use Sys::Syslog qw(:standard :macros);
+
+openlog("sh.do_startbackup", 'pid', LOG_AUTH);
+
+$|=0;		# turn off buffering
+$mintime=20;	# in seconds, mininum time between loops
+$npar=20;	# number of processes to run at once 
+$script_dir="/root/contest/backup/scripts";
+$bdir="/backups";
+$logdir="$bdir/logs";
+$tmpdir = tempdir( CLEANUP => 1 );
+if (! -d $bdir) {
+	die("$bdir not found ?!?\n");
+}
+if (! -d "$bdir/data") {
+	mkdir "$bdir/data";
+}
+if (! -d "$bdir/logs") {
+	mkdir "$bdir/logs";
+}
+if (! -d "$logdir/OLD") {
+	mkdir "$logdir/OLD";
+}
+#open(IN,"cat $bdir/list.judge $bdir/list.team |") || die("Unable to read lists: $!\n");
+# only teams, the judges have named accounts
+open(IN,"$bdir/list.team") || die("Unable to read lists: $!\n");
+while(<IN>) {
+	chomp;
+	next if /^#/;
+	push(@list,$_);
+}
+close(IN);
+do {
+        &clear_logs($logdir);
+	$loopnext = time() + $mintime;
+	@t=localtime();
+        # break it down further
+	$date=sprintf("%d%02d%02d%02d%02d%02d",$t[5]+1900,$t[4]+1,$t[3],$t[2],$t[1],$t[0]);
+	$yearday=sprintf("%d%02d%02d",$t[5]+1900,$t[4]+1,$t[3]);
+	$hour=sprintf("%02d",$t[2]);
+        $min=sprintf("%02d", $t[1]);
+        $sec=sprintf("%02d", $t[0]);
+        mkdir "$bdir/data/$yearday";
+        mkdir "$bdir/data/$yearday/$hour";
+        mkdir "$bdir/data/$yearday/$hour/$min$sec";
+        $date="$yearday/$hour/$min$sec";
+	print "Starting backup loop $date\n";
+	$command = ": $script_dir/sh.backupclient {} $bdir/data/$date";
+	open(OUT, ">$tmpdir/list") || warn("Unable to write $tmpdir/list: $!\n");
+	print OUT $command."\n";
+        foreach $host (@list) {
+		print OUT $host."\n";
+	}
+	close(OUT);
+	@COMMAND = ("$script_dir/par", "-l", "$bdir/logs/backup.$yearday$hour$min$sec", "-n", "$npar", "$tmpdir/list");
+	system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
+#        foreach $host (@list) {
+#          open(IN,"-|") || exec("$script_dir/sh.backupclient", $host, "$bdir/data/$date");
+#          while(<IN>) {
+#            print;
+#          }
+#          close(IN);
+#        }
+        symlink("$bdir/data/$date","$bdir/data/new");
+	sleep(3);
+	rename("$bdir/data/new", "$bdir/data/current");  # atomic
+	# now create .tar of the .zip files
+        @COMMAND = ("/bin/tar", "--exclude", "ps.team*", "-C", "$bdir/data/$date", "-cf", "$bdir/data/${date}.tar", ".");
+	system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
+        @COMMAND = ("/usr/bin/scp", "-q", "$bdir/data/${date}.tar", "root\@cds:backups.tar");
+	system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
+        @COMMAND = ("/usr/bin/ssh", "-q", "deboer\@cds", "/usr/local/bin/deploy_backup_tar");
+	system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
+	#        @COMMAND = ("/usr/bin/scp", "$bdir/data/${date}.tar", "\@sysops-mgmt:/mnt/team_backups.tar");
+	#system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
+	$loopend = time();
+	if ($loopend < $loopnext) {
+	    sleep ($loopnext - $loopend);
+	}
+	syslog(LOG_NOTICE, "looped ended for $date");
+} until (-f "$bdir/stop");
+
+sub clear_logs {
+    my($dir)=shift;
+    local *DIR;
+
+    opendir(DIR, $dir) || warn("Unable to read $dir: $!\n");
+    my(@files)=grep(/^backup\./, readdir(DIR));
+    close(DIR);
+    
+    foreach $f (@files) {
+        rename("$dir/$f", "$dir/OLD/$f");
+    }
+}

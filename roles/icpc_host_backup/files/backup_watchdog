@@ -1,0 +1,108 @@
+#!/usr/bin/perl
+
+# This script requires libproc-processtable-perl
+# Update $KILL_LIMIT if problems have time limits more then 55 seconds
+#
+# This script forks to put itself in the background.
+
+# sh.backupclient sometimes has trouble with its ulimit -t killing of the
+# child ssh processes
+# this script kills those trouble process (parent & child).
+
+use strict;
+use warnings;
+use vars qw/ $me $interval $tobj $pid $pidfile $KILL_LIMIT $opt_nofork %backup_ppids/;
+use Getopt::Long;
+
+BEGIN {
+    $me = $0;
+    $me =~ s/.*\/(\S+)$/$1/;
+}
+
+# this requires libproc-processtable-perl package
+use Proc::ProcessTable;
+use Sys::Syslog qw ( :DEFAULT setlogsock );
+
+$KILL_LIMIT=60; # in seconds, eg kill process if it's been running longer then this
+$interval=47; # sleep interval in seconds
+$|=1;
+
+my $result = GetOptions('nofork');
+$SIG{CHLD}="IGNORE";
+$tobj = new Proc::ProcessTable;
+$pidfile="$ENV{HOME}/$me.pid";
+if(-f $pidfile) {
+    open(PID, $pidfile) || die("Could not read $me:$! \n");
+    $pid = <PID>;
+    close($pid);
+    chomp($pid);
+    if (&verifypid($pid)) {
+        die("$me already running (pid $pid)\n");
+    }
+}
+
+if (!defined($opt_nofork)) {
+    $pid = fork();
+    die("cannot fork") unless defined $pid;
+    if ($pid == 0) {
+        # this is the child
+        &writepid;
+    } else {
+        exit(0);
+    }
+} else {
+    &writepid;
+}
+
+setlogsock('unix');
+openlog($me, 'pid,cons', 'kern');
+syslog('info', "starting");
+
+while(1) {
+    &collectstats;
+    sleep($interval);
+}
+
+sub writepid {
+    open(PID, ">$pidfile") || die;
+    print PID "$$\n";
+    close(PID);
+}
+
+sub collectstats {
+    my($process);
+    my($current_time)=time;
+    foreach $process (@{$tobj->table}) {
+	# ignore ourselves
+ 	next if ($process->pid() == $$);
+        if ($process->fname() =~ /sh.backupclient/) {
+	    if (($current_time-$process->start) > $KILL_LIMIT) { # $process->time is broken
+                $backup_ppids{$process->pid()}=0;
+		my $msg=sprintf("killing process %d, time is %d seconds", $process->pid(), $current_time-$process->start);
+		syslog('notice', $msg);
+		$process->kill(9);
+	    }
+	}
+        if ($process->fname() =~ /ssh team/) {
+            if (defined($backup_ppids{$process->ppid()})) {
+                # parent has been running too long, kill any child too
+		my $msg=sprintf("killing process %d, parent (%d) was killed", $process->pid(), $process->ppid());
+		syslog('notice', $msg);
+		$process->kill(9);
+            }
+        }
+    }
+}
+
+sub verifypid {
+    my($pid)=shift;
+
+    my($process);
+    foreach $process (@{$tobj->table}) {
+ 	next if ($process->pid() != $pid);
+	if ($process->fname =~ m#$me#) {
+	    return(1);
+        }
+    }
+    return(0);
+}

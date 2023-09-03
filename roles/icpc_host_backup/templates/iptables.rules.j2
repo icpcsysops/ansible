@@ -1,0 +1,124 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# LOGGING / DEBUGGING
+-N accept-in-log
+-A accept-in-log -j LOG --log-level 4 --log-prefix "accept-in-log:"
+-A accept-in-log -j ACCEPT
+-N accept-out-log
+-A accept-out-log -j LOG --log-level 4 --log-prefix "accept-out-log:"
+-A accept-out-log -j ACCEPT
+-N drop-n-log
+-A drop-n-log -j LOG -m limit --limit 5/m --limit-burst 7 --log-level 4 --log-prefix "DENIED:"
+-A drop-n-log -j DROP
+
+# internal interface
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# open up server to server communication
+-A OUTPUT -d 10.3.3.208/29 -j ACCEPT
+-A INPUT -s 10.3.3.208/29 -j ACCEPT
+
+{%- if ldap %}
+# ldap inbound
+-A INPUT -p tcp --sport 389 -s 10.3.3.210 -j ACCEPT
+-A OUTPUT -p tcp --dport 389 -d 10.3.3.210 -j ACCEPT
+-A INPUT -p tcp --sport 389 -s 10.3.3.211 -j ACCEPT
+-A OUTPUT -p tcp --dport 389 -d 10.3.3.211 -j ACCEPT
+-A INPUT -p tcp --sport 636 -s 10.3.3.210 -j ACCEPT
+-A OUTPUT -p tcp --dport 636 -d 10.3.3.210 -j ACCEPT
+-A INPUT -p tcp --sport 636 -s 10.3.3.211 -j ACCEPT
+-A OUTPUT -p tcp --dport 636 -d 10.3.3.211 -j ACCEPT
+
+# ldap outbound
+-A INPUT -p tcp --dport 189 -j ACCEPT
+-A OUTPUT -p tcp --sport 189 -j ACCEPT
+-A INPUT -p tcp --dport 636 -j ACCEPT
+-A OUTPUT -p tcp --sport 636 -j ACCEPT
+
+<%- endif %>
+# DNS outbound
+-A INPUT -p tcp --sport 53 -j ACCEPT
+-A OUTPUT -p tcp --dport 53 -j ACCEPT
+-A INPUT -p udp --sport 53 -j ACCEPT
+-A OUTPUT -p udp --dport 53 -j ACCEPT
+
+# http outbound
+-A INPUT -p tcp --sport 80 -j ACCEPT
+-A OUTPUT -p tcp --dport 80 -j ACCEPT
+-A INPUT -p udp --sport 80 -j ACCEPT
+-A OUTPUT -p udp --dport 80 -j ACCEPT
+
+# https outbound
+-A INPUT -p tcp --sport 443 -j ACCEPT
+-A OUTPUT -p tcp --dport 443 -j ACCEPT
+-A INPUT -p udp --sport 443 -j ACCEPT
+-A OUTPUT -p udp --dport 443 -j ACCEPT
+
+# http
+-A OUTPUT -p tcp --dport 80 -d 10.3.3.208 -j ACCEPT
+-A INPUT -p tcp --sport 80 -s 10.3.3.208 -j ACCEPT
+
+# ntp in
+-A OUTPUT -p tcp --sport 123 -j ACCEPT
+-A OUTPUT -p udp --sport 123 -j ACCEPT
+-A INPUT -p tcp --dport 123 -j ACCEPT
+-A INPUT -p udp --dport 123 -j ACCEPT
+# ntp out
+-A OUTPUT -p tcp --dport 123 -j ACCEPT
+-A OUTPUT -p udp --dport 123 -j ACCEPT
+-A INPUT -p tcp --sport 123 -j ACCEPT
+-A INPUT -p udp --sport 123 -j ACCEPT
+
+# ssh inbound
+-A INPUT -p tcp -m tcp --dport 22 -s 10.3.3.208/29 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 22 -d 10.3.3.208/29 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 22 -s 10.5.5.0/24 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 22 -d 10.5.5.0/24 -j ACCEPT
+
+# ssh outbound
+-A OUTPUT -p tcp -m tcp --dport 22 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --dport 22 -j ACCEPT
+-A INPUT -p tcp -m tcp --sport 22 -j ACCEPT
+-A INPUT -p tcp -m tcp --sport 22 -j ACCEPT
+
+# syslog
+-A INPUT -p tcp --dport 514 -d 10.3.3.208/29 -j ACCEPT
+-A INPUT -p udp --dport 514 -d 10.3.3.208/29 -j ACCEPT
+-A OUTPUT -p tcp --sport 514 -s 10.3.3.208/29 -j ACCEPT
+-A OUTPUT -p udp --sport 514 -s 10.3.3.208/29 -j ACCEPT
+
+# printing (ipp)
+-A OUTPUT -p tcp --sport 631 -s 10.3.3.211 -j ACCEPT
+-A OUTPUT -p udp --sport 631 -s 10.3.3.211 -j ACCEPT
+-A INPUT -p tcp --dport 631 -d 10.3.3.211 -j ACCEPT
+-A INPUT -p udp --dport 631 -d 10.3.3.211 -j ACCEPT
+
+# allow ICMP ping incoming client request from servers
+-A INPUT -p icmp --icmp-type 8 -s 10.3.3.208/29 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+-A OUTPUT -p icmp --icmp-type 0 -d 10.3.3.208/29 -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# enable outgoing ICMP request
+-A OUTPUT -p icmp --icmp-type 8 -j ACCEPT
+# enable incoming ICMP reply
+-A INPUT -p icmp --icmp-type 0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# what else
+# -A INPUT -m state --state ESTABLISHED,RELATED -j accept-in-log
+# -A OUTPUT -m state --state NEW,ESTABLISHED,RELATED -j accept-out-log
+
+# go ahead and send destination unreachable message
+-A INPUT -p icmp --icmp-type 3 -j ACCEPT
+
+# drop green network crap that we do not care about
+-A INPUT -i {{ green_network_ifc }} -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -i {{ green_network_ifc }} -j DROP
+
+# drop rest
+-A OUTPUT -j drop-n-log
+-A INPUT -j drop-n-log
+
+COMMIT

@@ -1,0 +1,643 @@
+# 2023 Version - Last updated 9/7/2023 - TB
+# redo split as team4[67]{id:03d}
+# team-wf46 vs team-wf47 split
+# for pc2 and domjudge also
+# Moved Green network -> 172.29.0.0/22
+
+127.0.0.1    localhost
+
+# team networks 10.1.44.0/22
+# wf46 Team Network (10.1.46.0/24)
+10.1.46.1 team46001
+10.1.46.2 team46002
+10.1.46.3 team46003
+10.1.46.4 team46004
+10.1.46.5 team46005
+10.1.46.6 team46006
+10.1.46.7 team46007
+10.1.46.8 team46008
+10.1.46.9 team46009
+10.1.46.10 team46010
+10.1.46.11 team46011
+10.1.46.12 team46012
+10.1.46.13 team46013
+10.1.46.14 team46014
+10.1.46.15 team46015
+10.1.46.16 team46016
+10.1.46.17 team46017
+10.1.46.18 team46018
+10.1.46.19 team46019
+10.1.46.20 team46020
+10.1.46.21 team46021
+10.1.46.22 team46022
+10.1.46.23 team46023
+10.1.46.24 team46024
+10.1.46.25 team46025
+10.1.46.26 team46026
+10.1.46.27 team46027
+10.1.46.28 team46028
+10.1.46.29 team46029
+10.1.46.30 team46030
+10.1.46.31 team46031
+10.1.46.32 team46032
+10.1.46.33 team46033
+10.1.46.34 team46034
+10.1.46.35 team46035
+10.1.46.36 team46036
+10.1.46.37 team46037
+10.1.46.38 team46038
+10.1.46.39 team46039
+10.1.46.40 team46040
+10.1.46.41 team46041
+10.1.46.42 team46042
+10.1.46.43 team46043
+10.1.46.44 team46044
+10.1.46.45 team46045
+10.1.46.46 team46046
+10.1.46.47 team46047
+10.1.46.48 team46048
+10.1.46.49 team46049
+10.1.46.50 team46050
+10.1.46.51 team46051
+10.1.46.52 team46052
+10.1.46.53 team46053
+10.1.46.54 team46054
+10.1.46.55 team46055
+10.1.46.56 team46056
+10.1.46.57 team46057
+10.1.46.58 team46058
+10.1.46.59 team46059
+10.1.46.60 team46060
+10.1.46.61 team46061
+10.1.46.62 team46062
+10.1.46.63 team46063
+10.1.46.64 team46064
+10.1.46.65 team46065
+10.1.46.66 team46066
+10.1.46.67 team46067
+10.1.46.68 team46068
+10.1.46.69 team46069
+10.1.46.70 team46070
+10.1.46.71 team46071
+10.1.46.72 team46072
+10.1.46.73 team46073
+10.1.46.74 team46074
+10.1.46.75 team46075
+10.1.46.76 team46076
+10.1.46.77 team46077
+10.1.46.78 team46078
+10.1.46.79 team46079
+10.1.46.80 team46080
+10.1.46.81 team46081
+10.1.46.82 team46082
+10.1.46.83 team46083
+10.1.46.84 team46084
+10.1.46.85 team46085
+10.1.46.86 team46086
+10.1.46.87 team46087
+10.1.46.88 team46088
+10.1.46.89 team46089
+10.1.46.90 team46090
+10.1.46.91 team46091
+10.1.46.92 team46092
+10.1.46.93 team46093
+10.1.46.94 team46094
+10.1.46.95 team46095
+10.1.46.96 team46096
+10.1.46.97 team46097
+10.1.46.98 team46098
+10.1.46.99 team46099
+10.1.46.100 team46100
+10.1.46.101 team46101
+10.1.46.102 team46102
+10.1.46.103 team46103
+10.1.46.104 team46104
+10.1.46.105 team46105
+10.1.46.106 team46106
+10.1.46.107 team46107
+10.1.46.108 team46108
+10.1.46.109 team46109
+10.1.46.110 team46110
+10.1.46.111 team46111
+10.1.46.112 team46112
+10.1.46.113 team46113
+10.1.46.114 team46114
+10.1.46.115 team46115
+10.1.46.116 team46116
+10.1.46.117 team46117
+10.1.46.118 team46118
+10.1.46.119 team46119
+10.1.46.120 team46120
+10.1.46.121 team46121
+10.1.46.122 team46122
+10.1.46.123 team46123
+10.1.46.124 team46124
+10.1.46.125 team46125
+10.1.46.126 team46126
+10.1.46.127 team46127
+10.1.46.128 team46128
+10.1.46.129 team46129
+10.1.46.130 team46130
+10.1.46.131 team46131
+10.1.46.132 team46132
+10.1.46.133 team46133
+10.1.46.134 team46134
+10.1.46.135 team46135
+10.1.46.136 team46136
+10.1.46.137 team46137
+10.1.46.138 team46138
+10.1.46.139 team46139
+10.1.46.140 team46140
+10.1.46.141 team46141
+10.1.46.142 team46142
+10.1.46.143 team46143
+10.1.46.144 team46144
+10.1.46.145 team46145
+10.1.46.146 team46146
+10.1.46.147 team46147
+10.1.46.148 team46148
+10.1.46.149 team46149
+10.1.46.150 team46150
+10.1.46.151 team46151
+10.1.46.152 team46152
+10.1.46.153 team46153
+10.1.46.154 team46154
+10.1.46.155 team46155
+
+10.1.46.213    lemon
+10.1.46.250    fogslave-wf46-1
+10.1.46.251    fogslave-wf46-2
+10.1.46.252    fogslave-wf46-3
+10.1.46.253    fogslave-wf46-4
+10.1.46.254    gateway46-1
+
+# wf47 Team Network (10.1.2.0/24)
+10.1.47.1 team47001
+10.1.47.2 team47002
+10.1.47.3 team47003
+10.1.47.4 team47004
+10.1.47.5 team47005
+10.1.47.6 team47006
+10.1.47.7 team47007
+10.1.47.8 team47008
+10.1.47.9 team47009
+10.1.47.10 team47010
+10.1.47.11 team47011
+10.1.47.12 team47012
+10.1.47.13 team47013
+10.1.47.14 team47014
+10.1.47.15 team47015
+10.1.47.16 team47016
+10.1.47.17 team47017
+10.1.47.18 team47018
+10.1.47.19 team47019
+10.1.47.20 team47020
+10.1.47.21 team47021
+10.1.47.22 team47022
+10.1.47.23 team47023
+10.1.47.24 team47024
+10.1.47.25 team47025
+10.1.47.26 team47026
+10.1.47.27 team47027
+10.1.47.28 team47028
+10.1.47.29 team47029
+10.1.47.30 team47030
+10.1.47.31 team47031
+10.1.47.32 team47032
+10.1.47.33 team47033
+10.1.47.34 team47034
+10.1.47.35 team47035
+10.1.47.36 team47036
+10.1.47.37 team47037
+10.1.47.38 team47038
+10.1.47.39 team47039
+10.1.47.40 team47040
+10.1.47.41 team47041
+10.1.47.42 team47042
+10.1.47.43 team47043
+10.1.47.44 team47044
+10.1.47.45 team47045
+10.1.47.46 team47046
+10.1.47.47 team47047
+10.1.47.48 team47048
+10.1.47.49 team47049
+10.1.47.50 team47050
+10.1.47.51 team47051
+10.1.47.52 team47052
+10.1.47.53 team47053
+10.1.47.54 team47054
+10.1.47.55 team47055
+10.1.47.56 team47056
+10.1.47.57 team47057
+10.1.47.58 team47058
+10.1.47.59 team47059
+10.1.47.60 team47060
+10.1.47.61 team47061
+10.1.47.62 team47062
+10.1.47.63 team47063
+10.1.47.64 team47064
+10.1.47.65 team47065
+10.1.47.66 team47066
+10.1.47.67 team47067
+10.1.47.68 team47068
+10.1.47.69 team47069
+10.1.47.70 team47070
+10.1.47.71 team47071
+10.1.47.72 team47072
+10.1.47.73 team47073
+10.1.47.74 team47074
+10.1.47.75 team47075
+10.1.47.76 team47076
+10.1.47.77 team47077
+10.1.47.78 team47078
+10.1.47.79 team47079
+10.1.47.80 team47080
+10.1.47.81 team47081
+10.1.47.82 team47082
+10.1.47.83 team47083
+10.1.47.84 team47084
+10.1.47.85 team47085
+10.1.47.86 team47086
+10.1.47.87 team47087
+10.1.47.88 team47088
+10.1.47.89 team47089
+10.1.47.90 team47090
+10.1.47.91 team47091
+10.1.47.92 team47092
+10.1.47.93 team47093
+10.1.47.94 team47094
+10.1.47.95 team47095
+10.1.47.96 team47096
+10.1.47.97 team47097
+10.1.47.98 team47098
+10.1.47.99 team47099
+10.1.47.100 team47100
+10.1.47.101 team47101
+10.1.47.102 team47102
+10.1.47.103 team47103
+10.1.47.104 team47104
+10.1.47.105 team47105
+10.1.47.106 team47106
+10.1.47.107 team47107
+10.1.47.108 team47108
+10.1.47.109 team47109
+10.1.47.110 team47110
+10.1.47.111 team47111
+10.1.47.112 team47112
+10.1.47.113 team47113
+10.1.47.114 team47114
+10.1.47.115 team47115
+10.1.47.116 team47116
+10.1.47.117 team47117
+10.1.47.118 team47118
+10.1.47.119 team47119
+10.1.47.120 team47120
+10.1.47.121 team47121
+10.1.47.122 team47122
+10.1.47.123 team47123
+10.1.47.124 team47124
+10.1.47.125 team47125
+10.1.47.126 team47126
+10.1.47.127 team47127
+10.1.47.128 team47128
+10.1.47.129 team47129
+10.1.47.130 team47130
+10.1.47.131 team47131
+10.1.47.132 team47132
+10.1.47.133 team47133
+10.1.47.134 team47134
+10.1.47.135 team47135
+10.1.47.136 team47136
+10.1.47.137 team47137
+10.1.47.138 team47138
+10.1.47.139 team47139
+10.1.47.140 team47140
+10.1.47.141 team47141
+10.1.47.142 team47142
+10.1.47.143 team47143
+10.1.47.144 team47144
+10.1.47.145 team47145
+10.1.47.146 team47146
+10.1.47.147 team47147
+10.1.47.148 team47148
+10.1.47.149 team47149
+10.1.47.150 team47150
+10.1.47.151 team47151
+10.1.47.152 team47152
+10.1.47.153 team47153
+10.1.47.154 team47154
+10.1.47.155 team47155
+
+10.1.47.250    fogslave-wf47-1
+10.1.47.251    fogslave-wf47-2
+10.1.47.252    fogslave-wf47-3
+10.1.47.253    fogslave-wf47-4
+10.1.47.254    gateway47-1
+
+#Judge Network (10.2.2.0/24)
+# Human judges 10.2.2.0/27
+10.2.2.1      judge1
+10.2.2.2      judge2
+10.2.2.3      judge3
+10.2.2.4      judge4
+10.2.2.5      judge5
+10.2.2.6      judge6
+10.2.2.7      judge7
+10.2.2.8      judge8
+10.2.2.9      judge9
+10.2.2.10     judge10
+10.2.2.11     judge11
+10.2.2.12     judge12
+10.2.2.13     judge13
+10.2.2.14     judge14
+10.2.2.15     judge15
+10.2.2.16     judge16
+10.2.2.17     judge17
+10.2.2.18     judge18
+10.2.2.19     judge19
+10.2.2.20     judge20
+10.2.2.21     judge21
+10.2.2.22     judge22
+10.2.2.23     judge23
+10.2.2.24     judge24
+10.2.2.25     judge25
+10.2.2.26     judge26
+10.2.2.27     judge27
+10.2.2.28     judge28
+10.2.2.29     judge29
+10.2.2.30     judge30
+10.2.2.31     judge31
+# Kattis AutoJudges  10.2.2.32/27
+10.2.2.32    autojudge1
+10.2.2.33    autojudge2
+10.2.2.34    autojudge3
+10.2.2.35    autojudge4
+10.2.2.36    autojudge5
+10.2.2.37    autojudge6
+10.2.2.38    autojudge7
+10.2.2.39    autojudge8
+10.2.2.40    autojudge9
+10.2.2.41    autojudge10
+10.2.2.42    autojudge11
+10.2.2.43    autojudge12
+10.2.2.44    autojudge13
+10.2.2.45    autojudge14
+10.2.2.46    autojudge15
+10.2.2.47    autojudge16
+10.2.2.48    autojudge17
+10.2.2.49    autojudge18
+10.2.2.50    autojudge19
+10.2.2.51    autojudge20
+10.2.2.52    autojudge21
+10.2.2.53    autojudge22
+10.2.2.54    autojudge23
+10.2.2.55    autojudge24
+10.2.2.56    autojudge25
+10.2.2.57    autojudge26
+10.2.2.58    autojudge27
+10.2.2.59    autojudge28
+10.2.2.60    autojudge29
+10.2.2.61    autojudge30
+10.2.2.62    autojudge31
+10.2.2.63    autojudge32
+# pc2 aj 10.2.2.128/27
+10.2.2.128    pc2-aj1
+10.2.2.129    pc2-aj2
+10.2.2.130    pc2-aj3
+10.2.2.131    pc2-aj4
+10.2.2.132    pc2-aj5
+10.2.2.133    pc2-aj6
+10.2.2.134    pc2-aj7
+10.2.2.135    pc2-aj8
+10.2.2.136    pc2-aj9
+10.2.2.137    pc2-aj10
+10.2.2.138    pc2-aj11
+10.2.2.139    pc2-aj12
+10.2.2.140    pc2-aj13
+10.2.2.141    pc2-aj14
+10.2.2.142    pc2-aj15
+10.2.2.143    pc2-aj16
+10.2.2.144    pc2-aj17
+10.2.2.145    pc2-aj18
+10.2.2.146    pc2-aj19
+10.2.2.147    pc2-aj20
+10.2.2.148    pc2-aj21
+10.2.2.149    pc2-aj22
+10.2.2.150    pc2-aj23
+10.2.2.151    pc2-aj24
+10.2.2.152    pc2-aj25
+10.2.2.153    pc2-aj26
+10.2.2.154    pc2-aj27
+10.2.2.155    pc2-aj28
+10.2.2.156    pc2-aj29
+10.2.2.157    pc2-aj30
+10.2.2.158    pc2-aj31
+10.2.2.159    pc2-aj32
+# domjudge judgehosts 10.2.2.192/27
+10.2.2.192    domjudge-judgehost1
+10.2.2.193    domjudge-judgehost2
+10.2.2.194    domjudge-judgehost3
+10.2.2.195    domjudge-judgehost4
+10.2.2.196    domjudge-judgehost5
+10.2.2.197    domjudge-judgehost6
+10.2.2.198    domjudge-judgehost7
+10.2.2.199    domjudge-judgehost8
+10.2.2.200    domjudge-judgehost9
+10.2.2.201    domjudge-judgehost10
+10.2.2.202    domjudge-judgehost11
+10.2.2.203    domjudge-judgehost12
+10.2.2.204    domjudge-judgehost13
+10.2.2.205    domjudge-judgehost14
+10.2.2.206    domjudge-judgehost15
+10.2.2.207    domjudge-judgehost16
+10.2.2.208    domjudge-judgehost17
+10.2.2.209    domjudge-judgehost18
+10.2.2.210    domjudge-judgehost19
+10.2.2.211    domjudge-judgehost20
+10.2.2.212    domjudge-judgehost21
+10.2.2.213    domjudge-judgehost22
+10.2.2.214    domjudge-judgehost23
+10.2.2.215    domjudge-judgehost24
+10.2.2.216    domjudge-judgehost25
+10.2.2.217    domjudge-judgehost26
+10.2.2.218    domjudge-judgehost27
+10.2.2.219    domjudge-judgehost28
+10.2.2.220    domjudge-judgehost29
+10.2.2.221    domjudge-judgehost30
+10.2.2.222    domjudge-judgehost31
+10.2.2.223    domjudge-judgehost32
+10.2.2.254    gateway2
+
+#Server Network (10.3.3.0/24)
+10.3.3.1    score1 # windows
+10.3.3.2    score2 # windows
+10.3.3.3    score3 # windows
+10.3.3.4    score4 # windows
+10.3.3.5    score5 # windows
+10.3.3.6    score6 # windows
+10.3.3.7    score7 # windows
+10.3.3.8    score8 # windows
+# ICPC Servers
+10.3.3.197 cds-wf47
+10.3.3.205  reverseproxy
+10.3.3.206    media
+10.3.3.207    cds cds-wf46
+# 10.3.3.208/28 for servers
+10.3.3.208    backup-wf47 scoreboard
+10.3.3.209    packages
+10.3.3.210    backup backup-wf46
+10.3.3.211    printsrv
+10.3.3.212      kattis kattismaster kattis-test kattis-dress kattis-final
+10.3.3.213      kattisbackup ccsbackup
+10.3.3.214      pc2-wf46
+10.3.3.215      domjudge-wf46 domserver-wf46
+10.3.3.216      domjudge-wf46-1
+10.3.3.217      domjudge-wf46-2
+10.3.3.218      domjudge-wf47 domserver-wf47
+10.3.3.219      domjudge-wf47-1
+10.3.3.220      domjudge-wf47-2
+10.3.3.221      pc2-wf47
+10.3.3.222      pc2backup-wf46
+10.3.3.223      pc2backup-wf47
+
+# 10.3.3.224/29 for domjudge-ccsadmin
+10.3.3.224    domjudge-ccsadmin1
+10.3.3.225    domjudge-ccsadmin2
+10.3.3.226    domjudge-ccsadmin3
+10.3.3.227    domjudge-ccsadmin4
+10.3.3.228    domjudge-ccsadmin5
+10.3.3.229    domjudge-ccsadmin6
+10.3.3.230    domjudge-ccsadmin7
+10.3.3.231    domjudge-ccsadmin8
+# 10.3.3.232/29 for ccsadmin
+10.3.3.232    ccsadmin1
+10.3.3.233    ccsadmin2
+10.3.3.234    ccsadmin3
+10.3.3.235    ccsadmin4
+10.3.3.236    ccsadmin5
+10.3.3.237    ccsadmin6
+10.3.3.238    ccsadmin7
+10.3.3.239    ccsadmin8
+
+# 10.3.3.240/28 mostly unused
+
+10.3.3.254    gateway3
+
+#Print/Balloon Network (10.4.4.0/24)
+# balloonmager is on this vlan
+# as it is located by the printers
+10.4.4.149    balloonmanager
+# 10.4.4.200/29 for printers
+10.4.4.201    teamprint1
+10.4.4.202    teamprint2
+10.4.4.203    teamprint3
+10.4.4.204    judgeprint
+10.4.4.205    systemsprint
+10.4.4.254    gateway4
+
+#MGMT network (10.5.5.0/24)
+10.5.5.5        sysops_mgmt sysops-mgmt troy
+10.5.5.11    esx1
+10.5.5.12    esx2
+10.5.5.13    esx3
+10.5.5.18    vcenter
+
+10.5.5.90    template
+10.5.5.92    vm2
+10.5.5.94    builder-vlan50
+10.5.5.95    domjudge-green-vlan50
+10.5.5.96    myicpc-vlan50
+10.5.5.97    myicpc2-vlan50
+10.5.5.98    myicpc3-vlan50
+10.5.5.99    myicpc4-vlan50
+10.5.5.100    myicpc5-vlan50
+10.5.5.200    doug
+10.5.5.201    chris
+10.5.5.202    chris2
+10.5.5.254    gateway5
+
+
+#Camera network (10.90.90.0/24)
+10.90.90.1    camera1
+10.90.90.2    camera2
+10.90.90.3    camera3
+10.90.90.4    camera4
+10.90.90.5    camera5
+10.90.90.6    camera6
+10.90.90.7    camera7
+10.90.90.8    camera8
+10.90.90.90    camera_mgmt
+
+#Start of the Green Network (172.29.0.0/22)
+172.29.0.1     router
+
+172.29.0.50 PresAdmin
+172.29.0.51 PreClient1
+172.29.0.52 PreClient2
+172.29.0.53 PreClient3
+172.29.0.54 PreClient4
+172.29.0.55 PreClient5
+172.29.0.56 PreClient6
+172.29.0.57 PreClient7
+172.29.0.58 PreClient8
+172.29.0.59 PreClient9
+
+172.29.0.100 - 172.29.0.149 ICPCLive
+
+# Analysts
+# 172.29.0.160/27 upto 191
+
+
+
+172.29.1.15    sniffer-vm01
+172.29.1.16    redirect1-green
+172.29.1.20  clock
+172.29.1.50  Sysops Printer
+172.29.1.101         Netmon
+172.29.1.191    builder
+172.29.1.192    myicpc2
+172.29.1.193    myicpc3
+172.29.1.194    myicpc4
+172.29.1.195    myicpc5
+172.29.1.206    myicpc
+172.29.1.207   cds-green
+172.29.1.208   scoreboard-green
+172.29.1.209   packages-green
+172.29.1.210   backup-green
+172.29.1.215   green
+172.29.1.216   green-ccsadmin1
+172.29.1.217   green-ccsadmin2
+172.29.1.218   green-ccsadmin3
+172.29.1.220   green-judgemaster
+172.29.1.221   green-judgehost1
+172.29.1.222   green-judgehost2
+172.29.1.223   green-judgehost3
+172.29.1.224   green-judgehost4
+172.29.1.225   green-judgehost5
+172.29.1.226   green-judgehost6
+172.29.1.227   green-judgehost7
+172.29.1.228   green-judgehost8
+172.29.1.229   green-judgehost9
+172.29.1.240   analysts-green
+172.29.1.245   media1-green
+172.29.1.250   gview-green
+
+172.29.2.5    CloudKeyManagement-hynan
+172.29.2.10 - 172.29.3.200 - DHCP Range
+172.29.3.201-172.29.3.250 - Switch MGMT area
+172.29.3.251 - FOG/Imaging Server
+
+#VPN VLAN NETWORKS
+# MORE COMING HERE...
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+10.3.3.208	scoreboard
+10.3.3.209	packages
+10.3.3.210	backup
+10.3.3.211	printsrv
+127.0.0.1    firefox.settings.services.mozilla.com

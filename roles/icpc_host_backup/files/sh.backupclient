@@ -1,0 +1,54 @@
+#!/bin/bash
+set -e
+if [ "$2." == "." ]; then 
+  exit
+fi
+dir=$2
+host=$1
+id0=`echo $host | cut -c 5-`
+id=`echo $id0 | tr -d '[a-c]'`
+BACKUPDIR="${dir}"
+echo
+echo -n Backing up $1 to $BACKUPDIR...
+
+exit_timeout() {
+    echo "backup took too long" > backup_timedout
+    logger -is -p auth.notice -t lastminute "$1 backup to $BACKUPDIR took too long"
+}
+
+if [ ! -d $BACKUPDIR/$id ]; then
+  mkdir -p $BACKUPDIR/$id
+fi
+
+cd $BACKUPDIR
+trap exit_timeout SIGALRM RETURN;
+(
+ulimit -t 30
+# old
+# ssh ${host} "(cd /home/${host}; tar cf -  --exclude .metadata --exclude core.* *)" | tar xf -
+# old new
+#ssh ${host} "(cd /home/${host}; tar czf -  --exclude .metadata --exclude core.* --exclude core *)" > ${host}.tar.gz
+# 2018 new
+ssh -q ${host} "(cd /home/${host}; zip -q -x "workspace/.metadata/*" "*/core.*" "*/core" "*venv*" "core" "core.*" -r -  *)" > $id/backup.${id0}.zip
+)
+# new for 2019 for jetbrains
+(
+ulimit -t 10
+# new for 2021A (one of these years I will get it right)
+# overall ps is stored at the yearday level,  back up past $hour/$min$sec
+ssh -q ${host} "(date +%s ; ps -auxw)" >> ../../ps.${host}.txt
+# new for 2020
+cp ../../ps.${host}.txt $id/tool_data.${id0}.txt
+)
+# new for wf2020, martkeys
+(
+scp -q @${host}:/tmp/keys.log $id/key_log.${id0}.txt
+)
+# new for wf2021, memory analysis
+(
+ulimit -t 10
+ssh -q ${host} "(date +%s ; free -m)" >> ../../memory.${host}.txt
+cp ../../memory.${host}.txt $id/memory.${id0}.txt
+)
+
+echo done.

@@ -1,0 +1,131 @@
+---
+
+- name: Ensure packages that are needed for backup hosts are installed
+  ansible.builtin.apt:
+    pkg:
+      - iptables
+      - cups
+      - rsyslog
+      - bash
+      - perl
+      - tcsh
+      - fping
+      - ntp
+      - libproc-processtable-perl
+      - exfat-fuse
+      - awscli
+      - python3.10-venv
+    state: present
+
+- name: Enable DNS bits in resolved.conf
+  ansible.builtin.replace:
+    path: /etc/systemd/resolved.conf
+    regexp: '^[#]?DNS=.*'
+    replace: 'DNS=8.8.8.8 8.8.4.4'
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Systemd-resolved
+
+- name: Get file stat of per contest hosts to be able to perform a check in the following tasks
+  ansible.builtin.stat:
+    path: "hosts.{{ contest }}.new"
+  register: per_contest_hosts
+
+- name: Copy per contest hosts to /etc/hosts
+  ansible.builtin.copy:
+    src: "hosts.{{ contest }}.new"
+    dest: /etc/hosts
+    mode: '0644'
+  when: per_contest_hosts.stat.exists
+
+- name: Copy hosts to /etc/hosts
+  ansible.builtin.copy:
+    src: "{{ hosts.new }}"
+    dest: /etc/hosts
+    mode: '0644'
+  when: not per_contest_hosts.stat.exists
+
+- name: Update ntp.conf
+  ansible.builtin.copy:
+    src: ntp.conf.new
+    dest: /etc/ntp.conf
+    mode: '0644'
+  notify:
+    - NTP
+
+- name: Install rsyslog.d config
+  ansible.builtin.copy:
+    src: 40-backup.conf
+    dest: /etc/rsyslog.d/40-backup.conf
+    mode: '0644'
+  notify:
+    - Rsyslog
+
+- name: Install logrotate.d config
+  ansible.builtin.copy:
+    src: ZZicpc
+    dest: /etc/logrotate.d/ZZicpc
+    mode: '0644'
+  notify:
+    - Logrotate
+
+- name: Update iptables.rules
+  ansible.builtin.template:
+    src: templates/iptables.rules.j2
+    dest: /etc/iptables.rules
+    mode: '0644'
+  notify:
+    IptablesLoad
+
+- name: Create contest directory if it does not exist
+  ansible.builtin.file:
+    path: /root/contest/backup/scripts
+    state: directory
+    mode: '0755'
+
+- name: Install and start backup_watchdog
+  notify:
+    - Backup_watchdog
+  block:
+    - name: Install backup_watchdog
+      ansible.builtin.copy:
+        src: backup_watchdog
+        dest: /usr/local/sbin/backup_watchdog
+        mode: '0755'
+    - name: Install backup_watchdog.service
+      ansible.builtin.copy:
+        src: backup_watchdog.service
+        dest: /etc/systemd/system/backup_watchdog.service
+        mode: '0644'
+    - name: Make sure a service unit is running
+      ansible.builtin.systemd:
+        state: started
+        enabled: true
+        daemon_reload: true
+        name: backup_watchdog.service
+
+- name: Install par
+  ansible.builtin.copy:
+    src: par
+    dest: /root/contest/backup/scripts/par
+    mode: '0755'
+
+- name: Install sh.do_startbackup
+  ansible.builtin.copy:
+    src: sh.do_startbackup
+    dest: /root/contest/backup/scripts/sh.do_startbackup
+    mode: '0755'
+
+- name: Install sh.backupclient
+  ansible.builtin.copy:
+    src: sh.backupclient
+    dest: /root/contest/backup/scripts/sh.backupclient
+    mode: '0755'
+
+- name: Install ssh config
+  ansible.builtin.copy:
+    src: root.ssh.config
+    dest: /root/.ssh.config
+    mode: '0600'

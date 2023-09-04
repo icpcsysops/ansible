@@ -1,0 +1,21 @@
+#!/usr/bin/python3
+
+from os import listdir, chdir, mkdir
+from os.path import isfile, islink, getmtime, join, realpath, isdir
+import tarfile
+
+# this file is dropped by the backup host
+# who then ssh's over to run this script.
+# constant
+BACKUP_FILE = "backups.tar"
+
+if isfile(backup_file):
+    path = "/srv/cds/contests/cds/"
+    destdir = join(realpath(path), "teams")
+    if not isdir(destdir):
+        mkdir(destdir)
+    with tarfile.open(BACKUP_FILE, "r") as tar:
+        tar.extractall(destdir)
+        print(f"extracted {BACKUP_FILE} to {destdir}")
+else:
+    print(f"ERROR: {BACKUP_FILE} does not exist")

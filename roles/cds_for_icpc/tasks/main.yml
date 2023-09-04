@@ -1,0 +1,6 @@
+---
+- name: Install deploy_backup_tar
+  ansible.builtin.copy:
+    src: deploy_backup_tar
+    dest: /usr/local/bin/deploy_backup_tar
+    mode: '0x755'

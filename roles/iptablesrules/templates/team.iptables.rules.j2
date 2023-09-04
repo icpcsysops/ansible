@@ -44,48 +44,43 @@
 -A OUTPUT -p tcp --dport 443 -d 10.3.3.209/32 -j ACCEPT
 
 # ntp
--A INPUT -p tcp --sport 123 -s 10.3.3.207 -j ACCEPT
--A INPUT -p udp --sport 123 -s 10.3.3.207 -j ACCEPT
--A INPUT -p tcp --sport 123 -s 10.3.3.209 -j ACCEPT
--A INPUT -p udp --sport 123 -s 10.3.3.209 -j ACCEPT
--A OUTPUT -p tcp --dport 123 -d 10.3.3.209 -j ACCEPT
--A OUTPUT -p udp --dport 123 -d 10.3.3.209 -j ACCEPT
--A INPUT -p tcp --sport 123 -s 10.3.3.210 -j ACCEPT
--A INPUT -p udp --sport 123 -s 10.3.3.210 -j ACCEPT
--A OUTPUT -p tcp --dport 123 -d 10.3.3.210 -j ACCEPT
--A OUTPUT -p udp --dport 123 -d 10.3.3.210 -j ACCEPT
--A INPUT -p tcp --sport 123 -s 10.3.3.254 -j ACCEPT
--A INPUT -p udp --sport 123 -s 10.3.3.254 -j ACCEPT
+{% for host in groups['ntpservers'] -%}
+-A OUTPUT -p tcp --dport 123 -d {{ hostvars[host].ansible_host }} -j ACCEPT
+-A OUTPUT -p udp --dport 123 -d {{ hostvars[host].ansible_host }} -j ACCEPT
+-A INPUT -p tcp --sport 123 -s {{ hostvars[host].ansible_host }} -j ACCEPT
+-A INPUT -p udp --sport 123 -s {{ hostvars[host].ansible_host }} -j ACCEPT
+{% endfor %}
+# why the server gateway?
 -A OUTPUT -p tcp --dport 123 -d 10.3.3.254 -j ACCEPT
 -A OUTPUT -p udp --dport 123 -d 10.3.3.254 -j ACCEPT
 
 # cds uses https
--A OUTPUT -p tcp --dport 443 -d 10.3.3.207/32 -j ACCEPT
--A INPUT -p tcp --sport 443 -s 10.3.3.207/32 -j ACCEPT
+-A OUTPUT -p tcp --dport 443 -d {{ cds_ip }}/32 -j ACCEPT
+-A INPUT -p tcp --sport 443 -s {{ cds_ip }}/32 -j ACCEPT
 # p100 uses https on port 9443
--A OUTPUT -p tcp --dport 9443 -d 10.3.3.207/32 -j ACCEPT
--A INPUT -p tcp --sport 9443 -s 10.3.3.207/32 -j ACCEPT
+-A OUTPUT -p tcp --dport 9443 -d {{ cds_ip }}/32 -j ACCEPT
+-A INPUT -p tcp --sport 9443 -s {{ cds_ip }}/32 -j ACCEPT
 
 # ssh inbound
 -A INPUT -p tcp -m tcp --dport 22 -s 10.3.3.208/29 -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 22 -d 10.3.3.208/29 -j ACCEPT
 
+{% if vlc -%}
 # vlc camera inbound
--A INPUT -p tcp -m tcp --dport 8080 -s 10.3.3.205/32 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 8080 -d 10.3.3.205/32 -j ACCEPT
--A INPUT -p tcp -m tcp --dport 8080 -s 10.3.3.207/32 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 8080 -d 10.3.3.207/32 -j ACCEPT
--A INPUT -p tcp -m tcp --dport 8080 -s 10.3.3.208/28 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 8080 -d 10.3.3.208/28 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 8080 -s {{ cds_ip }}/32 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 8080 -d {{ cds_ip }}/32 -j ACCEPT
 
 # vlc screen inbound
--A INPUT -p tcp -m tcp --dport 9090 -s 10.3.3.205/32 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 9090 -d 10.3.3.205/32 -j ACCEPT
--A INPUT -p tcp -m tcp --dport 9090 -s 10.3.3.207/32 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 9090 -d 10.3.3.207/32 -j ACCEPT
--A INPUT -p tcp -m tcp --dport 9090 -s 10.3.3.208/28 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 9090 -d 10.3.3.208/28 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 9090 -s {{ cds_ip }}/32 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 9090 -d {{ cds_ip }}/32 -j ACCEPT
 
+{% endif %}
+{% if mediamtx %}
+# mediamtx
+-A INPUT -p tcp -m tcp --dport 8888 -s {{ cds_ip }}/32 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 8888 -d {{ cds_ip }}/32 -j ACCEPT
+
+{% endif %}
 # ssh to backup (used by rsync)
 -A INPUT -p tcp -m tcp --sport 22 -s 10.3.3.213 -j ACCEPT
 -A OUTPUT -p tcp -m tcp --dport 22 -d 10.3.3.213 -j ACCEPT

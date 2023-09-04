@@ -8,8 +8,6 @@
 :drop-n-log - [0:0]
 -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 -A INPUT -i lo -j ACCEPT
--A INPUT -s 10.3.3.208/31 -p tcp -m tcp --sport 80 -j ACCEPT
--A INPUT -s 10.3.3.215/32 -p tcp -m tcp --sport 80 -j ACCEPT
 -A INPUT -s 10.3.3.215/32 -p tcp -m tcp --sport 443 -j ACCEPT
 -A INPUT -s 10.3.3.209/32 -p tcp -m tcp --sport 443 -j ACCEPT
 -A INPUT -s 10.3.3.208/32 -p tcp -m tcp --sport 123 -j ACCEPT
@@ -45,8 +43,6 @@
 -A INPUT -s 10.3.3.210/32 -p icmp -m icmp --icmp-type 3 -j ACCEPT
 -A INPUT -j drop-n-log
 -A OUTPUT -p udp -m multiport --dports 53 -j ACCEPT
--A OUTPUT -d 10.3.3.216/31 -p tcp -m multiport --dports 80,443,53 -j drop-n-log
--A OUTPUT -d 10.3.3.215/32 -p tcp -m multiport --dports 80,443,53 -j drop-n-log
 -A OUTPUT -p tcp -m multiport --dports 80,443,53 -j ACCEPT
 -A OUTPUT -o lo -j ACCEPT
 -A OUTPUT -p udp -m udp --dport 137 -j REJECT --reject-with icmp-port-unreachable
@@ -55,8 +51,6 @@
 -A OUTPUT -p udp -m udp --dport 5353 -j REJECT --reject-with icmp-port-unreachable
 -A OUTPUT -p udp -m udp --dport 8610 -j REJECT --reject-with icmp-port-unreachable
 -A OUTPUT -p udp -m udp --dport 8612 -j REJECT --reject-with icmp-port-unreachable
--A OUTPUT -d 10.3.3.208/31 -p tcp -m tcp --dport 80 -j ACCEPT
--A OUTPUT -d 10.3.3.215/32 -p tcp -m tcp --dport 80 -j ACCEPT
 -A OUTPUT -d 10.3.3.215/32 -p tcp -m tcp --dport 443 -j ACCEPT
 -A OUTPUT -d 10.3.3.209/32 -p tcp -m tcp --dport 443 -j ACCEPT
 -A OUTPUT -d 10.3.3.208/32 -p tcp -m tcp --dport 123 -j ACCEPT
@@ -87,6 +81,8 @@
 -A OUTPUT -d 10.3.3.216/32 -p tcp -m tcp --dport 515 -j ACCEPT
 -A OUTPUT -d 10.3.3.210/31 -p tcp -m tcp --dport 389 -j ACCEPT
 -A OUTPUT -d 10.3.3.210/31 -p tcp -m tcp --dport 636 -j ACCEPT
+-A OUTPUT -d 10.3.3.0/24 -p tcp -m multiport --dports 80,443,53 -j drop-n-log
+-A OUTPUT -d 10.3.3.0/24 -p tcp -m multiport --dports 80,443,53 -j drop-n-log
 -A OUTPUT -d 10.3.3.208/29 -p icmp -m icmp --icmp-type 0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 -A OUTPUT -p icmp -m icmp --icmp-type 0 -m state --state RELATED,ESTABLISHED -j drop-n-log
 -A OUTPUT -p icmp -m icmp --icmp-type 8 -j drop-n-log

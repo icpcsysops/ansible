@@ -15,6 +15,11 @@
   role:
     - role: icpc_host_backup
 
+- name: Configure dual_nic machines
+  hosts: backup*, scoreboard*, cds*, packages
+  roles:
+    - role: dual_nic
+
 - name: Configure coachview machines
   hosts: coachview*
   roles:

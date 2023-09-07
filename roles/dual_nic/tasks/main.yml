@@ -1,0 +1,36 @@
+- name: Gather ip_subnet4
+  ansible.builtin.shell:
+    cmd: set -o pipefail && ip -4 -oneline addr |  egrep -v '(lo|link|wlp) ' | cut -d . -f 4 | cut -d / -f 1
+    args:
+      executable: /usr/bin/bash
+  changed_when: false
+  register: ip_subnet4
+
+- name: Print ip_subnet4
+  ansible.builtin.debug:
+    msg: "ip_subnet4 = {{ ip_subnet4 }}"
+
+- name: Gather ip link info
+  ansible.builtin.shell:
+    cmd: "set -o pipefail && ip -oneline link | egrep -v '(lo:|wlp)' | cut -d: -f2 | sed -e 's/ //g'"
+    args:
+      executable: /usr/bin/bash
+  changed_when: false
+  register: ifc_list
+
+- name: Print ifc_list
+  ansible.builtin.debug:
+    msg: "ifc_list = {{ ifc_list }}"
+
+- name: Dump 1st ifc {{ ifc_list.stdout_lines[0] }}
+  ansible.builtin.template:
+    dest: /etc/network/interfaces.d/{{ ifc_list.stdout_lines[0] }}
+    src: ifc1.j2
+    mode: '0644'
+
+- name: Dump 2nd ifc {{ ifc_list.stdout_lines[1] }}
+  ansible.builtin.template:
+    dest: /etc/network/interfaces.d/{{ ifc_list.stdout_lines[1] }}
+    src: ifc2.j2
+    mode: '0644'
+  when: ifc_list.stdout_lines | length > 1

@@ -14,16 +14,16 @@ if args.wf:
     name = "wf2023"
     detail = "2023Sharm"
     timezone = "Africa/Cairo"
-    max_team = 152
-    max_human_judge = 12
-    max_pc2_autojudge = 16
+    max_team = 140
+    max_human_judge = 14
+    max_pc2_autojudge = 20
     max_kattis_autojudge = 0
-    max_domjudge_autojudge = 16
-    max_domjudge_ccsadmin = 7
-    # pc2 for wf2021
-    max_ccsadmin = 4
+    max_domjudge_autojudge = 24
+    max_domjudge_ccsadmin = 8
+    # pc2 for wf2023
+    max_ccsadmin = 8
     papersize = "A4"
-    enable_vlc = True
+    enable_vlc = False
 else:
     name = "nac2023"
     detail = "2023Florida"
@@ -43,6 +43,15 @@ def print_host(num, hostname, ip, list_fh, group, base_ip=0):
     group[f"{hostname}{num}"] = {"ansible_host": f"{ip}.{base_ip+num}"}
     print(f"{hostname}{num}", file=list_fh)
 
+def print_host_wf(base, num, hostname, ip, list_fh, group, base_ip=0):
+    group[f"{hostname}{num}"] = {"ansible_host": f"{ip}.{base_ip+num-base}"}
+    print(f"{hostname}{num}", file=list_fh)
+
+def print_host_wf46(num, hostname, ip, list_fh, group, base_ip=0):
+    print_host_wf(46000, num+46000, hostname, ip, list_fh, group, base_ip)
+
+def print_host_wf47(num, hostname, ip, list_fh, group, base_ip=0):
+    print_host_wf(47000, num+47000, hostname, ip, list_fh, group, base_ip)
 
 def print_server(hostname, ip, group=[]):
     group[f"{hostname}"] = {"ansible_host": f"{ip}"}
@@ -51,8 +60,15 @@ def print_server(hostname, ip, group=[]):
 if __name__ == "__main__":
     with open("../hosts.yml", "wt") as fh:
         with open("../list.team", "wt") as list_fh:
-            for i in range(max_team):
-                print_host(i + 1, "team", "10.1.1", list_fh, contestants)
+            # revert after wf2023
+            if args.wf:
+                for i in range(max_team):
+                   print_host_wf46(i + 1, "team", "10.1.46", list_fh, contestants)
+                for i in range(max_team):
+                    print_host_wf47(i + 1, "team", "10.1.47", list_fh, contestants)
+            else:
+                for i in range(max_team):
+                    print_host(i + 1, "team", "10.1.1", list_fh, contestants)
         document = f"""
 contestants:
   hosts: {contestants}
@@ -100,13 +116,15 @@ others:
     {others}
 """
         print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)
-        document = f"""
+        document_unused = f"""
 ldapserver:
   hosts:
     ldap-server1:
       ansible_host: 10.3.3.211
     ldap-server2:
       ansible_host: 10.3.3.210
+"""
+        document = f"""
 ntpservers:
   hosts:
      backup:
@@ -122,7 +140,7 @@ all:
     disable_sources_list_changes: false
     enable_reverseproxy: {not args.wf}
     contest:  {name}
-    contest_detail: REPLCACEME_detail
+    contest_detail: {detail}
     papersize:  {papersize}
     enable_vlc: {enable_vlc}
 

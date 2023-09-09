@@ -1,0 +1,19 @@
+---
+- name: Apache2
+  ansible.builtin.service:
+    name: apache2
+    state: restarted
+
+- name: Systemd-resolved
+  ansible.builtin.service:
+    name: systemd-resolved
+    state: restarted
+
+- name: NTP
+  ansible.builtin.service:
+    name: ntp
+    state: restarted
+
+- name: Iptablesload
+  ansible.builtin.command: /etc/network/if-pre-up.d/iptablesload
+  changed_when: false

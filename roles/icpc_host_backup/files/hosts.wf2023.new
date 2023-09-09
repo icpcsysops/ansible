@@ -171,7 +171,7 @@
 10.1.46.253    fogslave-wf46-4
 10.1.46.254    gateway46-1
 
-# wf47 Team Network (10.1.2.0/24)
+# wf47 Team Network (10.1.47.0/24)
 10.1.47.1 team47001
 10.1.47.2 team47002
 10.1.47.3 team47003

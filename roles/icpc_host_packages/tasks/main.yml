@@ -3,7 +3,7 @@
   ansible.builtin.replace:
     path: /etc/systemd/resolved.conf
     regexp: '^[#]?DNS=.*'
-    replace: 'DNS=8.8.8.8 8.8.4.4'
+    replace: 'DNS=8.8.8.8 1.1.1.1'
     owner: root
     group: root
     mode: '0644'

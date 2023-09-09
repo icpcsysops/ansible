@@ -10,6 +10,11 @@
   roles:
     - role: icpc_host_packages
 
+- name: Configure backups
+  hosts: backup*
+  role:
+    - role: icpc_host_backup
+
 - name: Configure coachview machines
   hosts: coachview*
   roles:

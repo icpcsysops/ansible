@@ -1,0 +1,13 @@
+[Unit]
+Description=Job to run backup_watchdog
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+ExecStart=/usr/local/sbin/backup_watchdog --nofork
+Type=simple
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=3
+

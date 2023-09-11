@@ -1,0 +1,7 @@
+---
+# defaults for p100
+cds_ip: 10.3.3.207
+cds_port: 9443
+# this is slug after /api/contests/
+cds_endpoint: ""
+# need to set cds_p100_password

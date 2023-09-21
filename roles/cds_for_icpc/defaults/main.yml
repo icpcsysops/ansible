@@ -1,0 +1,3 @@
+# array of local keys to add
+local_ssh_keys: []
+git_user_password: WFltGBxB/v4Fs

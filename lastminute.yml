@@ -195,52 +195,6 @@
         mode: '0644'
       when: technotes.stat.exists
 
-    - name: DOMJudge only bits
-      when: ccs == "domjudge"
-      block:
-        - name: Is contest_detail TeamGuide.pdf available?
-          delegate_to: localhost
-          ansible.builtin.stat:
-            path: files/"{{ contest_detail }}-domjudge-team-manual.pdf"
-          register: domjudge_team_manual
-
-        - name: Copy domjudge TeamGuide.pdf (if ccs == domjudge)
-          ansible.builtin.copy:
-            src: files/"{{ contest_detail }}-domjudge-team-manual.pdf"
-            dest: /usr/share/doc/icpc/TeamGuide.pdf
-            mode: '0644'
-          when: domjudge_team_manual.stat.exists
-
-        - name: Add domjudge to /etc/hosts
-          ansible.builtin.lineinfile:
-            path: /etc/hosts
-            line: "{{ baseip }}.{{ item.ip }}   {{ item.hostname }}" # noqa: no-tabs
-            owner: root
-            group: root
-            mode: '0644'
-          loop:
-            # TODO make this 215 configurable
-            - { ip: 215, hostname: domjudge }
-          when: enable_reverseproxy is not defined or not enable_reverseproxy
-
-        - name: Add domjudge doc dir
-          ansible.builtin.file:
-            path: /usr/share/apps/domjudge
-            state: directory
-            mode: '0755'
-
-        - name: Add domjudge png
-          ansible.builtin.copy:
-            src: files/DOMjudgelogo.png
-            dest: /usr/share/apps/domjudge/DOMjudgelogo.png
-            mode: '0644'
-
-        - name: Add domjudge desktop entry
-          ansible.builtin.copy:
-            src: files/domjudge.desktop
-            dest: /usr/share/applications/domjudge.desktop
-            mode: '0644'
-
     # local accounts bit
     - name: Create group teams
       ansible.builtin.group:
@@ -359,6 +313,8 @@
     printer_name: systemsprinter
   roles:
     - role: cups
+    - role: ccstools
+      when: ccs  == "domjudge"
 
 - name: Configure others printers
   hosts: others:!authprint

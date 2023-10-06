@@ -12,7 +12,7 @@
 
 - name: Configure backups
   hosts: backup*
-  role:
+  roles:
     - role: icpc_host_backup
 
 - name: Configure dual_nic machines

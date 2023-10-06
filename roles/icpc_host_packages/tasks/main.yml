@@ -35,7 +35,7 @@
       - ssl-cert
       - ntp
       - awscli
-    state: installed
+    state: present
 
 - name: Configure apache2
   notify:

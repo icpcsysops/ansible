@@ -1,0 +1,8 @@
+#!/bin/sh
+HOST=`hostname`
+printf '%s\n' "Hi! You've successfully authenticated, but I do not provide"
+printf '%s\n' "interactive shell access."
+printf '%s\n' ""
+printf '%s\n' "Available repos to clone:"
+ls -1d *.git | awk -vuser=$USER -vhost=$HOST '{printf "%s@%s:%s\n", user, host, $1}'
+exit 128

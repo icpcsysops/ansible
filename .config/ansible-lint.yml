@@ -10,3 +10,4 @@ skip_list:
 
 warn_list:
   - yaml  # long lines
+  - git-latest

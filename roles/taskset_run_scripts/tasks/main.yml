@@ -1,5 +1,5 @@
 ---
-- name: Add taskset to run scripts
+- name: Add taskset to most run scripts
   ansible.builtin.lineinfile:
     path: /usr/local/bin/{{ item }}
     state: present
@@ -10,3 +10,14 @@
     - runpython3
     - runkotlin
     - runjava
+
+- name: Add taskset to runc/runcpp
+  ansible.builtin.lineinfile:
+    path: /usr/local/bin/{{ item }}
+    state: present
+    regexp: '^(./a.out)(.*)$'
+    backrefs: true
+    line: 'taskset -c 2 \1\2'
+  loop:
+    - runc
+    - runcpp

@@ -1,0 +1,76 @@
+#!/bin/bash
+set -euo pipefail
+DATAPATH="/usr/share/cups/data/"
+
+team="$2"
+created_at="0"
+processed_at="0"
+originating_host="0"
+
+options=($(grep -oE '[^=]+=[^=]+ ' <<< "$5"))
+for o in "${options[@]}"; do
+	k=$(cut -d'=' -f1 <<< $o)
+	v=$(cut -d'=' -f2 <<< $o)
+	echo "$k -> $v" 1>&2
+
+	case "$k" in
+		"time-at-creation")
+			created_at=$(date --date="@$v")
+			;;
+		"time-at-processing")
+			processed_at=$(date --date="@$v")
+			;;
+		"job-originating-host-name")
+			originating_host=$v
+			;;
+	esac
+
+done
+
+WORKDIR=$(mktemp -d)
+cat > "$WORKDIR/in.pdf"
+
+affiliation='(none)'
+if [ -f $DATAPATH/UniversityNames/$team.txt ]; then
+	affiliation=$(cat "$DATAPATH/UniversityNames/$team.txt")
+fi
+
+text=$(cat <<EOF
+Affiliation: $affiliation
+Host: $originating_host
+Created: $created_at
+Processed: $processed_at
+EOF
+)
+
+echo -e "ICPC-BANNER\n$text" >&2
+
+photo_args=''
+if [ -f $DATAPATH/Pictures/$team.jpg ]; then
+	photo_args="( $DATAPATH/Pictures/$team.jpg -resize 1400x1000 ) -gravity center -geometry +0-500 -composite"
+fi
+logo_args=''
+if [ -f $DATAPATH/Logos/$team.png ]; then
+	logo_args="( $DATAPATH/Logos/$team.png -resize 512x512 ) -gravity center -geometry -900+860 -composite"
+fi
+#rm -f /tmp/out.pdf
+#rm -f /tmp/in.pdf
+/usr/bin/convert -density 300 $DATAPATH/nac2023-empty.pdf \
+	-gravity center -pointsize 50 -family "Ubuntu" -annotate "+200+600" "$team" \
+	-gravity center -pointsize 16 -family "Ubuntu" -annotate "+200+860" "$text" \
+	-gravity SouthEast  -pointsize 16 -family "Ubuntu" -annotate "+200+200" "Delivered By: __________" \
+	$photo_args $logo_args \
+	"$WORKDIR/banner.pdf"
+
+/usr/bin/convert -density 300 "$WORKDIR/in.pdf" -gravity NorthEast -pointsize 12 -family "Ubuntu" -fill '#f00' -annotate "+60+60" "Team: $team" "$WORKDIR/watermarked.pdf"
+/usr/bin/pdftk "$WORKDIR/banner.pdf" "$WORKDIR/watermarked.pdf" cat output "$WORKDIR/out.pdf" >> /tmp/test_filter
+
+#cp $WORKDIR/in.pdf /tmp/in.pdf
+#cp $WORKDIR/out.pdf /tmp/out.pdf
+#chmod 644 /tmp/out.pdf
+#chmod 644 /tmp/in.pdf
+#exit 1
+
+cat "$WORKDIR/out.pdf"
+rm -r "$WORKDIR"
+

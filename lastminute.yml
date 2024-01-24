@@ -324,3 +324,8 @@
     printer_name: systemsprinter
   roles:
     - role: cups
+
+- name: Configure printserver
+  hosts: authprint
+  roles:
+    - role: printserver

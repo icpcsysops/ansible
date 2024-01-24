@@ -1,0 +1,124 @@
+---
+- name: install packages needed to munging pdfs
+  ansible.builtin.package:
+    name:
+      - imagemagick
+      - pdftk
+
+- name: remove old policy from ImagicMagick
+  ansible.builtin.lineinfile:
+    path: /etc/ImageMagick-6/policy.xml
+    state: absent
+    regexp: '<policy domain="coder" rights="none" pattern="{{ item }}" />'
+  loop:
+    - PS
+    - PS2
+    - PS3
+    - EPS
+    - PDF
+    - XPS
+
+# TODO change nac2023 to variable
+- name: installing banner page empty template
+  ansible.builtin.copy:
+    src: files/nac2023-banner-template.pdf
+    dest: /usr/share/cups/data/banner-template.pdf
+
+- name: Check if the judgeprint exists
+  ansible.builtin.command: lpstat -p judgeprint
+  register: lpstat_judgeprint
+  changed_when: false
+  ignore_errors: true
+
+- name: Lpadmin add judgeprint printer
+  ansible.builtin.command: lpadmin -p judgeprint -E -v ipp://judgeprint -m everywhere # noqa: yaml[line-length]
+  when: lpstat_judgeprint.rc != 0
+  changed_when: false
+
+- name: Set the judgeprint as default
+  ansible.builtin.command: lpadmin -d judgeprint
+  when: lpstat_judgeprint.rc != 0
+  changed_when: false
+
+- name: Check if the balloonprinter exists
+  ansible.builtin.command: lpstat -p balloonprinter
+  register: lpstat_teamprint1
+  changed_when: false
+  ignore_errors: true
+
+- name: Check if the class exists
+  ansible.builtin.command: lpstat -c contest
+  register: lpstat_contest
+  changed_when: false
+  ignore_errors: true
+
+- name: Lpadmin add balloonprinter printer
+  ansible.builtin.command: lpadmin -p balloonprinter -E -v ipp://teamprint1 -m everywhere # noqa: yaml[line-length]
+  when: lpstat_teamprint1.rc != 0
+  changed_when: false
+
+# may need two icpc-banners one for letter, one for a4
+- name: Add icpc-banner filter
+  ansible.builtin.copy:
+    src: files/icpc-banner
+    dest: /usr/lib/cups/filter/icpc-banner
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Check if the teamprint2 exists
+  ansible.builtin.command: lpstat -p teamprint2
+  register: lpstat_teamprint2
+  changed_when: false
+  ignore_errors: true
+
+- name: Lpadmin add teamprint2 printer
+  ansible.builtin.command: lpadmin -p teamprint2 -E -v ipp://teamprint2 -m everywhere # noqa: yaml[line-length]
+  when: lpstat_teamprint2.rc != 0
+  changed_when: false
+
+- name: update teamprint2 ppd to call icpc-banner
+  ansible.builtin.lineinfile:
+    path: /etc/cups/ppd/teamprint2.ppd
+    state: present
+    insertafter: '\*cupsFilter2: "image/urf image/urf 100 -"'
+    line: '*cupsFilter2: "application/vnd.cups-pdf application/pdf 0 icpc-banner"'
+  register: teamprint2_ppd
+  until: "teamprint2_ppd is not failed"
+  retries: 5
+  delay: 5
+  notify: Restart cups
+
+- name: add teamprint2 to contest class
+  ansible.builtin.command: lpadmin -p teamprint2 -c contest
+  when: not lpstat_contest.stdout is search("teamprint2")
+
+- name: Only if teamprint3 exists
+  when: teamprint3 is defined
+  block:
+    - name: Check if the teamprint3 exists
+      ansible.builtin.command: lpstat -p teamprint3
+      register: lpstat_teamprint3
+      changed_when: false
+      ignore_errors: true
+
+    - name: Lpadmin add teamprint3 printer
+      ansible.builtin.command: lpadmin -p teamprint3 -E -v ipp://teamprint3 -m everywhere # noqa: yaml[line-length]
+      when: lpstat_teamprint3.rc != 0
+      changed_when: false
+
+    - name: update teamprint3 ppd to call icpc-banner
+      ansible.builtin.lineinfile:
+        path: /etc/cups/ppd/teamprint3.ppd
+        state: present
+        insertafter: '\*cupsFilter2: "image/urf image/urf 100 -"'
+        line: '*cupsFilter2: "application/vnd.cups-pdf application/pdf 0 icpc-banner"'
+      register: teamprint3_ppd
+      until: "teamprint3_ppd is not failed"
+      retries: 5
+      delay: 5
+      notify: Restart cups
+
+    - name: add teamprint3 to contest class
+      ansible.builtin.command: lpadmin -p teamprint3 -c contest
+      when: not lpstat_contest.stdout is search("teamprint3")

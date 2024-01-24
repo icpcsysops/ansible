@@ -18,10 +18,9 @@
     - PDF
     - XPS
 
-# TODO change nac2023 to variable
 - name: installing banner page empty template
   ansible.builtin.copy:
-    src: files/nac2023-banner-template.pdf
+    src: files/{{ contest }}-banner-template.pdf
     dest: /usr/share/cups/data/banner-template.pdf
 
 - name: Check if the judgeprint exists

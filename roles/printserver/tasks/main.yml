@@ -1,11 +1,11 @@
 ---
-- name: install packages needed to munging pdfs
+- name: Install packages needed to munging pdfs
   ansible.builtin.package:
     name:
       - imagemagick
       - pdftk
 
-- name: remove old policy from ImagicMagick
+- name: Remove old policy from ImagicMagick
   ansible.builtin.lineinfile:
     path: /etc/ImageMagick-6/policy.xml
     state: absent
@@ -18,10 +18,11 @@
     - PDF
     - XPS
 
-- name: installing banner page empty template
+- name: Installing banner page empty template
   ansible.builtin.copy:
     src: files/{{ contest }}-banner-template.pdf
     dest: /usr/share/cups/data/banner-template.pdf
+    mode: '0644'
 
 - name: Check if the judgeprint exists
   ansible.builtin.command: lpstat -p judgeprint
@@ -76,7 +77,7 @@
   when: lpstat_teamprint2.rc != 0
   changed_when: false
 
-- name: update teamprint2 ppd to call icpc-banner
+- name: Update teamprint2 ppd to call icpc-banner
   ansible.builtin.lineinfile:
     path: /etc/cups/ppd/teamprint2.ppd
     state: present
@@ -88,8 +89,9 @@
   delay: 5
   notify: Restart cups
 
-- name: add teamprint2 to contest class
+- name: Add teamprint2 to contest class
   ansible.builtin.command: lpadmin -p teamprint2 -c contest
+  changed_when: true
   when: not lpstat_contest.stdout is search("teamprint2")
 
 - name: Only if teamprint3 exists
@@ -106,7 +108,7 @@
       when: lpstat_teamprint3.rc != 0
       changed_when: false
 
-    - name: update teamprint3 ppd to call icpc-banner
+    - name: Update teamprint3 ppd to call icpc-banner
       ansible.builtin.lineinfile:
         path: /etc/cups/ppd/teamprint3.ppd
         state: present
@@ -118,6 +120,7 @@
       delay: 5
       notify: Restart cups
 
-    - name: add teamprint3 to contest class
+    - name: Add teamprint3 to contest class
       ansible.builtin.command: lpadmin -p teamprint3 -c contest
+      changed_when: true
       when: not lpstat_contest.stdout is search("teamprint3")

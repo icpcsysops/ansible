@@ -31,6 +31,7 @@
     - role: cups
     - role: team
     - role: mediamtx
+      when: enable_hls is defined and enable_hls
     - role: ldapclient
       tags: ldapclient
       when: ldap_domain is defined

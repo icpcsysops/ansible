@@ -55,7 +55,7 @@ if [ -f $DATAPATH/Logos/$team.png ]; then
 fi
 #rm -f /tmp/out.pdf
 #rm -f /tmp/in.pdf
-/usr/bin/convert -density 300 $DATAPATH/nac2023-empty.pdf \
+/usr/bin/convert -density 300 $DATAPATH/banner-template.pdf \
 	-gravity center -pointsize 50 -family "Ubuntu" -annotate "+200+600" "$team" \
 	-gravity center -pointsize 16 -family "Ubuntu" -annotate "+200+860" "$text" \
 	-gravity SouthEast  -pointsize 16 -family "Ubuntu" -annotate "+200+200" "Delivered By: __________" \

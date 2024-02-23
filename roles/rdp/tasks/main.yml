@@ -1,0 +1,20 @@
+---
+
+- task: Install requirements
+  ansible.builtin.apt: 
+    pkg:
+      - fce4
+      - xfce4-goodies
+      - xrdp
+
+- task: Update startwm.sh
+  anisble.builtin.copy:
+    src: startwm.sh
+    dest: /etc/xrdp/startwm.sh
+    mode: '0755'
+
+- task: Add judge user
+  ansible.builtin.user:
+    name: judge
+    group: judges
+    password: "{{ judge_password }}"

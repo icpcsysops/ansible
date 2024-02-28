@@ -3,7 +3,7 @@
 - task: Install requirements
   ansible.builtin.apt: 
     pkg:
-      - fce4
+      - xfce4
       - xfce4-goodies
       - xrdp
 

@@ -1,0 +1,32 @@
+---
+# Define here handlers associated to this role.
+
+- name: Restart nginx-exporter
+  ansible.builtin.service:
+    name: prometheus-nginx-exporter
+    enabled: true
+    state: restarted
+
+- name: Restart php-exporter
+  ansible.builtin.service:
+    name: php-fpm-exporter
+    enabled: true
+    state: restarted
+
+- name: Restart nginx
+  ansible.builtin.service:
+    name: nginx
+    enabled: true
+    state: restarted
+
+- name: Restart grafana
+  ansible.builtin.service:
+    name: grafana-server
+    enabled: true
+    state: restarted
+
+- name: Restart loki
+  ansible.builtin.service:
+    name: loki
+    enabled: true
+    state: restarted

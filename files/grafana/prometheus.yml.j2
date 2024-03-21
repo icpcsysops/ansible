@@ -9,4 +9,6 @@ scrape_configs:
 #      - targets: [backup:9100]
 #        labels:
 #          group: 'Disks'
-# TODO add entries here
+{% for host in groups["all"] %}
+        - {{ hostvars[host].ansible_host }}:9100
+{% endfor %}

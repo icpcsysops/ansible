@@ -72,6 +72,18 @@
         enabled: false
         masked: true
 
+    # local accounts bit
+    - name: Create group teams
+      ansible.builtin.group:
+        name: teams
+        gid: 3000
+
+    - name: Copy the per contest bits
+      ansible.builtin.copy:
+        src: "{{ contest }}.teams.tar.gz"
+        dest: "/root/{{ contest }}.teams.tar.gz"
+        mode: '0600'
+
     - name: Remove icpc user
       ansible.builtin.user:
         name: "icpc"
@@ -106,6 +118,7 @@
         - "gvfsd-burn"
         - "gvfsd-computer"
         - "gvfsd-localtest"
+
     - name: Place 21_icpc-disable-automount-schema.gschema.override
       ansible.builtin.copy:
         content: |
@@ -196,18 +209,6 @@
         mode: '0644'
       when: technotes.stat.exists
 
-    # local accounts bit
-    - name: Create group teams
-      ansible.builtin.group:
-        name: teams
-        gid: 3000
-
-    - name: Copy the per contest bits
-      ansible.builtin.copy:
-        src: "{{ contest }}.teams.tar.gz"
-        dest: "/root/{{ contest }}.teams.tar.gz"
-        mode: '0600'
-
     - name: Pre-generate the kernel flags for ansible usage
       ansible.builtin.set_fact:
         procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1 i915.force_probe=4690"
@@ -222,6 +223,7 @@
       notify:
         - Update grub
         - Reboot
+
     - name: Ensure /etc/default/grub has proper GRUB_TIMEOUT
       ansible.builtin.replace:
         path: /etc/default/grub
@@ -241,6 +243,7 @@
       when:
         - root_password is defined
         - '"$6$" in root_password'
+
     - name: Update root password (if root_password is cleartext)
       ansible.builtin.user:
         name: "root"
@@ -261,6 +264,13 @@
       register: git_revision
       delegate_to: 127.0.0.1
       changed_when: false
+
+    # TODO to be done in icpc2024
+    - name: Stop and disable apport service
+      ansible.builtin.service:
+          name: apport
+          state: "stopped"
+          enabled: false
 
     - name: Log version of script on client
       community.general.syslogger:

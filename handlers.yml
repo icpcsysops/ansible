@@ -1,0 +1,5 @@
+- name: Restart nginx
+  ansbile.builtin.systemd:
+    name: nginx
+    enabled: true
+    state: restarted

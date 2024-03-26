@@ -1,0 +1,20 @@
+---
+
+- hosts: grafana
+  vars:
+    host_type: grafana
+  become: true
+  handlers:
+    - include: handlers.yml
+  roles:
+    - role: base_packages
+      tags: base_packages
+    - role: system_fixes
+      tags: system_fixes
+    - role: hosts
+      tags: hosts
+    - role: prometheus_target_all
+      tags: prometheus_target_all
+      when: GRAFANA_MONITORING
+    - role: grafana
+      tags: grafana

@@ -1,0 +1,16 @@
+---
+# This playbook installs the Management machine
+
+- name: Setup management
+  hosts: mgmt
+  vars:
+    host_type: mgmt
+  become: true
+  handlers:
+    - include: handlers.yml
+  roles:
+    - role: base_packages
+      tags: base_packages
+    - role: prometheus_target_all
+      tags: prometheus_target_all
+      when: GRAFANA_MONITORING

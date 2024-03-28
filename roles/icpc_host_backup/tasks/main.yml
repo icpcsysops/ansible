@@ -42,7 +42,7 @@
 
 - name: Copy hosts to /etc/hosts
   ansible.builtin.copy:
-    src: "{{ hosts.new }}"
+    src: hosts.new
     dest: /etc/hosts
     mode: '0644'
   when: not per_contest_hosts.stat.exists

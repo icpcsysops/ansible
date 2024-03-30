@@ -99,6 +99,28 @@
   ansible.builtin.set_fact:
     cds_needs_restart: "{{ cds_needs_restart | bool or unit_updated.changed }}"
 
+- name: Ensure HIDE_COUNTRY_INFO is present
+  ansible.builtin.lineinfile:
+    path: /etc/environment
+    line: 'HIDE_COUNTRY_INFO=yes'
+    create: true
+    mode: '0644'
+  register: environment_changed
+  when: hide_country_info
+
+- name: Ensure HIDE_COUNTRY_INFO is not present
+  ansible.builtin.lineinfile:
+    path: /etc/environment
+    state: absent
+    regexp: '^HIDE_COUNTRY_INFO=yes'
+    mode: '0644'
+  register: environment_changed
+  when: not hide_country_info
+
+- name: "Update cds_needs_restart: after environment for {{ cds_instance_name }}"
+  ansible.builtin.set_fact:
+    cds_needs_restart: "{{ cds_needs_restart | bool or environment_changed.changed }}"
+
 - name: Restart+enable cds instance
   ansible.builtin.systemd:
     name: "{{ cds_instance_name }}"

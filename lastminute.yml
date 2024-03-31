@@ -71,6 +71,8 @@
         state: stopped
         enabled: false
         masked: true
+      # don't disable dns if we're using public packages
+      when: not disable_sources_list_changes
 
     # local accounts bit
     - name: Create group teams

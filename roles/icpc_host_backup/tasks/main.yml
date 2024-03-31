@@ -86,19 +86,19 @@
     mode: '0755'
 
 - name: Install and start backup_watchdog
-  notify:
-    - Backup_watchdog
   block:
     - name: Install backup_watchdog
       ansible.builtin.copy:
         src: backup_watchdog
         dest: /usr/local/sbin/backup_watchdog
         mode: '0755'
+      notify: Backup_watchdog
     - name: Install backup_watchdog.service
       ansible.builtin.copy:
         src: backup_watchdog.service
         dest: /etc/systemd/system/backup_watchdog.service
         mode: '0644'
+      notify: Backup_watchdog
     - name: Make sure a service unit is running
       ansible.builtin.systemd:
         state: started

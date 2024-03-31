@@ -38,14 +38,13 @@
     state: present
 
 - name: Configure apache2
-  notify:
-    - Apache2
   block:
     - name: Install packages.pem
       ansible.builtin.copy:
         src: /root/ca/intermediate/certs/packages.cert.pem
         dest: /etc/ssl/certs/packages.pem
         mode: '0644'
+      notify: Apache2
 
     - name: Install packages.key
       ansible.builtin.copy:
@@ -53,18 +52,21 @@
         dest: /etc/ssl/private/packages.key
         group: ssl-cert
         mode: '0640'
+      notify: Apache2
 
     - name: Install sites-available/packages.conf
       ansible.builtin.copy:
         src: sites.packages.conf
         dest: /etc/apache2/sites-available/packages.conf
         mode: '0644'
+      notify: Apache2
 
     - name: Install conf-available/packages.conf
       ansible.builtin.copy:
         src: conf.packages.conf
         dest: /etc/apache2/conf-available/packages.conf
         mode: '0644'
+      notify: Apache2
 
     - name: Ensure we are not listening on port 80
       ansible.builtin.lineinfile:
@@ -74,6 +76,7 @@
         owner: root
         group: root
         mode: '0644'
+      notify: Apache2
 
     - name: Check if ssl is enabled in apache2 mods
       ansible.builtin.command: /usr/sbin/a2query -q -m ssl
@@ -84,6 +87,7 @@
       ansible.builtin.command: /usr/sbin/a2enmod -q ssl
       changed_when: false
       when: a2_ssl.rc == 0
+      notify: Apache2
 
     - name: Check if packages is enabled in apache2 site
       ansible.builtin.command: /usr/sbin/a2query -q -s packages
@@ -94,6 +98,7 @@
       ansible.builtin.command: /usr/sbin/a2ensite -q packages
       changed_when: false
       when: a2_site.rc == 0
+      notify: Apache2
 
     - name: Check if packages is enabled in apache2 conf
       ansible.builtin.command: /usr/sbin/a2query -q -c packages
@@ -104,6 +109,7 @@
       ansible.builtin.command: /usr/sbin/a2enconf -q packages
       changed_when: false
       when: a2_conf.rc == 0
+      notify: Apache2
 
     - name: Check if 000-default is enabled in apache2 conf
       ansible.builtin.command: /usr/sbin/a2query -q -c 000-default
@@ -114,3 +120,4 @@
       ansible.builtin.command: /usr/sbin/a2dissite -q 000-default
       changed_when: false
       when: default_conf.rc == 1
+      notify: Apache2

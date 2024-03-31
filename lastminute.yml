@@ -182,6 +182,7 @@
   vars:
     judging_notes: "{{ 'files/%s.JudgingNotes.%s.pdf'|format(contest_detail, papersize) }}"
     tech_notes: "{{ 'files/%s.TechNotes.%s.pdf'|format(contest_detail, papersize) }}"
+    judging_notes_addendum: "{{ 'files/%s.JudgingNotes.Addendum.%s.pdf'|format(contest_detail, papersize) }}"
 
   tasks:
     # stat file first
@@ -196,6 +197,19 @@
         dest: /usr/share/doc/icpc/JudgingNotes.pdf
         mode: '0644'
       when: judgingnotes.stat.exists
+
+    - name: Get file stat of JudgingNotes.Addendum to be able to perform a check in the following task
+      ansible.builtin.stat:
+        path: "{{ judging_addendum_notes }}"
+      register: judging_notes_addendum
+
+    # TODO in future we might want to only drop judgingnotes_addendum.desktop if we have these.
+    - name: Copy JudgingNotes.Addendum.pdf
+      ansible.builtin.copy:
+        src: "{{ judging_notes }}"
+        dest: /usr/share/doc/icpc/JudgingNotes.Addendum.pdf
+        mode: '0644'
+      when: judging_notes_addendum.stat.exists
 
     - name: Get file stat of TechNotes to be able to perform a check in the following task
       ansible.builtin.stat:

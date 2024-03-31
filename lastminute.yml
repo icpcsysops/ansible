@@ -282,11 +282,11 @@
       changed_when: false
 
     # TODO to be done in icpc2024
-    - name: Stop and disable apport service
-      ansible.builtin.service:
-          name: apport
-          state: "stopped"
-          enabled: false
+    # - name: Stop and disable apport service
+    #   ansible.builtin.service:
+    #       name: apport
+    #       state: "stopped"
+    #       enabled: false
 
     - name: Log version of script on client
       community.general.syslogger:

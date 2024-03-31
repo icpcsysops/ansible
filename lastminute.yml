@@ -278,7 +278,7 @@
         executable: /bin/bash
       become: false
       register: git_revision
-      delegate_to: 127.0.0.1
+      delegate_to: localhost
       changed_when: false
 
     # TODO to be done in icpc2024

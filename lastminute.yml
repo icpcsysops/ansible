@@ -300,6 +300,7 @@
       changed_when: false
     - name: Reboot
       ansible.builtin.reboot:
+      when: reboot_enabled
 
 - name: Configure the reverse proxy
   hosts: reverseproxy

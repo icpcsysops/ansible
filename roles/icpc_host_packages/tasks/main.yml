@@ -35,7 +35,7 @@
       - iptables
       - bash
       - ssl-cert
-      - ntp
+      # - ntp # this replaces/removes systemd-timesyncd, which we use instead
       - awscli
     state: present
 

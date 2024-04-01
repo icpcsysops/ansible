@@ -3,10 +3,10 @@
     name: systemd-resolved
     state: restarted
 
-- name: NTP
-  ansible.builtin.service:
-    name: ntp
-    state: restarted
+# - name: NTP
+#   ansible.builtin.service:
+#     name: ntp
+#     state: restarted
 
 - name: Rsyslog
   ansible.builtin.service:

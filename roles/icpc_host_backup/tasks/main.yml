@@ -64,13 +64,14 @@
   notify:
     - Rsyslog
 
-- name: Install logrotate.d config
-  ansible.builtin.copy:
-    src: files/ZZicpc
-    dest: /etc/logrotate.d/ZZicpc
-    mode: '0644'
-  notify:
-    - Logrotate
+# TODO: this ruleset is bad/conflicts with /etc/logrotate.d/rsyslog for most of it's files
+# - name: Install logrotate.d config
+#   ansible.builtin.copy:
+#     src: files/ZZicpc
+#     dest: /etc/logrotate.d/ZZicpc
+#     mode: '0644'
+#   notify:
+#     - Logrotate
 
 - name: Update iptables.rules
   ansible.builtin.template:

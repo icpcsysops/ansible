@@ -38,8 +38,8 @@
 -A OUTPUT -p tcp --sport 189 -j ACCEPT
 -A INPUT -p tcp --dport 636 -j ACCEPT
 -A OUTPUT -p tcp --sport 636 -j ACCEPT
+{%- endif %}
 
-<%- endif %>
 # DNS outbound
 -A INPUT -p tcp --sport 53 -j ACCEPT
 -A OUTPUT -p tcp --dport 53 -j ACCEPT

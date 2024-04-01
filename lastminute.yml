@@ -184,7 +184,7 @@
   vars:
     judging_notes: "{{ 'files/%s.JudgingNotes.%s.pdf'|format(contest_detail, papersize) }}"
     tech_notes: "{{ 'files/%s.TechNotes.%s.pdf'|format(contest_detail, papersize) }}"
-    judging_notes_addendum: "{{ 'files/%s.JudgingNotes.Addendum.%s.pdf'|format(contest_detail, papersize) }}"
+    judging_addendum_notes: "{{ 'files/%s.JudgingNotes.Addendum.%s.pdf'|format(contest_detail, papersize) }}"
 
   tasks:
     # stat file first

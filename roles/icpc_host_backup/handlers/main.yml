@@ -13,12 +13,12 @@
     name: rsyslog
     state: restarted
 
-- name: Logrorate
+- name: Logrotate
   ansible.builtin.service:
     name: logrotate
     state: restarted
 
-- name: Iptablesload
+- name: IptablesLoad
   ansible.builtin.command: /etc/network/if-pre-up.d/iptablesload
   changed_when: false
 

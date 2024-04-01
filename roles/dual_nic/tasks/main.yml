@@ -1,8 +1,8 @@
 - name: Gather ip_subnet4
   ansible.builtin.shell:
     cmd: set -o pipefail && ip -4 -oneline addr |  egrep -v '(lo|link|wlp) ' | cut -d . -f 4 | cut -d / -f 1
-    args:
-      executable: /usr/bin/bash
+  args:
+    executable: /usr/bin/bash
   changed_when: false
   register: ip_subnet4
 
@@ -13,8 +13,8 @@
 - name: Gather ip link info
   ansible.builtin.shell:
     cmd: "set -o pipefail && ip -oneline link | egrep -v '(lo:|wlp)' | cut -d: -f2 | sed -e 's/ //g'"
-    args:
-      executable: /usr/bin/bash
+  args:
+    executable: /usr/bin/bash
   changed_when: false
   register: ifc_list
 

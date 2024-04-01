@@ -10,13 +10,15 @@
   notify:
     - Systemd-resolved
 
-- name: Update ntp.conf
-  ansible.builtin.copy:
-    src: ntp.conf.new
-    dest: /etc/ntp.conf
-    mode: '0644'
-  notify:
-    - NTP
+# This seems to be part of icpc_host_backup?
+# And also, aren't we using systemd-timesyncd
+# - name: Update ntp.conf
+#   ansible.builtin.copy:
+#     src: ntp.conf.new
+#     dest: /etc/ntp.conf
+#     mode: '0644'
+#   notify:
+#     - NTP
 
 - name: Update iptables.rules
   ansible.builtin.template:

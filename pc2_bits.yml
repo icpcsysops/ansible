@@ -1,0 +1,80 @@
+---
+- name: configure pc2 machines
+  hosts: pc2*,ccsadmin*
+
+  roles:
+    - role: hyperthreadingdisabled
+
+  tasks:
+    - name: create ~icpc/.ssh if it does not exist
+      ansible.builtin.file:
+        path: /home/icpc/.ssh
+        state: directory
+        mode: 0700
+        group: icpc
+        owner: icpc
+
+    - name: copy authorized_keys2 to icpc
+      ansible.builtin.copy:
+        src: pc2.authorized_keys2
+        dest: /home/icpc/.ssh/authorized_keys2
+        mode: 0700
+        group: icpc
+        owner: icpc
+
+    - name: Ensure the necessary hosts are present in /etc/hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ baseip }}.{{ item.ip }}   {{ item.hostname }}" # noqa: no-tabs
+        owner: root
+        group: root
+        mode: '0644'
+      loop:
+        - { ip: 197, hostname: cds-wf47 }
+        - { ip: 207, hostname: cds-wf46 }
+        - { ip: 215, hostname: domserver-wf46 }
+        - { ip: 218, hostname: domserver-wf47 }
+        - { ip: 241, hostname: pc2server-wf46 }
+        - { ip: 242, hostname: pc2server-wf47 }
+        - { ip: 232, hostname: ccsadmin1 }
+        - { ip: 233, hostname: ccsadmin2 }
+        - { ip: 234, hostname: ccsadmin3 }
+        - { ip: 235, hostname: ccsadmin4 }
+        - { ip: 236, hostname: ccsadmin5 }
+        - { ip: 237, hostname: ccsadmin6 }
+        - { ip: 238, hostname: ccsadmin7 }
+        - { ip: 239, hostname: ccsadmin8 }
+
+    - name: Ensure the aj hosts are present in /etc/hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "10.2.2.{{ item.ip }}   {{ item.hostname }}" # noqa: no-tabs
+        owner: root
+        group: root
+        mode: '0644'
+      loop:
+        - { ip: 144, hostname: pc2-aj1 }
+        - { ip: 145, hostname: pc2-aj2 }
+        - { ip: 146, hostname: pc2-aj3 }
+        - { ip: 147, hostname: pc2-aj4 }
+        - { ip: 148, hostname: pc2-aj5 }
+        - { ip: 149, hostname: pc2-aj6 }
+        - { ip: 150, hostname: pc2-aj7 }
+        - { ip: 151, hostname: pc2-aj8 }
+        - { ip: 152, hostname: pc2-aj9 }
+        - { ip: 153, hostname: pc2-aj10 }
+        - { ip: 154, hostname: pc2-aj11 }
+        - { ip: 155, hostname: pc2-aj12 }
+        - { ip: 156, hostname: pc2-aj13 }
+        - { ip: 157, hostname: pc2-aj14 }
+        - { ip: 158, hostname: pc2-aj15 }
+        - { ip: 159, hostname: pc2-aj16 }
+        - { ip: 160, hostname: pc2-aj17 }
+        - { ip: 161, hostname: pc2-aj18 }
+        - { ip: 162, hostname: pc2-aj19 }
+        - { ip: 163, hostname: pc2-aj20 }
+
+    - name: install pc2
+      ansible.builtin.package:
+        name: pc2
+        state: latest

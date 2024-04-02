@@ -1,0 +1,22 @@
+---
+- name: Install pc2
+  ansible.builtin.package:
+    name: pc2
+    state: latest
+
+- name: Check for pc2v9.ini
+  ansible.builtin.stat:
+    path: /home/icpc/pc2v9.ini
+  register: pc2v9_ini
+
+- name: Copy ini if does not exists
+  ansible.builtin.file:
+    src: /usr/pc2/pc2v9.ini
+    dest: /home/icpc/pc2v9.ini
+  when: not pc2v9_ini.stat.isreg
+
+- name: Update server line
+  ansible.builtin.lineinfile:
+    path: /home/icpc/pc2v9.ini
+    regexp: '^server=.*'
+    line: "server=${pc2server}:50002"

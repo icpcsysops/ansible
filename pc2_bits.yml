@@ -6,7 +6,7 @@
     - role: hyperthreadingdisabled
 
   tasks:
-    - name: create ~icpc/.ssh if it does not exist
+    - name: Create ~icpc/.ssh if it does not exist
       ansible.builtin.file:
         path: /home/icpc/.ssh
         state: directory
@@ -14,7 +14,7 @@
         group: icpc
         owner: icpc
 
-    - name: copy authorized_keys2 to icpc
+    - name: Copy authorized_keys2 to icpc
       ansible.builtin.copy:
         src: pc2.authorized_keys2
         dest: /home/icpc/.ssh/authorized_keys2
@@ -74,7 +74,16 @@
         - { ip: 162, hostname: pc2-aj19 }
         - { ip: 163, hostname: pc2-aj20 }
 
-    - name: install pc2
-      ansible.builtin.package:
-        name: pc2
-        state: latest
+- name: configure wf46 pc2 machines
+  hosts: pc2server-wf46,ccsadmin[1-4]
+
+  roles:
+    - role: pc2client
+
+- name: configure wf47 pc2 machines
+  hosts: pc2server-wf47,ccsadmin[5-8]
+  vars:
+    pc2server: 10.3.3.221
+
+  roles:
+    - role: pc2client

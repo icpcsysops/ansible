@@ -323,6 +323,7 @@
     printer_name: balloonprinter
   roles:
     - role: cups
+    - role: balloonprinter
 
 - name: Configure ccsadmin printers
   hosts: ccsadmin*

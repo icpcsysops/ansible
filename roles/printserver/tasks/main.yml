@@ -124,3 +124,10 @@
       ansible.builtin.command: lpadmin -p teamprint3 -c contest
       changed_when: true
       when: not lpstat_contest.stdout is search("teamprint3")
+
+
+# TODO: add the university names+logos, and team photos
+# They go in files like this, with names based on
+# /usr/share/cups/data/UniversityNames/$user.txt
+# /usr/share/cups/data/Pictures/$user.png
+# /usr/share/cups/data/Logos/$user.png

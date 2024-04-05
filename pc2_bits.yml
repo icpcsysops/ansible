@@ -34,8 +34,10 @@
         - { ip: 207, hostname: cds-wf46 }
         - { ip: 215, hostname: domserver-wf46 }
         - { ip: 218, hostname: domserver-wf47 }
-        - { ip: 241, hostname: pc2server-wf46 }
-        - { ip: 242, hostname: pc2server-wf47 }
+        - { ip: 214, hostname: pc2-wf46 }
+        - { ip: 221, hostname: pc2-wf47 }
+        - { ip: 222, hostname: pc2backup-wf46 }
+        - { ip: 223, hostname: pc2backup-wf47 }
         - { ip: 232, hostname: ccsadmin1 }
         - { ip: 233, hostname: ccsadmin2 }
         - { ip: 234, hostname: ccsadmin3 }

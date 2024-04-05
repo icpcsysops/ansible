@@ -29,6 +29,12 @@
     group: root
   notify: Restart prometheus
 
+- name: Start prometheus service
+  ansible.builtin.service:
+    name: prometheus
+    state: started
+    enabled: true
+
 # Setup loki which gathers our logs
 - name: Install loki
   ansible.builtin.unarchive:
@@ -103,6 +109,12 @@
     src: dashboards/
     dest: /etc/grafana/dashboards/
   notify: Restart grafana
+
+- name: Start grafana service
+  ansible.builtin.service:
+    name: grafana-server
+    state: started
+    enabled: true
 
 # Setup nginx with selfsigned certificate
 - name: Copy ssl cert

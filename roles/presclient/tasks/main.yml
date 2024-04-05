@@ -105,8 +105,11 @@
 
 - name: Add bat script to launch the presentation client
   ansible.windows.win_copy:
-    content: |
-      c:/Users/{{ ansible_user }}/Desktop/presclient/client.bat {{ presclient_cds_url }} {{ presclient_user }} {{ presclient_pass }} --name {{ inventory_hostname }} # noqa: yaml[line-length]
+    content: >
+      c:/Users/{{ ansible_user }}/Desktop/presclient/client.bat
+      {{ presclient_cds_url }}
+      {{ presclient_user }} {{ presclient_pass }}
+      --name {{ inventory_hostname }}
     dest: /Users/{{ ansible_user }}/Desktop/launch_pres_client.bat
 
 - name: Copy a shortcut to launch the presentation client

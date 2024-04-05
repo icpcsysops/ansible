@@ -1,5 +1,5 @@
 ---
-- name: configure pc2 machines
+- name: Configure pc2 machines
   hosts: pc2*,ccsadmin*
 
   roles:
@@ -10,7 +10,7 @@
       ansible.builtin.file:
         path: /home/icpc/.ssh
         state: directory
-        mode: 0700
+        mode: '0700'
         group: icpc
         owner: icpc
 
@@ -18,7 +18,7 @@
       ansible.builtin.copy:
         src: pc2.authorized_keys2
         dest: /home/icpc/.ssh/authorized_keys2
-        mode: 0700
+        mode: '0700'
         group: icpc
         owner: icpc
 
@@ -74,13 +74,13 @@
         - { ip: 162, hostname: pc2-aj19 }
         - { ip: 163, hostname: pc2-aj20 }
 
-- name: configure wf46 pc2 machines
+- name: Configure wf46 pc2 machines
   hosts: pc2server-wf46,ccsadmin[1-4]
 
   roles:
     - role: pc2client
 
-- name: configure wf47 pc2 machines
+- name: Configure wf47 pc2 machines
   hosts: pc2server-wf47,ccsadmin[5-8]
   vars:
     pc2server: 10.3.3.221

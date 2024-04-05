@@ -12,7 +12,7 @@ judges = {}
 others = {}
 if args.wf:
     name = "wf2023"
-    detail = "2023Sharm"
+    detail = "2023Luxor"
     timezone = "Africa/Cairo"
     max_team = 140
     max_human_judge = 14

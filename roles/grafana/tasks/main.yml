@@ -107,14 +107,18 @@
 # Setup nginx with selfsigned certificate
 - name: Copy ssl cert
   ansible.posix.synchronize:
-    src: ssl.crt
+    # src: ssl.crt
+    src: /etc/ssl/certs/ssl-cert-snakeoil.pem
     dest: /etc/ssl/certs/grafana.crt
+    remote_src: true
   notify: Restart nginx
 
 - name: Copy ssl key
   ansible.posix.synchronize:
-    src: ssl.key
+    # src: ssl.key
+    src: /etc/ssl/private/ssl-cert-snakeoil.key
     dest: /etc/ssl/private/grafana.key
+    remote_src: true
   notify: Restart nginx
 
 - name: Copy default nginx config

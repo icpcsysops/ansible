@@ -1,7 +1,7 @@
 ---
 exclude_paths:
-  - ../.github/
-  - ../roles/stuvusIT.systemd-timesyncd/
+  - .github/
+  - roles/stuvusIT.systemd-timesyncd
 
 skip_list:
   # completely ignore these two rules

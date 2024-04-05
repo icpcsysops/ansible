@@ -13,8 +13,8 @@
     src: https://github.com/grafana/loki/releases/download/v2.5.0/promtail-linux-amd64.zip
     dest: /usr/bin/
     remote_src: true
-    owner: domjudge
-    group: domjudge
+    owner: root
+    group: root
   when: prom
 
 - name: Dir for promtail settings
@@ -27,14 +27,14 @@
   when: prom
 
 - name: Set promtail settings
-  ansible.builtin.copy:
-    src: promtail-local-config.yaml
+  ansible.builtin.template:
+    src: promtail-local-config.yaml.j2
     dest: /etc/promtail/
     owner: root
     group: root
     mode: "0644"
   when: prom
-  notify: restart promtail
+  notify: Restart promtail
 
 - name: Setup promtail systemd
   ansible.builtin.copy:
@@ -44,7 +44,7 @@
     owner: root
     group: root
   when: prom
-  notify: restart promtail
+  notify: Restart promtail
 
 - name: Start promtail service
   ansible.builtin.service:

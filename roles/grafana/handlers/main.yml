@@ -19,6 +19,12 @@
     enabled: true
     state: restarted
 
+- name: Restart prometheus
+  ansible.builtin.service:
+    name: prometheus
+    enabled: true
+    state: restarted
+
 - name: Restart grafana
   ansible.builtin.service:
     name: grafana-server

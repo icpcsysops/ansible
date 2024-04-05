@@ -12,85 +12,85 @@ scrape_configs:
   - job_name: 'db'
     static_configs:
       - targets:
-{% for host in groups["domserver"] %}
+{%if "domserver" in groups %}{% for host in groups["domserver"] %}
         - {{ hostvars[host].ansible_host }}:9104
-{% endfor %}
+{% endfor %}{% endif %}
   - job_name: node_domserver
     static_configs:
       - targets:
-{% for host in groups["domserver"] %}
+{%if "domserver" in groups %}{% for host in groups["domserver"] %}
         - {{ hostvars[host].ansible_host }}:9100
-{% endfor %}
+{% endfor %}{% endif %}
   - job_name: node_judgehost
     static_configs:
       - targets:
-{% for host in groups["judgehost"] %}
+{%if "judgehost" in groups %}{% for host in groups["judgehost"] %}
         - {{ hostvars[host].ansible_host }}:9100
-{% endfor %}
+{% endfor %}{% endif %}
   - job_name: node_grafana
     static_configs:
       - targets:
-{% for host in groups["grafana"] %}
+{%if "grafana" in groups %}{% for host in groups["grafana"] %}
         - {{ hostvars[host].ansible_host }}:9100
-{% endfor %}
+{% endfor %}{% endif %}
   - job_name: node_mgmt
     static_configs:
       - targets:
-{% for host in groups["mgmt"] %}
+{%if "mgmt" in groups %}{% for host in groups["mgmt"] %}
         - {{ hostvars[host].ansible_host }}:9100
-{% endfor %}
+{% endfor %}{% endif %}
   - job_name: node_scoreboard
     static_configs:
       - targets:
-{% for host in groups["scoreboard"] %}
+{%if "scoreboard" in groups %}{% for host in groups["scoreboard"] %}
         - {{ hostvars[host].ansible_host }}:9100
-{% endfor %}
+{% endfor %}{% endif %}
   - job_name: node_cds
     static_configs:
       - targets:
-{% for host in groups["cds"] %}
+{%if "cds" in groups %}{% for host in groups["cds"] %}
         - {{ hostvars[host].ansible_host }}:9100
-{% endfor %}
+{% endfor %}{% endif %}
   - job_name: node_teams
     static_configs:
       - targets:
-{% for host in groups["contestants"] %}
+{%if "contestants" in groups %}{% for host in groups["contestants"] %}
         - {{ hostvars[host].ansible_host }}:9100
-{% endfor %}
+{% endfor %}{% endif %}
   - job_name: domjudge
     basic_auth:
       username: admin
-      password: {{ ADMIN_PASSWORD }}
+      password: {{ ADMIN_PASSWORD|default('admin') }}
     metrics_path: /api/v4/metrics/prometheus
     scheme: https
     tls_config:
       insecure_skip_verify: true
     static_configs:
       - targets:
-{% for host in groups["domserver"] %}
+{%if "domserver" in groups %}{% for host in groups["domserver"] %}
         - {{ hostvars[host].ansible_host }}
-{% endfor %}
+{% endfor %}{% endif %}
   - job_name: 'web_nginx_cds'
     static_configs:
       - targets:
-{% for host in groups["cds"] %}
+{%if "cds" in groups %}{% for host in groups["cds"] %}
         - {{ hostvars[host].ansible_host }}:9113
-{% endfor %}
+{% endfor %}{% endif %}
   - job_name: 'web_nginx_scoreboard'
     static_configs:
       - targets:
-{% for host in groups["scoreboard"] %}
+{%if "scoreboard" in groups %}{% for host in groups["scoreboard"] %}
         - {{ hostvars[host].ansible_host }}:9113
-{% endfor %}
+{% endfor %}{% endif %}
   - job_name: 'web_nginx_domserver'
     static_configs:
       - targets:
-{% for host in groups["domserver"] %}
+{%if "domserver" in groups %}{% for host in groups["domserver"] %}
         - {{ hostvars[host].ansible_host }}:9113
-{% endfor %}
+{% endfor %}{% endif %}
   - job_name: 'web_fpm_domserver'
     static_configs:
       - targets:
-{% for host in groups["domserver"] %}
+{%if "domserver" in groups %}{% for host in groups["domserver"] %}
         - {{ hostvars[host].ansible_host }}:9253
-{% endfor %}
+{% endfor %}{% endif %}

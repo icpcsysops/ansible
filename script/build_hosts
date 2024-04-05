@@ -125,6 +125,10 @@ ldapserver:
       ansible_host: 10.3.3.210
 """
         document = f"""
+grafana:
+  hosts:
+    backup:
+      ansible_host: 10.3.3.210
 ntpservers:
   hosts:
      backup:

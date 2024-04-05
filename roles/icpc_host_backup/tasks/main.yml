@@ -10,7 +10,6 @@
       - perl
       - tcsh
       - fping
-      # - ntp # this removes systemd-timesyncd, which is not what we want
       - libproc-processtable-perl
       - exfat-fuse
       - awscli
@@ -46,15 +45,6 @@
     dest: /etc/hosts
     mode: '0644'
   when: not per_contest_hosts.stat.exists
-
-# we use systemd-timesyncd instead
-# - name: Update ntp.conf
-#   ansible.builtin.copy:
-#     src: files/ntp.conf.new
-#     dest: /etc/ntp.conf
-#     mode: '0644'
-#   notify:
-#     - NTP
 
 - name: Install rsyslog.d config
   ansible.builtin.copy:

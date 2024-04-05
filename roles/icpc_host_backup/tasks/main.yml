@@ -64,14 +64,16 @@
   notify:
     - Rsyslog
 
-# TODO: this ruleset is bad/conflicts with /etc/logrotate.d/rsyslog for most of it's files
-# - name: Install logrotate.d config
-#   ansible.builtin.copy:
-#     src: files/ZZicpc
-#     dest: /etc/logrotate.d/ZZicpc
-#     mode: '0644'
-#   notify:
-#     - Logrotate
+# Overwrite the default rsyslog.conf file with our custom one
+# It switches weekly to daily, and adds a couple extra logfiles
+# to monitor.
+- name: Install logrotate.d config
+  ansible.builtin.copy:
+    src: files/icpc-logrotate.conf
+    dest: /etc/logrotate.d/rsyslog
+    mode: '0644'
+  notify:
+    - Logrotate
 
 - name: Update iptables.rules
   ansible.builtin.template:

@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: run ansible lint
-        run: /usr/local/bin/ansible-lint -vvv -c .config/ansible-lint.yml
+        run: /usr/local/bin/ansible-lint -c .config/ansible-lint.yml
         env:
           # These tell ansible-lint to use github compatible annotation format:
           GITHUB_ACTIONS: "true"

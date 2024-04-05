@@ -5,7 +5,7 @@
 # WLP_USER_DIR = the place where we put each instance (cds/live/p100)
 # WLP_OUTPUT_DIR = the place it writes random temp files and whatnot
 
-- name: load accounts from yaml
+- name: Load accounts from yaml
   ansible.builtin.include_vars:
     name: cdsaccounts-{{ cds_name }}
     file: "{{ cds_instance.accounts }}"

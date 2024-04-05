@@ -119,3 +119,4 @@
   community.windows.win_shortcut:
     src: "c:/Users/{{ ansible_user }}/Desktop/presclient.lnk"
     dest: "%ProgramData%/Microsoft/Windows/Start Menu/Programs/Startup/presclient.lnk"
+

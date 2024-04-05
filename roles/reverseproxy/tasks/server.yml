@@ -3,6 +3,7 @@
   ansible.builtin.apt:
     pkg: nginx
     state: present
+    policy_rc_d: 101 # prevent nginx from starting after installation
 
 - name: Remove default nginx configuration
   ansible.builtin.file:

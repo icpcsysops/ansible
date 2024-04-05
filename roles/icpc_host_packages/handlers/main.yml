@@ -9,11 +9,12 @@
     name: systemd-resolved
     state: restarted
 
-- name: NTP
-  ansible.builtin.service:
-    name: ntp
-    state: restarted
+# We use systemd-timesyncd instead
+# - name: NTP
+#   ansible.builtin.service:
+#     name: ntp
+#     state: restarted
 
-- name: Iptablesload
+- name: IptablesLoad
   ansible.builtin.command: /etc/network/if-pre-up.d/iptablesload
   changed_when: false

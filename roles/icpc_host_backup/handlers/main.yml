@@ -3,22 +3,22 @@
     name: systemd-resolved
     state: restarted
 
-- name: NTP
-  ansible.builtin.service:
-    name: ntp
-    state: restarted
+# - name: NTP
+#   ansible.builtin.service:
+#     name: ntp
+#     state: restarted
 
 - name: Rsyslog
   ansible.builtin.service:
     name: rsyslog
     state: restarted
 
-- name: Logrorate
+- name: Logrotate
   ansible.builtin.service:
     name: logrotate
     state: restarted
 
-- name: Iptablesload
+- name: IptablesLoad
   ansible.builtin.command: /etc/network/if-pre-up.d/iptablesload
   changed_when: false
 

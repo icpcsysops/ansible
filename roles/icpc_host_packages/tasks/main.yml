@@ -10,13 +10,15 @@
   notify:
     - Systemd-resolved
 
-- name: Update ntp.conf
-  ansible.builtin.copy:
-    src: ntp.conf.new
-    dest: /etc/ntp.conf
-    mode: '0644'
-  notify:
-    - NTP
+# This seems to be part of icpc_host_backup?
+# And also, aren't we using systemd-timesyncd
+# - name: Update ntp.conf
+#   ansible.builtin.copy:
+#     src: ntp.conf.new
+#     dest: /etc/ntp.conf
+#     mode: '0644'
+#   notify:
+#     - NTP
 
 - name: Update iptables.rules
   ansible.builtin.template:
@@ -33,19 +35,18 @@
       - iptables
       - bash
       - ssl-cert
-      - ntp
+      # - ntp # this replaces/removes systemd-timesyncd, which we use instead
       - awscli
     state: present
 
 - name: Configure apache2
-  notify:
-    - Apache2
   block:
     - name: Install packages.pem
       ansible.builtin.copy:
         src: /root/ca/intermediate/certs/packages.cert.pem
         dest: /etc/ssl/certs/packages.pem
         mode: '0644'
+      notify: Apache2
 
     - name: Install packages.key
       ansible.builtin.copy:
@@ -53,18 +54,21 @@
         dest: /etc/ssl/private/packages.key
         group: ssl-cert
         mode: '0640'
+      notify: Apache2
 
     - name: Install sites-available/packages.conf
       ansible.builtin.copy:
-        src: sites.packages.conf
+        src: files/sites.packages.conf
         dest: /etc/apache2/sites-available/packages.conf
         mode: '0644'
+      notify: Apache2
 
     - name: Install conf-available/packages.conf
       ansible.builtin.copy:
-        src: conf.packages.conf
+        src: files/conf.packages.conf
         dest: /etc/apache2/conf-available/packages.conf
         mode: '0644'
+      notify: Apache2
 
     - name: Ensure we are not listening on port 80
       ansible.builtin.lineinfile:
@@ -74,43 +78,41 @@
         owner: root
         group: root
         mode: '0644'
+      notify: Apache2
 
-    - name: Check if ssl is enabled in apache2 mods
-      ansible.builtin.command: /usr/sbin/a2query -q -m ssl
-      changed_when: false
-      register: a2_ssl
-
+    # creates symlinks in /etc/apache2/mods-enabled
     - name: Enable ssl mod
-      ansible.builtin.command: /usr/sbin/a2enmod -q ssl
-      changed_when: false
-      when: a2_ssl.rc == 0
-
-    - name: Check if packages is enabled in apache2 site
-      ansible.builtin.command: /usr/sbin/a2query -q -s packages
-      changed_when: false
-      register: a2_site
+      ansible.builtin.file:
+        dest: /etc/apache2/mods-enabled/{{ item }}
+        src: /etc/apache2/mods-available/{{ item }}
+        state: link
+      with_items:
+        - ssl.conf
+        - ssl.load
+        # Dependencies that need to be enabled for ssl to work
+        - socache_shmcb.load
+        # These are probably enabled by default, but might as well list them here too?
+        - mime.conf
+        - mime.load
+        - setenvif.conf
+        - setenvif.load
 
     - name: Enable packages site
-      ansible.builtin.command: /usr/sbin/a2ensite -q packages
-      changed_when: false
-      when: a2_site.rc == 0
-
-    - name: Check if packages is enabled in apache2 conf
-      ansible.builtin.command: /usr/sbin/a2query -q -c packages
-      changed_when: false
-      register: a2_conf
+      ansible.builtin.file:
+        dest: /etc/apache2/sites-enabled/packages.conf
+        src: /etc/apache2/sites-available/packages.conf
+        state: link
+      notify: Apache2
 
     - name: Enable packages conf
-      ansible.builtin.command: /usr/sbin/a2enconf -q packages
-      changed_when: false
-      when: a2_conf.rc == 0
-
-    - name: Check if 000-default is enabled in apache2 conf
-      ansible.builtin.command: /usr/sbin/a2query -q -c 000-default
-      changed_when: false
-      register: default_conf
+      ansible.builtin.file:
+        dest: /etc/apache2/conf-enabled/packages.conf
+        src: /etc/apache2/conf-available/packages.conf
+        state: link
+      notify: Apache2
 
     - name: Remove 000-default
-      ansible.builtin.command: /usr/sbin/a2dissite -q 000-default
-      changed_when: false
-      when: default_conf.rc == 1
+      ansible.builtin.file:
+        path: /etc/apache2/sites-enabled/000-default.conf
+        state: absent
+      notify: Apache2

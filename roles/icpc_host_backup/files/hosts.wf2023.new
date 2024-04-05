@@ -582,7 +582,7 @@
 172.29.0.58 PreClient8
 172.29.0.59 PreClient9
 
-172.29.0.100 - 172.29.0.149 ICPCLive
+# 172.29.0.100 - 172.29.0.149 ICPCLive
 
 # Analysts
 # 172.29.0.160/27 upto 191
@@ -623,9 +623,9 @@
 172.29.1.250   gview-green
 
 172.29.2.5    CloudKeyManagement-hynan
-172.29.2.10 - 172.29.3.200 - DHCP Range
-172.29.3.201-172.29.3.250 - Switch MGMT area
-172.29.3.251 - FOG/Imaging Server
+#172.29.2.10 - 172.29.3.200 - DHCP Range
+#172.29.3.201-172.29.3.250 - Switch MGMT area
+#172.29.3.251 - FOG/Imaging Server
 
 #VPN VLAN NETWORKS
 # MORE COMING HERE...

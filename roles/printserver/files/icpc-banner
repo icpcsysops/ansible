@@ -2,6 +2,13 @@
 set -euo pipefail
 DATAPATH="/usr/share/cups/data/"
 
+# $1 is job id
+# $2 is user
+# $3 is job name/title
+# $4 is number of copies
+# $5 is job options
+# $6 is the file to print
+
 team="$2"
 created_at="0"
 processed_at="0"

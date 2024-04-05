@@ -10,7 +10,7 @@
       - perl
       - tcsh
       - fping
-      - ntp
+      # - ntp # this removes systemd-timesyncd, which is not what we want
       - libproc-processtable-perl
       - exfat-fuse
       - awscli
@@ -35,38 +35,42 @@
 
 - name: Copy per contest hosts to /etc/hosts
   ansible.builtin.copy:
-    src: "hosts.{{ contest }}.new"
+    src: "files/hosts.{{ contest }}.new"
     dest: /etc/hosts
     mode: '0644'
   when: per_contest_hosts.stat.exists
 
 - name: Copy hosts to /etc/hosts
   ansible.builtin.copy:
-    src: hosts.new
+    src: files/hosts.new
     dest: /etc/hosts
     mode: '0644'
   when: not per_contest_hosts.stat.exists
 
-- name: Update ntp.conf
-  ansible.builtin.copy:
-    src: ntp.conf.new
-    dest: /etc/ntp.conf
-    mode: '0644'
-  notify:
-    - NTP
+# we use systemd-timesyncd instead
+# - name: Update ntp.conf
+#   ansible.builtin.copy:
+#     src: files/ntp.conf.new
+#     dest: /etc/ntp.conf
+#     mode: '0644'
+#   notify:
+#     - NTP
 
 - name: Install rsyslog.d config
   ansible.builtin.copy:
-    src: 40-backup.conf
+    src: files/40-backup.conf
     dest: /etc/rsyslog.d/40-backup.conf
     mode: '0644'
   notify:
     - Rsyslog
 
+# Overwrite the default rsyslog.conf file with our custom one
+# It switches weekly to daily, and adds a couple extra logfiles
+# to monitor.
 - name: Install logrotate.d config
   ansible.builtin.copy:
-    src: ZZicpc
-    dest: /etc/logrotate.d/ZZicpc
+    src: files/icpc-logrotate.conf
+    dest: /etc/logrotate.d/rsyslog
     mode: '0644'
   notify:
     - Logrotate
@@ -86,19 +90,19 @@
     mode: '0755'
 
 - name: Install and start backup_watchdog
-  notify:
-    - Backup_watchdog
   block:
     - name: Install backup_watchdog
       ansible.builtin.copy:
         src: backup_watchdog
         dest: /usr/local/sbin/backup_watchdog
         mode: '0755'
+      notify: Backup_watchdog
     - name: Install backup_watchdog.service
       ansible.builtin.copy:
         src: backup_watchdog.service
         dest: /etc/systemd/system/backup_watchdog.service
         mode: '0644'
+      notify: Backup_watchdog
     - name: Make sure a service unit is running
       ansible.builtin.systemd:
         state: started
@@ -108,24 +112,24 @@
 
 - name: Install par
   ansible.builtin.copy:
-    src: par
+    src: files/par
     dest: /root/contest/backup/scripts/par
     mode: '0755'
 
 - name: Install sh.do_startbackup
   ansible.builtin.copy:
-    src: sh.do_startbackup
+    src: files/sh.do_startbackup
     dest: /root/contest/backup/scripts/sh.do_startbackup
     mode: '0755'
 
 - name: Install sh.backupclient
   ansible.builtin.copy:
-    src: sh.backupclient
+    src: files/sh.backupclient
     dest: /root/contest/backup/scripts/sh.backupclient
     mode: '0755'
 
 - name: Install ssh config
   ansible.builtin.copy:
-    src: root.ssh.config
+    src: files/root.ssh.config
     dest: /root/.ssh.config
     mode: '0600'

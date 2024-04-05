@@ -1,2 +1,3 @@
 ---
 ldap: false
+icpc_host_backup_ntp: "10.3.3.209 10.3.3.210"

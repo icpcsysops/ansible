@@ -5,7 +5,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: docker://quay.io/ansible/creator-ee:v0.5.0
+      image: docker://quay.io/ansible/creator-ee:v24.2.0
       options: "--entrypoint /bin/bash"
     steps:
       - uses: actions/checkout@v2

@@ -8,6 +8,9 @@ skip_list:
   - meta-no-info    # nags about missing metadata for roles
   - package-latest  # nags about not using latest when using apt install
 
+  # nags about variable names starting with role name as a prefix
+  - var-naming[no-role-prefix]
+
 warn_list:
   - yaml  # long lines
   - git-latest

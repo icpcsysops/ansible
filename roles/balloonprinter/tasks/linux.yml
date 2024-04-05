@@ -66,7 +66,7 @@
     owner: root
     group: root
     mode: '0644'
-  notify: restart gdm3
+  notify: Restart gdm3
 
 - name: Check if balloon is installed
   ansible.builtin.stat:

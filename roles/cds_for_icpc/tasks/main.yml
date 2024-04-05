@@ -47,6 +47,7 @@
     year: ansible_date_time.year
 
 - name: Setup local git repo
+  become: true
   become_user: git
   ansible.builtin.git:
     bare: true

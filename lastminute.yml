@@ -171,14 +171,8 @@
     - role: firefox_desktop
     - role: stuvusIT.systemd-timesyncd
       timesync_timezone: "{{ timezone }}"
-      timesync_ntp_hosts:
-        - "{{ baseip }}.208"
-        - "{{ baseip }}.209"
-        - "{{ baseip }}.210"
-      timesync_fallback_ntp_hosts:
-        - "{{ baseip }}.208"
-        - "{{ baseip }}.209"
-        - "{{ baseip }}.210"
+      timesync_ntp_hosts: "{{ ntp_hosts }}"
+      timesync_fallback_ntp_hosts: "{{ fallback_ntp_hosts }}"
       tags: systemd-timesyncd
 
   vars:

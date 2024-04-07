@@ -92,6 +92,12 @@
         state: absent
       when: root_password is defined
 
+    - name: Remove icpc2023 user
+      ansible.builtin.user:
+        name: "icpc2023"
+        state: absent
+      when: root_password is defined
+
     - name: Workaround nautilus auto-mounting
       ansible.builtin.file:
         path: /media

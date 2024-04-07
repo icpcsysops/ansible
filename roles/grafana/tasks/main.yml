@@ -122,6 +122,7 @@
     # src: ssl.crt
     src: /etc/ssl/certs/ssl-cert-snakeoil.pem
     dest: /etc/ssl/certs/grafana.crt
+    mode: "0644"
     remote_src: true
   notify: Restart nginx
 
@@ -130,6 +131,7 @@
     # src: ssl.key
     src: /etc/ssl/private/ssl-cert-snakeoil.key
     dest: /etc/ssl/private/grafana.key
+    mode: "0600"
     remote_src: true
   notify: Restart nginx
 

@@ -116,23 +116,39 @@
     state: started
     enabled: true
 
+- name: Dump grafana cert if found
+  ansible.builtin.copy:
+    content: "{{ grafana_ssl_cert }}"
+    dest: /etc/ssl/certs/grafana.crt
+    mode: "0644"
+  when: grafana_ssl_cert is not None
+  notify: Restart nginx
+
+- name: Dump grafana key if found
+  ansible.builtin.copy:
+    content: "{{ grafana_ssl_key }}"
+    dest: /etc/ssl/private/grafana.key
+    mode: "0644"
+  when: grafana_ssl_cert is not None
+  notify: Restart nginx
+
 # Setup nginx with selfsigned certificate
 - name: Copy ssl cert
   ansible.builtin.copy:
-    # src: ssl.crt
     src: /etc/ssl/certs/ssl-cert-snakeoil.pem
     dest: /etc/ssl/certs/grafana.crt
     mode: "0644"
     remote_src: true
+  when: grafana_ssl_cert is None
   notify: Restart nginx
 
 - name: Copy ssl key
   ansible.builtin.copy:
-    # src: ssl.key
     src: /etc/ssl/private/ssl-cert-snakeoil.key
     dest: /etc/ssl/private/grafana.key
     mode: "0600"
     remote_src: true
+  when: grafana_ssl_key is None
   notify: Restart nginx
 
 - name: Copy default nginx config

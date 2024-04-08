@@ -1,0 +1,3 @@
+---
+# set to false during imaging
+contest_printer_enabled: true

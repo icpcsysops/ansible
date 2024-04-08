@@ -14,7 +14,7 @@ if args.wf:
     name = "wf2023"
     detail = "2023Luxor"
     timezone = "Africa/Cairo"
-    max_team = 140
+    max_team = 146
     max_human_judge = 14
     max_pc2_autojudge = 20
     max_kattis_autojudge = 0
@@ -24,6 +24,7 @@ if args.wf:
     max_ccsadmin = 8
     papersize = "A4"
     enable_vlc = False
+    ccs = "domjudge"
 else:
     name = "nac2023"
     detail = "2023Florida"
@@ -37,6 +38,7 @@ else:
     max_ccsadmin = 0
     papersize = "letter"
     enable_vlc = False
+    ccs = "domjudge"
 
 
 def print_host(num, hostname, ip, list_fh, group, base_ip=0):
@@ -103,7 +105,7 @@ judges:
         print_server("scoreboard", "10.3.3.208", others)
         print_server("packages", "10.3.3.209", others)
         print_server("backup", "10.3.3.210", others)
-        print_server("authprint", "10.3.3.211", others)
+        print_server("printsrv", "10.3.3.211", others)
         print_server("balloonmanager", "10.4.4.149", others)
         # print_server("kattis", "10.3.3.212", others)
         # print_server("kattisbackup", "10.3.3.213", others)
@@ -139,6 +141,7 @@ ntpservers:
        ansible_host: 10.3.3.209
 all:
   vars:
+    ccs: {ccs}
     timezone: {timezone}
     root_password:  REPLACEME_root_password_or_crypt
     disable_sources_list_changes: false

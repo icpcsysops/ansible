@@ -1,0 +1,3 @@
+---
+# useful to disbale during imaging phase
+contest_printer_enabled: true

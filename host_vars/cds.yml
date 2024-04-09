@@ -1,0 +1,7 @@
+---
+extra_nic_configs:
+  - gateway: false
+    address: 10.3.3.207/24
+    ifc_name: enp0s31f6
+    routes:
+      - { network: 10.0.0.0/8, via: 10.3.3.254 }

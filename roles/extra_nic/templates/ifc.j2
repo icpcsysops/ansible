@@ -1,0 +1,12 @@
+auto {{ extra_nic_config.ifc_name }}
+iface {{ extra_nic_config.ifc_name }} inet static
+ address {{ extra_nic_config.address | ipaddr('address') }}
+ netmask {{ extra_nic_config.address | ipaddr('netmask') }}
+{% if extra_nic_config.gateway %}
+ gateway {{ extra_nic_config.gateway }}
+{% else -%}
+{% for route in extra_nic_config.routes -%}
+ post-up ip route add {{ route.network }} dev {{ extra_nic_config.ifc_name }} via {{ route.via }}
+{% endfor -%}
+{% endif -%}
+

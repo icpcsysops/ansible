@@ -1,6 +1,0 @@
-auto {{ ifc_list.stdout_lines[1] }}
-iface {{ ifc_list.stdout_lines[1] }} inet static
- address 172.29.1.{{ ip_subnet4.stdout_lines[0] }}
- netmask 255.255.252.0
- gateway 172.29.0.1
-

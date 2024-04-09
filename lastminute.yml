@@ -15,10 +15,16 @@
   roles:
     - role: icpc_host_backup
 
-- name: Configure dual_nic machines
+- name: Configure extra_nic machines
   hosts: backup*, scoreboard*, cds*, packages
-  roles:
-    - role: dual_nic
+  tags: extra_nics
+  tasks:
+    - name: Configure nics
+      ansible.builtin.include_role:
+        name: extra_nic
+      vars:
+        extra_nic_config: "{{ item }}"
+      loop: "{{ extra_nic_configs }}"
 
 - name: Configure coachview machines
   hosts: coachview*
@@ -338,7 +344,7 @@
       when: ccs  == "domjudge"
 
 - name: Configure others printers
-  hosts: others:!authprint
+  hosts: others:!printsrv
   vars:
     job_sheet: null
     device_uri: 'printers/systemsprinter'
@@ -347,6 +353,6 @@
     - role: cups
 
 - name: Configure printserver
-  hosts: authprint
+  hosts: printsrv
   roles:
     - role: printserver

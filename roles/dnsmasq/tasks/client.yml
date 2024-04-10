@@ -9,3 +9,14 @@
     mode: '0644'
   notify:
     - Systemd-resolved
+
+- name: Send single label names to the dns resolver (e.g. green)
+  ansible.builtin.replace:
+    path: /etc/systemd/resolved.conf
+    regexp: '^[#]?ResolveUnicastSingleLabel=.*'
+    replace: "ResolveUnicastSingleLabel=yes"
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Systemd-resolved

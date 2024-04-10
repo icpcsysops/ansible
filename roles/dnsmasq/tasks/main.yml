@@ -1,0 +1,18 @@
+---
+- name: Install dnsmasq
+  ansible.builtin.package:
+    pkg: dnsmasq
+    state: present
+
+- name: Configure dnsmasq
+  ansible.builtin.template:
+    src: templates/dnsmasq.conf.j2
+    dest: /etc/dnsmasq.conf
+    mode: "0644"
+  notify: Restart dnsmasq
+
+- name: Enable+start dnsmasq
+  ansible.builtin.service:
+    name: dnsmasq
+    enabled: true
+    state: started

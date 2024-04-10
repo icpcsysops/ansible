@@ -1,0 +1,11 @@
+---
+- name: Configure resolved to point at dnsmasq
+  ansible.builtin.replace:
+    path: /etc/systemd/resolved.conf
+    regexp: '^[#]?DNS=.*'
+    replace: "DNS={{ dnsmasq_server }}:{{ dnsmasq_port }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Systemd-resolved

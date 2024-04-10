@@ -1,0 +1,8 @@
+port={{ dnsmasq_port }}
+
+# We are the only dns server, don't try to forward queries elsewhere
+no-resolv
+
+# if you want it to read another file, as well as /etc/hosts, use
+# this.
+#addn-hosts=/etc/banner_add_hosts

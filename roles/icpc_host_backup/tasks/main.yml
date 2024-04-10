@@ -33,24 +33,14 @@
   notify:
     - Systemd-resolved
 
-- name: Get file stat of per contest hosts to be able to perform a check in the following tasks
-  ansible.builtin.stat:
-    path: "hosts.{{ contest }}.new"
-  register: per_contest_hosts
-
 - name: Copy per contest hosts to /etc/hosts
   ansible.builtin.copy:
-    src: "files/hosts.{{ contest }}.new"
+    src: "{{ item }}"
     dest: /etc/hosts
     mode: '0644'
-  when: per_contest_hosts.stat.exists
-
-- name: Copy hosts to /etc/hosts
-  ansible.builtin.copy:
-    src: files/hosts.new
-    dest: /etc/hosts
-    mode: '0644'
-  when: not per_contest_hosts.stat.exists
+  with_first_found:
+    - files/hosts.{{ contest }}.new
+    - files/hosts.new
 
 - name: Install rsyslog.d config
   ansible.builtin.copy:

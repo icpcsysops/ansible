@@ -8,7 +8,7 @@
   tasks:
     - name: Create ~icpc2023/.ssh if it does not exist
       ansible.builtin.file:
-        path: /home/icpc/.ssh
+        path: /home/icpc2023/.ssh
         state: directory
         mode: "0700"
         group: icpc2023

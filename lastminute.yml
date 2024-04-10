@@ -13,6 +13,7 @@
 - name: Configure backups
   hosts: backup*
   roles:
+    - role: dnsmasq
     - role: script_server
     - role: icpc_host_backup
 
@@ -31,6 +32,20 @@
   hosts: coachview*
   roles:
     - role: coachview
+
+- name: Configure everything but contestants to use backup for dns
+  hosts: judges,others,!backup
+  tasks:
+    - import_role:
+        name: dnsmasq
+        tasks_from: client.yml
+      tags: dnsmasq
+
+- name: Configure servers (but not DOMjudge) to run node exporter
+  hosts: all:!dom*
+  roles:
+    - role: prometheus_target_all
+      tags: prom
 
 - name: Configure contestant machines
   hosts: contestants
@@ -54,8 +69,6 @@
     - role: iptablesrules
     - role: martkeys
       when: disable_martkeys is not defined or not disable_martkeys
-    - role: prometheus_target_all
-      tags: prom
 
   tasks:
     - name: Switch from files to compat in nsswitch

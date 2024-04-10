@@ -483,6 +483,8 @@
 10.3.3.92   cdsadmin3
 # ICPC Servers
 10.3.3.197 cds-wf47
+10.3.3.198 emergency-wf46
+10.3.3.199 emergency-wf47
 10.3.3.205  reverseproxy
 10.3.3.206    media
 10.3.3.207    cds cds-wf46

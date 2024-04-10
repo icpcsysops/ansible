@@ -19,6 +19,10 @@
 -A OUTPUT -o lo -j ACCEPT
 
 # open up server to server communication
+-A OUTPUT -d 10.3.3.197 -j ACCEPT
+-A INPUT -s 10.3.3.197 -j ACCEPT
+-A OUTPUT -d 10.3.3.207 -j ACCEPT
+-A INPUT -s 10.3.3.207 -j ACCEPT
 -A OUTPUT -d 10.3.3.208/29 -j ACCEPT
 -A INPUT -s 10.3.3.208/29 -j ACCEPT
 
@@ -81,8 +85,6 @@
 
 # ssh outbound
 -A OUTPUT -p tcp -m tcp --dport 22 -j ACCEPT
--A OUTPUT -p tcp -m tcp --dport 22 -j ACCEPT
--A INPUT -p tcp -m tcp --sport 22 -j ACCEPT
 -A INPUT -p tcp -m tcp --sport 22 -j ACCEPT
 
 # syslog

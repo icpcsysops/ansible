@@ -14,8 +14,8 @@ cds_config:
   cds-wf46:
     http_port: 8046
     https_port: 8446
-    contests: &contests-wf46
-      - name: systest0
+    contests: &contests_wf46
+      - name: systest0-wf46
         path: wf46/systest0
         # ccs:
         #   url: https://domjudge.nac.icpc.global/api/contests/NAC-2023-real
@@ -26,17 +26,17 @@ cds_config:
   cds-wf47:
     http_port: 8047
     https_port: 8447
-    contests: &contests-wf47
-      - name: systest0
+    contests: &contests_wf47
+      - name: systest0-wf47
         path: wf47/systest0
     accounts: cds/cds-accounts.yaml
   p100-wf46:
     http_port: 9046
     https_port: 9446
-    contests: *contests-wf46
+    contests: *contests_wf46
     accounts: cds/p100-accounts.yaml
   p100-wf47:
     http_port: 9047
     https_port: 9447
-    contests: *contests-wf47
+    contests: *contests_wf47
     accounts: cds/p100-accounts.yaml

@@ -104,7 +104,7 @@
 - name: Clone the contest repo
   become: true
   become_user: cds
-  ansible.builtin.git:
+  ansible.builtin.git: # noqa: latest
     repo: "{{ cds_contest_git_repo }}"
     dest: /mnt/{{ ansible_hostname }}/cds/contest_repo
 
@@ -122,6 +122,6 @@
     cds_name: "{{ outeritem.key }}"
     cds_instance: "{{ outeritem.value }}"
     needs_restart: updated_war.changed
-  with_dict: "{{ CDS }}"
+  with_dict: "{{ cds_config }}"
   loop_control:
     loop_var: outeritem

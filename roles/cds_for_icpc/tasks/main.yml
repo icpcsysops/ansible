@@ -24,7 +24,7 @@
     create_home: true
     state: present
 
-- name: Ensure {{ git_home_dir }}/git-shell-commands exists
+- name: Ensure ~git/git-shell-commands exists
   ansible.builtin.file:
     path: "{{ git_home_dir }}/git-shell-commands"
     owner: git

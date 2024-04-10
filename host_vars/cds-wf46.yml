@@ -6,12 +6,11 @@ extra_nic_configs:
     routes:
       - { network: 10.0.0.0/8, via: 10.3.3.254 }
 
-
 cds_version: 2.5.984
 cds_contest_git_repo: /mnt/cds-wf46/git/wfluxor.git
-#cds_contest_git_repo: git@cds-wf46:/wfluxor.git
+# cds_contest_git_repo: git@cds-wf46:/wfluxor.git
 
-CDS:
+cds_config:
   cds:
     http_port: 80
     https_port: 443
@@ -29,4 +28,3 @@ CDS:
     https_port: 9443
     contests: *contests
     accounts: cds/p100-accounts.yaml
-

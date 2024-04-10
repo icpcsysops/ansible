@@ -22,3 +22,56 @@ extra_nic_configs:
       - { network: 10.0.0.0/8, via: 10.3.3.254 }
 # TODO update this
 green_network_ifc: enp0s0
+
+# script server config below here:
+script_server_url: files/script-server.zip
+
+script_server_admin_users: &admin_users
+  # hostnames or ips
+  - backup
+  - 127.0.0.1
+
+# ansible hostgroups to ignore
+script_server_ignored_groups:
+  - 'all'
+  - 'ungrouped'
+  - 'contestants'
+
+script_server_commands:
+  - name: run-lastminute
+    description: Runs the ansible playbook lastminute.yml
+    group: ansible # for organization in script-server
+    allowed_users:
+      - backup # or 10.3.3.210 (the ansible template will resolve names to IPs)
+    content: |
+      #!/usr/bin/bash
+      echo "hello world $HOSTPATTERN"
+    parameters:
+      - name: host_pattern
+        # pass_as: env_variable # this is default
+        # env_var: host_pattern # default is same as name
+        type: list
+        values:
+          - all
+          - backup
+          - packages
+          - scoreboard
+          - cds
+
+  # - name: refresh-git
+  #   description: Update git on the CDS
+  #   group: cds
+  #   allowed_users: 10.3.3.207 # cds host
+  #   content: |
+  #     #!/usr/bin/bash
+  #     ssh root@cds bash -c 'cd /opt/git && git pull'
+
+  # - name: restart-cds
+  #   description: Restarts cds and p100 instances
+  #   group: cds
+  #   allowed_users: 10.3.3.207 # cds host
+  #   content: |
+  #     #!/usr/bin/bash
+  #     ssh root@cds systemctl restart cds_instance@cds
+  #     ssh root@cds systemctl restart cds_instance@p100
+  #     # ssh root@cds systemctl restart cds_instance@live

@@ -13,6 +13,7 @@
 - name: Configure backups
   hosts: backup*
   roles:
+    - role: script_server
     - role: icpc_host_backup
 
 - name: Configure extra_nic machines

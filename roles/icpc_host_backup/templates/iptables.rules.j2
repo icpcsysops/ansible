@@ -50,6 +50,12 @@
 -A INPUT -p udp --sport 53 -j ACCEPT
 -A OUTPUT -p udp --dport 53 -j ACCEPT
 
+# DNS inbound from 10.3 (servers) and 10.2(judges)
+-A INPUT -p tcp --dport 5353 -s 10.3.3.0/24 -j ACCEPT
+-A OUTPUT -p tcp --sport 5353 -d 10.3.3.0/24 -j ACCEPT
+-A INPUT -p tcp --dport 5353 -s 10.2.2.0/24 -j ACCEPT
+-A OUTPUT -p tcp --sport 5353 -d 10.2.2.0/24 -j ACCEPT
+
 # http outbound
 -A INPUT -p tcp --sport 80 -j ACCEPT
 -A OUTPUT -p tcp --dport 80 -j ACCEPT

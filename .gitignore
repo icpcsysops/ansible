@@ -2,3 +2,4 @@
 /list.*
 /venv
 /vars
+/files/*.zip

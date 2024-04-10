@@ -477,6 +477,10 @@
 10.3.3.6    score6 # windows
 10.3.3.7    score7 # windows
 10.3.3.8    score8 # windows
+# Admin Machines
+10.3.3.90   cdsadmin1
+10.3.3.91   cdsadmin2
+10.3.3.92   cdsadmin3
 # ICPC Servers
 10.3.3.197 cds-wf47
 10.3.3.205  reverseproxy

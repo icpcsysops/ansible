@@ -14,8 +14,10 @@
       - exfat-fuse
       - awscli
       - python3.10-venv
+      - git-cola
         # consider adding these to the iso
       - jq
+      - htop
       - curl
       - vim
     state: present

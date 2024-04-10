@@ -12,6 +12,8 @@ script_server_ignored_groups:
   - 'all'
   - 'ungrouped'
   - 'contestants'
+  - 'contestants_wf46'
+  - 'contestants_wf47'
 
 
 script_server_commands:

@@ -31,12 +31,6 @@ script_server_admin_users: &admin_users
   - backup
   - 127.0.0.1
 
-# ansible hostgroups to ignore
-script_server_ignored_groups:
-  - 'all'
-  - 'ungrouped'
-  - 'contestants'
-
 script_server_commands:
   - name: run-lastminute
     description: Runs the ansible playbook lastminute.yml

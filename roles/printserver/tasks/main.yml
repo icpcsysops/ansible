@@ -8,6 +8,7 @@
     - { ip: 10.4.4.201, name: teamprint1 }
     - { ip: 10.4.4.202, name: teamprint2 }
     - { ip: 10.4.4.203, name: teamprint3 }
+    - { ip: 10.4.4.204, name: judgeprint }
     - { ip: 10.4.4.205, name: systemsprint }
 
 - name: Install packages needed to munging pdfs
@@ -46,9 +47,20 @@
   when: lpstat_judgeprint.rc != 0
   changed_when: false
 
-- name: Set the judgeprint as default
-  ansible.builtin.command: lpadmin -d judgeprint
-  when: lpstat_judgeprint.rc != 0
+- name: Check if the systemsprint exists
+  ansible.builtin.command: lpstat -p systemsprint
+  register: lpstat_systemsprint
+  changed_when: false
+  ignore_errors: true
+
+- name: Lpadmin add systemsprint printer
+  ansible.builtin.command: lpadmin -p systemsprint -E -v ipp://systemsprint -m everywhere # noqa: yaml[line-length]
+  when: lpstat_systemsprint.rc != 0
+  changed_when: false
+
+- name: Set the systemsprint as default
+  ansible.builtin.command: lpadmin -d systemsprint
+  when: lpstat_systemsprint.rc != 0
   changed_when: false
 
 - name: Check if the balloonprinter exists

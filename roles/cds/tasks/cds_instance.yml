@@ -21,11 +21,24 @@
 
 - name: Create CDS directories
   ansible.builtin.file:
-    path: /var/lib/cds/{{ cds_instance_name }}
+    path: /var/lib/cds/{{ cds_instance_name }}/resources/security
     state: directory
     owner: cds
     group: cds
     mode: '0755'
+
+- name: Copy the key.p12 for the instance
+  ansible.builtin.copy:
+    src: files/cds-key.p12
+    dest: /var/lib/cds/{{ cds_instance_name }}/resources/security/key.p12
+    owner: cds
+    group: cds
+    mode: "0640"
+  register: keyp12_updated
+
+- name: "Update cds_needs_restart: after updating the key.p12 (ssl certs)"
+  ansible.builtin.set_fact:
+    cds_needs_restart: "{{ cds_needs_restart | bool or keyp12_updated.changed }}"
 
 - name: Make sure directories exist
   ansible.builtin.file:

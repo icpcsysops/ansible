@@ -84,9 +84,16 @@
   ansible.builtin.set_fact:
     cds_needs_restart: "{{ cds_needs_restart | bool or cds_config_updated.changed }}"
 
+- name: Create symlink to the git repo
+  ansible.builtin.file:
+    src: /mnt/{{ ansible_hostname }}/cds/contest_repo/contests/{{ item.path }}
+    dest: /srv/cds/contests/{{ item.name }}
+    state: link
+  loop: "{{ cds_contests }}"
+
 - name: Create contest specific directory
   ansible.builtin.file:
-    path: /srv/cds/contests/{{ item.path }}
+    path: /srv/cds/contests/{{ item.name }}
     state: directory
     owner: cds
     group: cds

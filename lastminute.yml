@@ -312,6 +312,12 @@
       reverseproxy_server: true
       tags: reverseproxy
 
+- name: Configure cds-wf46 as the git server
+  hosts: cds-wf46
+  roles:
+    - role: cds_for_icpc
+      tags: cds
+
 - name: Configure the cds instances (new style)
   hosts: cds*
   roles:

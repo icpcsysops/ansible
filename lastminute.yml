@@ -36,7 +36,8 @@
 - name: Configure everything but contestants to use backup for dns
   hosts: judges,others,!backup
   tasks:
-    - import_role:
+    - name: Configure dns client
+      ansible.builtin.import_role:
         name: dnsmasq
         tasks_from: client.yml
       tags: dnsmasq

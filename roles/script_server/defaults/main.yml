@@ -38,7 +38,6 @@ script_server_commands:
           - cds
 
 script_server_command_defaults:
-  admin_users: *admin_users
   output_format: terminal
-  scheduling: # Don't allow scheduling, the ui for it is not good...
-    enabled: false
+  #scheduling: # Don't allow scheduling, the ui for it is not good...
+    #enabled: false

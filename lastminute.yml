@@ -285,7 +285,7 @@
       ansible.builtin.user:
         name: "root"
         state: present
-        password: "{{ root_password | password_hash('sha512', job_sheet) }}"
+        password: "{{ root_password | password_hash('sha512', root_password) }}"
       when:
         - root_password is defined
         - '"$6$" not in root_password'
@@ -343,7 +343,6 @@
 - name: Configure balloonmanager printers
   hosts: balloonmanager
   vars:
-    job_sheet: null
     device_uri: 'printers/balloonprinter'
     printer_name: balloonprinter
   roles:
@@ -353,7 +352,6 @@
 - name: Configure ccsadmin printers
   hosts: ccsadmin*
   vars:
-    job_sheet: null
     device_uri: 'printers/systemsprinter'
     printer_name: systemsprinter
   roles:
@@ -362,7 +360,6 @@
 - name: Configure judges printers
   hosts: judge*
   vars:
-    job_sheet: null
     device_uri: 'printers/systemsprinter'
     printer_name: systemsprinter
   roles:
@@ -373,7 +370,6 @@
 - name: Configure others printers
   hosts: others:!printsrv
   vars:
-    job_sheet: null
     device_uri: 'printers/systemsprinter'
     printer_name: systemsprinter
   roles:

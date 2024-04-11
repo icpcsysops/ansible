@@ -67,6 +67,7 @@
     - role: taskset_run_scripts
     - role: vlc
       when: enable_vlc is defined and enable_vlc
+      tags: vlc
     - role: iptablesrules
     - role: martkeys
       when: disable_martkeys is not defined or not disable_martkeys

@@ -33,39 +33,68 @@ script_server_admin_users: &admin_users
 
 script_server_commands:
   - name: run-lastminute
-    description: Runs the ansible playbook lastminute.yml
+    description: Runs lastminute.yml
     group: ansible # for organization in script-server
-    allowed_users:
-      - backup # or 10.3.3.210 (the ansible template will resolve names to IPs)
     content: |
-      #!/usr/bin/bash
-      echo "hello world $HOSTPATTERN"
+      #!/usr/bin/bash -ex
+      cd /root/ansible
+      ansible-playbook --limit "$PARAM_HOSTNAME" lastminute.yml
     parameters:
-      - name: host_pattern
-        # pass_as: env_variable # this is default
-        # env_var: host_pattern # default is same as name
-        type: list
-        values:
-          - all
-          - backup
-          - packages
-          - scoreboard
-          - cds
+      - name: hostname
+        env_var: PARAM_HOSTNAME
+        type: text
+        default: ${auth.audit_name}
+        constant: true
+        required: true
 
-  # - name: refresh-git
-  #   description: Update git on the CDS
-  #   group: cds
-  #   allowed_users: 10.3.3.207 # cds host
-  #   content: |
-  #     #!/usr/bin/bash
-  #     ssh root@cds bash -c 'cd /opt/git && git pull'
+  - name: refresh-git
+    description: Update git on the CDS
+    group: cds
+    allowed_users: &cds_allowed_users
+      - cds-wf46 # cds host
+      - cds-wf47 # cds host
+      - cdsadmin1
+      - cdsadmin2
+      - cdsadmin3
+    content: |
+      #!/usr/bin/bash -ex
+      ssh root@cds "bash -ec 'set -x; cd /mnt/cds-wf46/cds/contest_repo && sudo -u cds git pull'"
+    parameters: []
 
-  # - name: restart-cds
-  #   description: Restarts cds and p100 instances
-  #   group: cds
-  #   allowed_users: 10.3.3.207 # cds host
-  #   content: |
-  #     #!/usr/bin/bash
-  #     ssh root@cds systemctl restart cds_instance@cds
-  #     ssh root@cds systemctl restart cds_instance@p100
-  #     # ssh root@cds systemctl restart cds_instance@live
+  - name: status-cds
+    description: Show service status of cds instances
+    group: cds
+    allowed_users: *cds_allowed_users
+    content: |
+      #!/usr/bin/bash -ex
+      for x in $CDS_INSTANCE; do
+        ssh root@cds systemctl status $CDS_INSTANCE
+      done
+    parameters:
+      - name: instance
+        env_var: CDS_INSTANCE
+        type: multiselect
+        required: true
+        separator: ' '
+        values: &cds_instances
+          - cds-wf46
+          - cds-wf47
+          - p100-wf46
+          - p100-wf47
+
+  - name: restart-cds
+    description: Restarts cds and p100 instances
+    group: cds
+    allowed_users: *cds_allowed_users
+    content: |
+      #!/usr/bin/bash -ex
+      for x in $CDS_INSTANCE; do
+        ssh root@cds systemctl restart $CDS_INSTANCE
+      done
+    parameters:
+      - name: instance
+        env_var: CDS_INSTANCE
+        type: multiselect
+        required: true
+        separator: ' '
+        values: *cds_instances

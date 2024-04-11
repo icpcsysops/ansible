@@ -1,0 +1,13 @@
+---
+- name: Restart vlc-screen
+  ansible.builtin.service:
+    name: vlc-screen
+    state: restarted
+    daemon_reload: true
+
+- name: Restart vlc-webcam
+  ansible.builtin.service:
+    name: vlc-webcam
+    state: restarted
+    daemon_reload: true
+    

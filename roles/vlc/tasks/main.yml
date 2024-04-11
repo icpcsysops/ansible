@@ -9,19 +9,21 @@
     group: root
     mode: '0644'
 - name: Deploy vlc-screen.service
-  ansible.builtin.copy:
-    src: vlc-screen.service
+  ansible.builtin.template:
+    src: vlc-screen.service.j2
     dest: /lib/systemd/system/vlc-screen.service
     owner: root
     group: root
     mode: '0644'
+  notify: Restart vlc-screen
 - name: Deploy vlc-webcam.service
-  ansible.builtin.copy:
-    src: vlc-webcam.service
+  ansible.builtin.template:
+    src: vlc-webcam.service.j2
     dest: /lib/systemd/system/vlc-webcam.service
     owner: root
     group: root
     mode: '0644'
+  notify: Restart vlc-webcam
 - name: Enable and start vlc-screen.service
   ansible.builtin.service:
     name: vlc-screen

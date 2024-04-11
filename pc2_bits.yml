@@ -20,14 +20,21 @@
         state: present
         key: "{{ lookup('file', 'files/pc2.authorized_keys2') }}"
 
+    - name: Copy authorized_keys2 to root
+      ansible.posix.authorized_key:
+        user: root
+        state: present
+        key: "{{ lookup('file', 'files/pc2.authorized_keys2') }}"
+
+
 - name: Configure wf46 pc2 machines
-  hosts: pc2server-wf46,ccsadmin[1-4]
+  hosts: pc2server-wf46,ccsadmin-wf46,pc2-aj-wf46
 
   roles:
     - role: pc2client
 
 - name: Configure wf47 pc2 machines
-  hosts: pc2server-wf47,ccsadmin[5-8]
+  hosts: pc2server-wf47,ccsadmin-wf47,pc2-aj-wf47
   vars:
     pc2server: 10.3.3.221
 

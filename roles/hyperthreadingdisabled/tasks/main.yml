@@ -10,11 +10,14 @@
 
 - name: Install turboboost script
   ansible.builtin.copy:
-    src: /tmp/turboboost_ht
+    src: "{{ item }}"
     dest: /usr/sbin/disable_turboboost_ht
     owner: root
     group: root
     mode: '0755'
+  with_first_found:
+    - /tmp/turboboost_ht
+    - /root/git/domjudge-scripts/provision-contest/disable-turboboost_ht
 
 - name: Set hyperthreading service
   ansible.builtin.copy:

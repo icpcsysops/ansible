@@ -11,29 +11,30 @@
     url: https://raw.githubusercontent.com/DOMjudge/domjudge/main/submit/submit
     dest: "{{ role_path }}/files/submit"
     mode: '0755'
-  when: submit.stat.islnk is not defined
-
-- name: Add correct base URL
-  delegate_to: localhost
-  ansible.builtin.lineinfile:
-    path: "{{ role_path }}/files/submit"
-    regexp: "^baseurl.*"
-    line: 'baseurl = "{{ browser_urls | default(["https://domjudge"]) | first }}"'
-
-- name: Add correct path to python3
-  delegate_to: localhost
-  ansible.builtin.lineinfile:
-    path: "{{ role_path }}/files/submit"
-    regexp: "^#!/usr/bin/env python3$"
-    line: "#!/usr/bin/python3"
+  when: internet and submit.stat.islnk is not defined
 
 - name: Install submit client
   ansible.builtin.copy:
-    src: submit
+    src: "{{ item }}"
     dest: /usr/local/bin/submit
     owner: root
     group: root
     mode: '0555'
+  with_first_found:
+    - submit
+    - /root/git/domjudge/submit/submit
+
+- name: Add correct base URL
+  ansible.builtin.lineinfile:
+    path: /usr/local/bin/submit
+    regexp: "^baseurl.*"
+    line: 'baseurl = "{{ browser_urls | default(["https://domjudge"]) | first }}"'
+
+- name: Add correct path to python3
+  ansible.builtin.lineinfile:
+    path: /usr/local/bin/submit
+    regexp: "^#!/usr/bin/env python3$"
+    line: "#!/usr/bin/python3"
 
 - name: Is contest_detail TeamGuide.pdf available?
   delegate_to: localhost

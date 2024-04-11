@@ -6,3 +6,19 @@ no-resolv
 # if you want it to read another file, as well as /etc/hosts, use
 # this.
 #addn-hosts=/etc/banner_add_hosts
+
+# ttl for things from /etc/hosts, should be the default
+local-ttl=0
+
+# if you have multiple interfaces, allows one name to have multiple ips,
+# and to choice the ip for the interface the query came on
+localise-queries
+
+# do not forward domain-less queries upstream
+domain-needed
+
+# disable caching
+cache-size=0
+
+# disable negative caching
+no-negcache

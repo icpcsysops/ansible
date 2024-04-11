@@ -64,6 +64,8 @@
     group: git
     mode: "0600"
     state: touch
+    modification_time: preserve
+    access_time: preserve
 
 - name: Install deploy_backup_tar
   ansible.builtin.copy:

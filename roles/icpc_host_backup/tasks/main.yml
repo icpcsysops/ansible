@@ -41,6 +41,7 @@
   with_first_found:
     - files/hosts.{{ contest }}.new
     - files/hosts.new
+  notify: Restart dnsmasq
 
 - name: Install rsyslog.d config
   ansible.builtin.copy:

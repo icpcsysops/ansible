@@ -14,7 +14,7 @@ if args.wf:
     name = "wf2023"
     detail = "2023Luxor"
     timezone = "Africa/Cairo"
-    max_team = 140
+    max_team = 146
     max_human_judge = 14
     max_pc2_autojudge = 20
     max_kattis_autojudge = 0
@@ -24,6 +24,7 @@ if args.wf:
     max_ccsadmin = 8
     papersize = "A4"
     enable_vlc = False
+    ccs = "domjudge"
 else:
     name = "nac2023"
     detail = "2023Florida"
@@ -37,6 +38,7 @@ else:
     max_ccsadmin = 0
     papersize = "letter"
     enable_vlc = False
+    ccs = "domjudge"
 
 
 def print_host(num, hostname, ip, list_fh, group, base_ip=0):
@@ -82,10 +84,10 @@ contestants:
                 print_host(i + 1, "autojudge", "10.2.2", list_fh, judges, 31)
         with open("../list.pc2judges", "wt") as list_fh:
             for i in range(max_pc2_autojudge):
-                print_host(i + 1, "pc2-aj", "10.2.2", list_fh, judges, 143)
+                print_host(i + 1, "pc2-aj", "10.2.2", list_fh, judges, 127)
         with open("../list.domjudges", "wt") as list_fh:
             for i in range(max_domjudge_autojudge):
-                print_host(i + 1, "domjudge-judgehost", "10.2.2", list_fh, judges, 192)
+                print_host(i + 1, "domjudge-judgehost", "10.2.2", list_fh, judges, 191)
         document = f"""
 judges:
   hosts: {judges}
@@ -93,7 +95,7 @@ judges:
         print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)
         with open("../list.domjudges_ccsadmin", "wt") as list_fh:
             for i in range(max_domjudge_ccsadmin):
-                print_host(i + 1, "domjudge-ccsadmin", "10.3.3", list_fh, others, 222)
+                print_host(i + 1, "domjudge-ccsadmin", "10.3.3", list_fh, others, 223)
         with open("../list.ccsadmin", "wt") as list_fh:
             for i in range(max_ccsadmin):
                 print_host(i + 1, "ccsadmin", "10.3.3", list_fh, others, 231)
@@ -103,7 +105,7 @@ judges:
         print_server("scoreboard", "10.3.3.208", others)
         print_server("packages", "10.3.3.209", others)
         print_server("backup", "10.3.3.210", others)
-        print_server("authprint", "10.3.3.211", others)
+        print_server("printsrv", "10.3.3.211", others)
         print_server("balloonmanager", "10.4.4.149", others)
         # print_server("kattis", "10.3.3.212", others)
         # print_server("kattisbackup", "10.3.3.213", others)
@@ -139,8 +141,9 @@ ntpservers:
        ansible_host: 10.3.3.209
 all:
   vars:
+    ccs: {ccs}
     timezone: {timezone}
-    root_password:  REPLACEME_root_password_or_crypt
+    root_password:  null
     disable_sources_list_changes: false
     enable_reverseproxy: {not args.wf}
     contest:  {name}

@@ -18,7 +18,7 @@
   ansible.builtin.user:
     name: "git"
     password: "{{ git_user_password }}"
-    shell: /bin/bash
+    shell: /usr/bin/git-shell
     group: git
     home: "{{ git_home_dir }}"
     create_home: true

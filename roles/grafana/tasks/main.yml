@@ -73,7 +73,7 @@
 ## Setup grafana
 - name: Install grafana
   ansible.builtin.apt:
-    deb: https://dl.grafana.com/enterprise/release/grafana-enterprise_8.4.6_amd64.deb
+    name: grafana-enterprise
     state: present
   notify: Restart grafana
 

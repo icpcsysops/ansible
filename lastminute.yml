@@ -15,6 +15,7 @@
   roles:
     - role: dnsmasq
     - role: script_server
+      tags: script_server
     - role: icpc_host_backup
 
 - name: Configure extra_nic machines

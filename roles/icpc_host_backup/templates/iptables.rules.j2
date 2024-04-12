@@ -73,10 +73,10 @@
 -A INPUT -p tcp --sport 80 -s 10.3.3.208 -j ACCEPT
 
 # script-server
--A OUTPUT -p tcp --dport 5000 -d 10.3.3.0/24 -j ACCEPT
--A INPUT -p tcp --sport 5000 -s 10.3.3.0/24 -j ACCEPT
--A OUTPUT -p tcp --dport 5000 -d 10.2.2.0/24 -j ACCEPT
--A INPUT -p tcp --sport 5000 -s 10.2.2.0/24 -j ACCEPT
+-A INPUT -p tcp --dport 5000 -s 10.3.3.0/24 -j ACCEPT
+-A OUTPUT -p tcp --sport 5000 -d 10.3.3.0/24 -j ACCEPT
+-A INPUT -p tcp --dport 5000 -s 10.2.2.0/24 -j ACCEPT
+-A OUTPUT -p tcp --sport 5000 -d 10.2.2.0/24 -j ACCEPT
 
 # ntp in
 -A OUTPUT -p tcp --sport 123 -j ACCEPT
@@ -127,9 +127,11 @@
 # go ahead and send destination unreachable message
 -A INPUT -p icmp --icmp-type 3 -j ACCEPT
 
+{% if green_network_ifc is defined -%}
 # drop green network crap that we do not care about
 -A INPUT -i {{ green_network_ifc }} -m state --state ESTABLISHED,RELATED -j ACCEPT
 -A INPUT -i {{ green_network_ifc }} -j DROP
+{% endif -%}
 
 # drop rest
 -A OUTPUT -j drop-n-log

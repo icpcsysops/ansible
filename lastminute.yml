@@ -19,7 +19,7 @@
     - role: icpc_host_backup
 
 - name: Configure extra_nic machines
-  hosts: backup*, scoreboard*, cds*, packages
+  hosts: backup, scoreboard, printsrv, cds, packages
   tags: extra_nics
   tasks:
     - name: Configure nics
@@ -74,6 +74,10 @@
       when: disable_martkeys is not defined or not disable_martkeys
 
   tasks:
+    - name: Install stress-ng
+      ansible.builtin.apt:
+        pkg: stress-ng
+        state: present
     - name: Switch from files to compat in nsswitch
       tags: nsswitch
       ansible.builtin.replace:

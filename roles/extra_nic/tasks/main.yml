@@ -5,3 +5,4 @@
     dest: /etc/network/interfaces.d/{{ extra_nic_config.ifc_name }}
     src: templates/ifc.j2
     mode: '0644'
+  notify: Interface up all auto

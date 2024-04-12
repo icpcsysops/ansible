@@ -72,6 +72,12 @@
 -A OUTPUT -p tcp --dport 80 -d 10.3.3.208 -j ACCEPT
 -A INPUT -p tcp --sport 80 -s 10.3.3.208 -j ACCEPT
 
+# script-server
+-A OUTPUT -p tcp --dport 5000 -d 10.3.3.0/24 -j ACCEPT
+-A INPUT -p tcp --sport 5000 -s 10.3.3.0/24 -j ACCEPT
+-A OUTPUT -p tcp --dport 5000 -d 10.2.2.0/24 -j ACCEPT
+-A INPUT -p tcp --sport 5000 -s 10.2.2.0/24 -j ACCEPT
+
 # ntp in
 -A OUTPUT -p tcp --sport 123 -j ACCEPT
 -A OUTPUT -p udp --sport 123 -j ACCEPT

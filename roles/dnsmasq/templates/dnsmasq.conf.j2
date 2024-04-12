@@ -1,3 +1,4 @@
+listen-address={{ ansible_all_ipv4_addresses | join(",") }}
 port={{ dnsmasq_port }}
 
 # We are the only dns server, don't try to forward queries elsewhere

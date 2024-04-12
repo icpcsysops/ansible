@@ -98,3 +98,82 @@ script_server_commands:
         required: true
         separator: ' '
         values: *cds_instances
+
+  - name: domjudge-lastminute
+    description: Runs the ansible playbook lastminute.yml (against domjudge resources)
+    group: ansible
+    allowed_users: &domjudge_ccsadmin
+      - domjudge-ccsadmin1
+      - domjudge-ccsadmin2
+      - domjudge-ccsadmin3
+      - domjudge-ccsadmin4
+      - domjudge-ccsadmin5
+      - domjudge-ccsadmin6
+      - domjudge-ccsadmin7
+      - domjudge-ccsadmin8
+    content: |
+      #!/usr/bin/bash -ex
+      cd /root/ansible
+      ansible-playbook --limit "$HOST_PATTERN" lastminute.yml
+    parameters:
+      - name: host_pattern
+        env_var: HOST_PATTERN # default is same as name
+        separator: ','
+        type: multiselect
+        required: true
+        values: &domjudge_systems
+          - domjudge-judgehost*
+          - domjudge-ccsadmin*
+          - domjudge-wf*
+          - domjudge-wf46-*
+          - domjudge-wf47-*
+
+          # These two are "virtual" ips
+          # - domjudge-wf46 domserver-wf46
+          # - domjudge-wf47 domserver-wf47
+          - domjudge-wf46-1
+          - domjudge-wf46-2
+          - domjudge-wf47-1
+          - domjudge-wf47-2
+          - domjudge-ccsadmin1
+          - domjudge-ccsadmin2
+          - domjudge-ccsadmin3
+          - domjudge-ccsadmin4
+          - domjudge-ccsadmin5
+          - domjudge-ccsadmin6
+          - domjudge-ccsadmin7
+          - domjudge-ccsadmin8
+
+          # Individual judgehosts
+          - domjudge-judgehost1
+          - domjudge-judgehost2
+          - domjudge-judgehost3
+          - domjudge-judgehost4
+          - domjudge-judgehost5
+          - domjudge-judgehost6
+          - domjudge-judgehost7
+          - domjudge-judgehost8
+          - domjudge-judgehost9
+          - domjudge-judgehost10
+          - domjudge-judgehost11
+          - domjudge-judgehost12
+          - domjudge-judgehost13
+          - domjudge-judgehost14
+          - domjudge-judgehost15
+          - domjudge-judgehost16
+          - domjudge-judgehost17
+          - domjudge-judgehost18
+          - domjudge-judgehost19
+          - domjudge-judgehost20
+          - domjudge-judgehost21
+          - domjudge-judgehost22
+          - domjudge-judgehost23
+          - domjudge-judgehost24
+          # - domjudge-judgehost25
+          # - domjudge-judgehost26
+          # - domjudge-judgehost27
+          # - domjudge-judgehost28
+          # - domjudge-judgehost29
+          # - domjudge-judgehost30
+          # - domjudge-judgehost31
+          # - domjudge-judgehost32

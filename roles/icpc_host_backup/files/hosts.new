@@ -333,6 +333,7 @@
 10.3.3.229    domjudge-ccsadmin6
 10.3.3.230    domjudge-ccsadmin7
 10.3.3.231    domjudge-ccsadmin8
+
 # 10.3.3.232/29 for ccsadmin
 10.3.3.232    ccsadmin1
 10.3.3.233    ccsadmin2
@@ -343,8 +344,17 @@
 10.3.3.238    ccsadmin7
 10.3.3.239    ccsadmin8
 
-# 10.3.3.240/28 mostly unused
+# 10.3.3.240/29 for pc2-ccsadmin
+10.3.3.240    pc2-ccsadmin1
+10.3.3.241    pc2-ccsadmin2
+10.3.3.242    pc2-ccsadmin3
+10.3.3.243    pc2-ccsadmin4
+10.3.3.244    pc2-ccsadmin5
+10.3.3.245    pc2-ccsadmin6
+10.3.3.246    pc2-ccsadmin7
+10.3.3.247    pc2-ccsadmin8
 
+# 10.3.3.248/29 mostly unused
 10.3.3.254    gateway3
 
 #Print/Balloon Network (10.4.4.0/24)

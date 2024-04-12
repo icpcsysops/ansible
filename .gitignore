@@ -3,3 +3,4 @@
 /venv
 /vars
 /files/*.zip
+/roles/script_server/lookup_plugins/__pycache__/

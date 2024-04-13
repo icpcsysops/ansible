@@ -1,4 +1,12 @@
 ---
+- name: Install a new cupsd.conf file
+  ansible.builtin.copy:
+    src: files/cupsd.conf
+    dest: /etc/cups/cupsd.conf
+    mode: "0644"
+    owner: root
+    group: root
+
 - name: Add printers to /etc/hosts
   ansible.builtin.lineinfile:
     state: present

@@ -73,6 +73,10 @@
 -A INPUT -p udp --sport 443 -j ACCEPT
 -A OUTPUT -p udp --dport 443 -j ACCEPT
 
+# winrm outbound
+-A INPUT -p tcp --sport 5985 -j ACCEPT
+-A OUTPUT -p tcp --dport 5985 -j ACCEPT
+
 # http
 -A OUTPUT -p tcp --dport 80 -d 10.3.3.208 -j ACCEPT
 -A INPUT -p tcp --sport 80 -s 10.3.3.208 -j ACCEPT

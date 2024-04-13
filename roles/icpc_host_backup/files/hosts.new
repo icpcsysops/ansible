@@ -427,6 +427,32 @@
 172.29.1.16    redirect1-green
 172.29.1.20  clock
 172.29.1.50  Sysops Printer
+
+172.29.1.64  presclient1
+172.29.1.65  presclient2
+172.29.1.66  presclient3
+172.29.1.67  presclient4
+172.29.1.68  presclient5
+172.29.1.69  presclient6
+172.29.1.70  presclient7
+172.29.1.71  presclient8
+172.29.1.72  presclient9
+172.29.1.73  presclient10
+172.29.1.74  presclient11
+172.29.1.75  presclient12
+172.29.1.76  presclient13
+172.29.1.77  presclient14
+172.29.1.78  presclient15
+172.29.1.79  presclient16
+172.29.1.80  presclient17
+172.29.1.81  presclient18
+172.29.1.82  presclient19
+172.29.1.83  presclient20
+172.29.1.84  presclient21
+172.29.1.85  presclient22
+172.29.1.86  presclient23
+172.29.1.87  presclient24
+
 172.29.1.101         Netmon
 172.29.1.191    builder
 172.29.1.192    myicpc2

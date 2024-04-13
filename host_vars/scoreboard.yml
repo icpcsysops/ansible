@@ -1,19 +1,12 @@
-ntp_hosts:
-  - 172.29.1.20"
-  - 10.3.3.209"
-  - 10.3.3.210"
-  - 0.ubuntu.pool.ntp.org"
-  - 1.ubuntu.pool.ntp.org"
-  - 2.ubuntu.pool.ntp.org"
-  - 3.ubuntu.pool.ntp.org"
-fallback_ntp_hosts:
-  - 172.29.1.20"
-  - 10.3.3.209"
-  - 10.3.3.210"
-  - 0.ubuntu.pool.ntp.org"
-  - 1.ubuntu.pool.ntp.org"
-  - 2.ubuntu.pool.ntp.org"
-  - 3.ubuntu.pool.ntp.org"
+ntp_servers:
+  - 172.29.1.20
+  - 10.3.3.209
+  - 10.3.3.210
+ntp_pool:
+  - 0.ubuntu.pool.ntp.org
+  - 1.ubuntu.pool.ntp.org
+  - 2.ubuntu.pool.ntp.org
+  - 3.ubuntu.pool.ntp.org
 extra_nic_configs:
   - gateway: false
     address: 10.3.3.208/24

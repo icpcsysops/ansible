@@ -197,15 +197,25 @@
         name: rsyslog
         state: restarted
 
-- name: Lastminute config for all hosts
-  hosts: all
+- name: Install/configure systemd-timesyncd on everything but the ntp servers
+  hosts: all:!ntpservers
   roles:
-    - role: firefox_desktop
     - role: stuvusIT.systemd-timesyncd
       timesync_timezone: "{{ timezone }}"
       timesync_ntp_hosts: "{{ ntp_hosts }}"
       timesync_fallback_ntp_hosts: "{{ fallback_ntp_hosts }}"
       tags: systemd-timesyncd
+
+- name: Set up our ntp servers
+  hosts: ntpservers
+  roles:
+    - role: ntp
+      tags: ntp
+
+- name: Lastminute config for all hosts
+  hosts: all
+  roles:
+    - role: firefox_desktop
 
   vars:
     judging_notes: "{{ 'files/%s.JudgingNotes.%s.pdf'|format(contest_detail, papersize) }}"

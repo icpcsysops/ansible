@@ -4,7 +4,7 @@ iface {{ extra_nic_config.ifc_name }} inet static
  netmask {{ extra_nic_config.address | ipaddr('netmask') }}
 {% if extra_nic_config.gateway %}
  gateway {{ extra_nic_config.gateway }}
-{% else -%}
+{% elif 'routes' in extra_nic_config-%}
 {% for route in extra_nic_config.routes -%}
  post-up ip route add {{ route.network }} dev {{ extra_nic_config.ifc_name }} via {{ route.via }}
 {% endfor -%}

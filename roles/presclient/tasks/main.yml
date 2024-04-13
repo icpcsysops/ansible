@@ -72,6 +72,7 @@
   chocolatey.chocolatey.win_chocolatey:
     name: openjdk11jre
     state: present
+  when: not skip_chocolatey
 
 - name: Update/download and install the presentation client
   block:

@@ -1,5 +1,6 @@
 ## Only define if you want a specific version
 # presclient_version: 2.5.913 # the version from github icpctools releases
 presclient_user: presentation
-presclient_pass: cds_presentation_password
-presclient_cds_url: https://10.3.3.207/api/contests/
+presclient_pass: repave-change-refold-spoof
+presclient_cds_url: https://172.29.1.207/api/contests/
+skip_chocolatey: false

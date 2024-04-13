@@ -18,6 +18,12 @@
 -A INPUT -i lo -j ACCEPT
 -A OUTPUT -o lo -j ACCEPT
 
+# DNS outbound
+-A INPUT -p tcp --sport 53 -j ACCEPT
+-A OUTPUT -p tcp --dport 53 -j ACCEPT
+-A INPUT -p udp --sport 53 -j ACCEPT
+-A OUTPUT -p udp --dport 53 -j ACCEPT
+
 # dns outbound
 -A OUTPUT -p tcp --dport 5353 -d 10.3.3.210 -j ACCEPT
 -A OUTPUT -p udp --dport 5353 -d 10.3.3.210 -j ACCEPT

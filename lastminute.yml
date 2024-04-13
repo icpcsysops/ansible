@@ -337,7 +337,7 @@
   hosts: cds-wf46
   roles:
     - role: cds_for_icpc
-      tags: cds
+      tags: cds_for_icpc
 
 - name: Configure the cds instances (new style)
   hosts: cds*
@@ -384,3 +384,4 @@
   hosts: printsrv
   roles:
     - role: printserver
+      tags: printserver

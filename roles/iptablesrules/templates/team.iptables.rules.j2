@@ -28,8 +28,8 @@
 # other cups snmp stuff to drop
 -A OUTPUT -p udp -m udp -d 10.3.3.149 --dport 161 -j DROP
 # some app is triggering these
--A OUTPUT -p udp -m udp --dport 53 --d 10.0.0.1 -j DROP
--A OUTPUT -p udp -m udp --dport 53 --d 10.1.1.1 -j DROP
+-A OUTPUT -p udp -m udp --dport 53 -d 10.0.0.1 -j DROP
+-A OUTPUT -p udp -m udp --dport 53 -d 10.1.1.1 -j DROP
 
 # prom from the backup
 -A INPUT -p tcp -m tcp --dport 9100 -s 10.3.3.210 -j ACCEPT

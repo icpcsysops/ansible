@@ -1,9 +1,20 @@
 <cds>
     {% for contest in cds_contests %}
-    <contest location="/srv/cds/contests/{{ contest.name }}" recordReactions="false">
-      {% if 'ccs' in contest %}
+    <contest location="/srv/cds/contests/{{ contest.name }}" recordReactions="{{ contest.record_reactions|default('false') }}">
+      {% if 'ccs' in contest -%}
         <ccs url="{{ contest.ccs.url }}" user="{{ contest.ccs.username }}" password="{{ contest.ccs.password }}" />
-      {% endif %}
+      {% endif -%}
+      {% if 'video' in contest -%}
+        <video desktop="{{ contest.video.desktop }}" webcam="{{ contest.video.desktop }}" />
+      {% endif -%}
     </contest>
     {% endfor %}
+
+    {% for domain in cds_domains -%}
+    <domain>
+      {% for name in domain -%}
+      <user name="{{name}}" />
+      {% endfor -%}
+    </domain>
+    {% endfor -%}
 </cds>

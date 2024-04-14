@@ -16,6 +16,7 @@
     cds_http_port: "{{ cds_instance.http_port }}"
     cds_https_port: "{{ cds_instance.https_port }}"
     cds_contests: "{{ cds_instance.contests }}"
+    cds_domains: "{{ cds_instance.domains|default([]) }}"
     cds_accounts: "{{ lookup('vars', 'cdsaccounts-' + cds_name)['accounts'] }}"
     cds_needs_restart: "{{ needs_restart }}"
 
@@ -92,6 +93,13 @@
     group: cds
     mode: '0600'
   register: cds_config_updated
+
+- name: Symlink presentations to the config directory
+  ansible.builtin.file:
+    state: link
+    src: /mnt/{{ ansible_hostname }}/cds/contest_repo/servers/{{ cds_instance_name }}/config/present
+    dest: /srv/cds/wlp/usr/servers/{{ cds_instance_name}}/config/present
+    force: true
 
 - name: Update cds_needs_restart (after cdsConfig.xml)
   ansible.builtin.set_fact:

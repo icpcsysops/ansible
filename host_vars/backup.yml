@@ -8,14 +8,22 @@ ntp_pool:
   - 2.ubuntu.pool.ntp.org
   - 3.ubuntu.pool.ntp.org
 extra_nic_configs:
+  # blue
   - gateway: false
     address: 10.3.3.210/24
     ifc_name: enp0s31f6
     routes:
       - { network: 10.0.0.0/8, via: 10.3.3.254 }
+  # green
   - gateway: 172.29.0.1
     address: 172.29.1.210/22
     ifc_name: enx0050b623c335
+    routes: []
+  # red
+  - gateway: false
+    address: 172.24.0.100/24
+    ifc_name: enx0050b623c699
+    routes: []
 
 # script server config below here:
 script_server_url: files/script-server.zip

@@ -83,6 +83,8 @@ script_server_commands:
           - cds-wf47
           - p100-wf46
           - p100-wf47
+          - live-wf46
+          - live-wf46
 
   - name: restart-cds
     description: Restarts cds and p100 instances
@@ -129,6 +131,9 @@ script_server_commands:
           - domjudge-wf*
           - domjudge-wf46-*
           - domjudge-wf47-*
+          - emergency-wf*
+          - domjudge_analysts
+          - green-judge*
 
           # These two are "virtual" ips
           # - domjudge-wf46 domserver-wf46
@@ -137,6 +142,8 @@ script_server_commands:
           - domjudge-wf46-2
           - domjudge-wf47-1
           - domjudge-wf47-2
+          - emergency-wf46
+          - emergency-wf47
           - domjudge-ccsadmin1
           - domjudge-ccsadmin2
           - domjudge-ccsadmin3
@@ -179,3 +186,11 @@ script_server_commands:
           # - domjudge-judgehost30
           # - domjudge-judgehost31
           # - domjudge-judgehost32
+
+          - analysts-green
+          - green-judgehost1
+          - green-judgehost2
+          - green-judgehost3
+          - green-judgehost4
+          - green-judgehost5
+          - green-judgehost6

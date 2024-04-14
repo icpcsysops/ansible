@@ -543,6 +543,7 @@
 # as it is located by the printers
 10.4.4.149    balloonmanager
 # 10.4.4.200/29 for printers
+10.4.4.200    balloonprinter
 10.4.4.201    teamprint1
 10.4.4.202    teamprint2
 10.4.4.203    teamprint3
@@ -670,6 +671,26 @@
 
 #VPN VLAN NETWORKS
 172.24.0.7	cds-red
+
+# coachview
+172.24.0.84	coachview4601
+172.24.0.85	coachview4602
+172.24.0.86	coachview4603
+172.24.0.87	coachview4604
+172.24.0.88	coachview4605
+172.24.0.89	coachview4606
+172.24.0.90	coachview4607
+172.24.0.91	coachview4608
+
+172.24.0.92	coachview4701
+172.24.0.93	coachview4702
+172.24.0.94	coachview4703
+172.24.0.95	coachview4704
+172.24.0.96	coachview4705
+172.24.0.97	coachview4706
+172.24.0.98	coachview4707
+172.24.0.99	coachview4708
+
 # MORE COMING HERE...
 
 # The following lines are desirable for IPv6 capable hosts

@@ -362,6 +362,7 @@
 # as it is located by the printers
 10.4.4.149    balloonmanager
 # 10.4.4.200/29 for printers
+10.4.4.200    balloonprinter
 10.4.4.201    teamprint1
 10.4.4.202    teamprint2
 10.4.4.203    teamprint3
@@ -416,7 +417,17 @@
 172.29.0.58 PreClient8
 172.29.0.59 PreClient9
 
-172.29.0.100 - 172.29.0.149 ICPCLive
+# coachview
+172.24.0.84	coachview01
+172.24.0.85	coachview02
+172.24.0.86	coachview03
+172.24.0.87	coachview04
+172.24.0.88	coachview05
+172.24.0.89	coachview06
+172.24.0.90	coachview07
+172.24.0.91	coachview08
+
+# 172.29.0.100 - 172.29.0.149 ICPCLive
 
 # Analysts
 # 172.29.0.160/27 upto 191

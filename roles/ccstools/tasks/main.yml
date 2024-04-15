@@ -75,5 +75,5 @@
 - name: Add domjudge desktop entry
   ansible.builtin.copy:
     src: files/domjudge.desktop
-    dest: /usr/share/applications/domjudge.desktop
+    dest: /usr/share/applications/ccs.desktop
     mode: '0644'

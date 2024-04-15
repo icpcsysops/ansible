@@ -602,7 +602,17 @@
 
 # Analysts
 # 172.29.0.160/27 upto 191
+172.29.0.161 analyst1
+172.29.0.162 analyst2
+172.29.0.163 analyst3
+172.29.0.164 analyst4
+172.29.0.165 analyst5
+172.29.0.166 analyst6
+172.29.0.167 analyst7
+172.29.0.168 analyst8
 
+172.29.0.186 icat46
+172.29.0.187 icat47
 
 
 172.29.1.15    sniffer-vm01

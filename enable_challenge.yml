@@ -3,12 +3,19 @@
   hosts: contestants
   gather_facts: false
   vars:
-    firefox_default: https://icpcdhaka.contest.codeforces.com/
+    firefox_default: https://icpcluxor.contest.codeforces.com/
 
   roles:
     - role: firefox_desktop
 
   tasks:
+    - name: Install "open-tests.zip"
+      ansible.builtin.unarchive:
+        src: files/challenge/open-tests.tar.gz
+        dest: /home/{{ inventory_hostname }}
+        owner: "{{ inventory_hostname }}"
+        group: teams
+
     - name: Enable DNS bits in resolved.conf
       ansible.builtin.replace:
         path: /etc/systemd/resolved.conf
@@ -59,6 +66,10 @@
       loop:
         - "10.3.3.215/32"
         - "10.3.3.216/32"
+        - "10.3.3.217/32"
+        - "10.3.3.218/32"
+        - "10.3.3.219/32"
+        - "10.3.3.220/32"
 
     - name: Firewall additions output udp
       ansible.builtin.iptables:

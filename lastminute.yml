@@ -70,12 +70,14 @@
       when: enable_reverseproxy is defined and enable_reverseproxy
     - role: p100
     - role: ccstools
+      tags: ccstools
       when: ccs  == "domjudge"
     - role: taskset_run_scripts
     - role: vlc
       when: enable_vlc is defined and enable_vlc
       tags: vlc
     - role: iptablesrules
+      tags: iptablesrules
     - role: martkeys
       when: disable_martkeys is not defined or not disable_martkeys
 

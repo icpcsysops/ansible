@@ -5,7 +5,7 @@
         <ccs url="{{ contest.ccs.url }}" user="{{ contest.ccs.username }}" password="{{ contest.ccs.password }}" />
       {% endif -%}
       {% if 'video' in contest -%}
-        <video desktop="{{ contest.video.desktop }}" webcam="{{ contest.video.desktop }}" />
+        <video desktop="{{ contest.video.desktop }}" webcam="{{ contest.video.webcam }}" />
       {% endif -%}
     </contest>
     {% endfor %}

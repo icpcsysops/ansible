@@ -15,6 +15,7 @@
       - awscli
       - python3.10-venv
       - git-cola
+      - python3-passlib
         # consider adding these to the iso
       - jq
       - htop

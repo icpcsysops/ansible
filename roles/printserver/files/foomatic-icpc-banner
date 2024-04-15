@@ -1,0 +1,6 @@
+#!/bin/bash
+# in the ppd call this as foomatic-icpc-banner
+# used for old printers that only do PXL
+set -euo pipefail
+
+/usr/lib/cups/filter/icpc-banner "$@" | /usr/lib/cups/filter/foomatic-rip "$@"

@@ -403,3 +403,9 @@
   roles:
     - role: printserver
       tags: printserver
+
+
+- name: Configure analysts
+  hosts: analysts
+  roles:
+    - role: ccstools

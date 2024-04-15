@@ -1,0 +1,13 @@
+---
+- name: Install curl dependency
+  ansible.builtin.apt:
+    pkg:
+      - curl
+    state: present
+- name: Install the distribute scoreboard script
+  ansible.builtin.template:
+    src: distribute_scoreboard.sh.j2
+    dest: /usr/local/bin/distribute_scoreboard
+    mode: "0755"
+    group: root
+    owner: root

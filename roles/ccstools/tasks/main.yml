@@ -20,6 +20,8 @@
     owner: root
     group: root
     mode: '0555'
+    # only install this file once (otherwise updating the baseurl in it causes it to change every time)
+    force: false
   with_first_found:
     - submit
     - /root/git/domjudge/submit/submit

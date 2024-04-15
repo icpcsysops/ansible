@@ -1,4 +1,4 @@
 ---
 cds_port: 9446
 domjudge_ip: 215
-ccs_ip: 215
+ccs_ip: 10.3.3.215

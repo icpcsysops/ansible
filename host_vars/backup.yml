@@ -84,7 +84,7 @@ script_server_commands:
           - p100-wf46
           - p100-wf47
           - live-wf46
-          - live-wf46
+          - live-wf47
 
   - name: restart-cds
     description: Restarts cds and p100 instances
@@ -93,7 +93,7 @@ script_server_commands:
     content: |
       #!/usr/bin/bash -ex
       for x in $CDS_INSTANCE; do
-        ssh root@cds systemctl restart $CDS_INSTANCE
+        ssh root@cds systemctl restart $x
       done
     parameters:
       - name: instance

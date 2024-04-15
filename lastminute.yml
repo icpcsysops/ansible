@@ -86,6 +86,17 @@
       ansible.builtin.apt:
         pkg: stress-ng
         state: present
+
+    # TODO fix in icpc2024
+    - name: Remove ampersand from iptablesload
+      ansible.builtin.replace:
+        path: /etc/network/if-pre-up.d/iptablesload
+        regexp: " &"
+        replace: ""
+        owner: root
+        group: root
+        mode: '0755'
+
     - name: Switch from files to compat in nsswitch
       tags: nsswitch
       ansible.builtin.replace:

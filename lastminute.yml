@@ -10,6 +10,12 @@
   roles:
     - role: icpc_host_packages
 
+- name: Configure scoreboard machine
+  hosts: scoreboard
+  roles:
+    - role: scoreboard
+      tags: scoreboard
+
 - name: Configure backups
   hosts: backup*
   roles:

@@ -58,19 +58,16 @@
 -A OUTPUT -p tcp --dport 123 -d 10.3.3.254 -j ACCEPT
 -A OUTPUT -p udp --dport 123 -d 10.3.3.254 -j ACCEPT
 
-# cds uses https
--A OUTPUT -p tcp --dport 443 -d {{ cds_ip }}/32 -j ACCEPT
--A INPUT -p tcp --sport 443 -s {{ cds_ip }}/32 -j ACCEPT
-# p100 uses https on port 9443
--A OUTPUT -p tcp --dport 9443 -d {{ cds_ip }}/32 -j ACCEPT
--A INPUT -p tcp --sport 9443 -s {{ cds_ip }}/32 -j ACCEPT
+# p100 uses https on port {{ cds_port }}
+-A OUTPUT -p tcp --dport {{ cds_port }} -d {{ cds_ip }}/32 -j ACCEPT
+-A INPUT -p tcp --sport {{ cds_port }} -s {{ cds_ip }}/32 -j ACCEPT
 
 # ssh inbound
 -A INPUT -p tcp -m tcp --dport 22 -s 10.3.3.208/29 -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 22 -d 10.3.3.208/29 -j ACCEPT
 
 {% if vlc -%}
-# vlc camera inbound
+# vlc webcam inbound
 -A INPUT -p tcp -m tcp --dport 8080 -s {{ cds_ip }}/32 -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 8080 -d {{ cds_ip }}/32 -j ACCEPT
 

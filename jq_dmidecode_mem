@@ -1,0 +1,1 @@
+jc --dmidecode | jq -r '[ .[] | select(.values.size != "No Module Installed") | select(.handle != "0x1000")] | (length|tostring) + " " + (.[]|(.values.size + " " + .values.configured_memory_speed))'

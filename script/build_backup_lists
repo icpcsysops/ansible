@@ -1,0 +1,16 @@
+#!/usr/bin/python3
+
+import os
+
+if os.path.isfile("hosts.yml"):
+   hosts_yml = "hosts.yml"
+elif os.path.isfile("../hosts.yml"):
+   hosts_yml = "../hosts.yml"
+
+with open(hosts_yml, "rt") as fh:
+  teams_fh = open("/backups/list.team", "wt")
+  for line in fh:
+      if line.startswith("    team"):
+          team = line.strip()
+          team = team[0:-1]
+          print(team, file=teams_fh)

@@ -41,20 +41,27 @@
 - name: Is contest_detail TeamGuide.pdf available?
   delegate_to: localhost
   ansible.builtin.stat:
-    path: files/"{{ contest_detail }}-domjudge-team-manual.pdf"
+    path: "files/{{ contest_detail }}-domjudge-team-manual.pdf"
   register: domjudge_team_manual
 
 - name: Copy domjudge TeamGuide.pdf (if ccs == domjudge)
   ansible.builtin.copy:
-    src: files/"{{ contest_detail }}-domjudge-team-manual.pdf"
+    src: "files/{{ contest_detail }}-domjudge-team-manual.pdf"
     dest: /usr/share/doc/icpc/TeamGuide.pdf
     mode: '0644'
   when: domjudge_team_manual.stat.exists
 
+- name: Remove bad domjudge /etc/hosts entries (from imaging)
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regex: "^.*domjudge$"
+    state: absent
+  when: enable_reverseproxy is not defined or not enable_reverseproxy
+
 - name: Add domjudge to /etc/hosts
   ansible.builtin.lineinfile:
     path: /etc/hosts
-    line: "{{ baseip }}.{{ domjudge_ip }}   domjudge" # noqa: no-tabs
+    line: "{{ baseip }}.{{ domjudge_ip }}   domjudge # ANSIBLE MANAGED" # noqa: no-tabs
     owner: root
     group: root
     mode: '0644'

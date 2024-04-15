@@ -3,6 +3,8 @@
 use File::Temp qw/ tempdir /;
 use Sys::Syslog qw(:standard :macros);
 
+do './config.pl';
+
 openlog("sh.do_startbackup", 'pid', LOG_AUTH);
 
 $|=0;		# turn off buffering
@@ -72,7 +74,7 @@ do {
 	system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
         @COMMAND = ("/usr/bin/scp", "-q", "$bdir/data/${date}.tar", "root\@cds:backups.tar");
 	system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
-        @COMMAND = ("/usr/bin/ssh", "-q", "deboer\@cds", "/usr/local/bin/deploy_backup_tar");
+        @COMMAND = ("/usr/bin/ssh", "-q", "root\@cds", "/usr/local/bin/deploy_backup_tar @contests");
 	system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
 	#        @COMMAND = ("/usr/bin/scp", "$bdir/data/${date}.tar", "\@sysops-mgmt:/mnt/team_backups.tar");
 	#system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");

@@ -66,7 +66,7 @@
 -A INPUT -p tcp -m tcp --dport 22 -s 10.3.3.208/29 -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 22 -d 10.3.3.208/29 -j ACCEPT
 
-{% if vlc -%}
+{% if enable_vlc -%}
 # vlc webcam inbound
 -A INPUT -p tcp -m tcp --dport 8080 -s {{ cds_ip }}/32 -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 8080 -d {{ cds_ip }}/32 -j ACCEPT
@@ -76,7 +76,7 @@
 -A OUTPUT -p tcp -m tcp --sport 9090 -d {{ cds_ip }}/32 -j ACCEPT
 
 {% endif %}
-{% if mediamtx %}
+{% if enable_mediamtx %}
 # mediamtx
 -A INPUT -p tcp -m tcp --dport 8888 -s {{ cds_ip }}/32 -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 8888 -d {{ cds_ip }}/32 -j ACCEPT

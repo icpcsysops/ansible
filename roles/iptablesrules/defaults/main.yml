@@ -5,5 +5,5 @@ iptables_base: team
 # override this to (refer to hosts.txt for other ips)
 ccs_ip: 10.3.3.215
 cds_ip: 10.3.3.207
-mediamtx: true
-vlc: false
+enable_mediamtx: false
+enable_vlc: true

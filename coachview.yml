@@ -1,0 +1,5 @@
+---
+- name: Configure coachview machines
+  hosts: coachview*
+  roles:
+    - role: coachview

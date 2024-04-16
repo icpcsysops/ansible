@@ -1,0 +1,47 @@
+---
+- name: Create the user the named hosts for contest
+  gather_facts: false
+  hosts: contestants
+  vars:
+    contest: TODO
+
+
+  tasks:
+    - name: Clear /home
+      ansible.builtin.command: "/root/sh.clear_home"
+
+    - name: Clear /etc/skel/Desktop/samps
+      ansible.builtin.file:
+        state: absent
+        path: /etc/skel/Desktop/samps
+
+    - name: Check if contest-samples.zip exists
+      delegate_to: localhost
+      ansible.builtin.stat:
+        path: "files/{{ contest }}-samples.zip"
+      register: samples_zip
+
+    - name: If contest-samples.zip exist extract it
+      when: samples_zip.stat.exists == true
+      block:
+        - name: Create /etc/skel/Desktop/samps
+          ansible.builtin.file:
+            path: /etc/skel/Desktop/samps
+            state: directory
+            mode: '0755'
+            owner: root
+            group: root
+
+        - name: Deploy contest-samples.zip to /etc/skel/Desktop/samps
+          ansible.builtin.unarchive:
+            src: "{{ contest }}-samples.zip"
+            dest: /etc/skel/Desktop/samps
+
+    - name: Ceate the user on named host
+      ansible.builtin.user:
+        name: "{{ inventory_hostname }}"
+        password: "{{ users[inventory_hostname] | password_hash('sha512') }}"
+        comment: "{{ inventory_hostname }},,,"
+        shell: /bin/bash
+        groups: teams
+        create_home: true

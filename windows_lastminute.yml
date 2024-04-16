@@ -16,6 +16,6 @@
     - role: presclient
 - name: Balloon printer hosts
   hosts: win_balloonprinters
-  gather_facts: false
+  gather_facts: true
   roles:
     - role: balloonprinter

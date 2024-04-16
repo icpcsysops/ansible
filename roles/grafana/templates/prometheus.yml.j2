@@ -12,19 +12,10 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: node_grafana
+  - job_name: node_backup
     static_configs:
       - targets:
-{%if "grafana" in groups %}{% for host in groups["grafana"] %}
-        - {{ hostvars[host].ansible_host }}:9100
-{% endfor %}{% endif %}
-
-  - job_name: node_scoreboard
-    static_configs:
-      - targets:
-{%if "scoreboard" in groups %}{% for host in groups["scoreboard"] %}
-        - {{ hostvars[host].ansible_host }}:9100
-{% endfor %}{% endif %}
+        - localhost:9100
 
   - job_name: node_cds
     static_configs:
@@ -38,18 +29,4 @@ scrape_configs:
       - targets:
 {%if "contestants" in groups %}{% for host in groups["contestants"] %}
         - {{ hostvars[host].ansible_host }}:9100
-{% endfor %}{% endif %}
-
-  - job_name: 'web_nginx_cds'
-    static_configs:
-      - targets:
-{%if "cds" in groups %}{% for host in groups["cds"] %}
-        - {{ hostvars[host].ansible_host }}:9113
-{% endfor %}{% endif %}
-
-  - job_name: 'web_nginx_scoreboard'
-    static_configs:
-      - targets:
-{%if "scoreboard" in groups %}{% for host in groups["scoreboard"] %}
-        - {{ hostvars[host].ansible_host }}:9113
 {% endfor %}{% endif %}

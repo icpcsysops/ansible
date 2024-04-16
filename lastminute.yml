@@ -251,6 +251,7 @@
   tasks:
     # stat file first
     - name: Get file stat of JudgingNotes to be able to perform a check in the following task
+      delegate_to: localhost
       ansible.builtin.stat:
         path: "{{ judging_notes }}"
       register: judgingnotes
@@ -260,9 +261,10 @@
         src: "{{ judging_notes }}"
         dest: /usr/share/doc/icpc/JudgingNotes.pdf
         mode: '0644'
-          # when: judgingnotes.stat.exists
+      when: judgingnotes.stat.exists
 
     - name: Get file stat of JudgingNotes.Addendum to be able to perform a check in the following task
+      delegate_to: localhost
       ansible.builtin.stat:
         path: "{{ judging_addendum_notes }}"
       register: judging_notes_addendum
@@ -273,9 +275,11 @@
         src: "{{ judging_notes }}"
         dest: /usr/share/doc/icpc/JudgingNotes.Addendum.pdf
         mode: '0644'
-          # when: judging_notes_addendum.stat.exists
+      when: judging_notes_addendum.stat.exists
 
     - name: Get file stat of TechNotes to be able to perform a check in the following task
+      tags: icpc2024
+      delegate_to: localhost
       ansible.builtin.stat:
         path: "{{ tech_notes }}"
       register: technotes

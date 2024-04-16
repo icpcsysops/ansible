@@ -50,7 +50,7 @@ scp -q @${host}:/root/keys.log $id/key_log.${id0}.txt
   ulimit -t 10
   # new for 2023
   ssh -q ${host} "(sudo -u ${host} /bin/env DISPLAY=:1 /usr/local/bin/s.py)" >> ../../spy.${host}.json
-  cp ../../spy.${host}.json id/tool_data_spy.${id0}.json
+  cp ../../spy.${host}.json $id/tool_data_spy.${id0}.json
 )
 
 # new for wf2021, memory analysis

@@ -4,11 +4,43 @@
   gather_facts: false
   vars:
     firefox_default: https://icpcluxor.contest.codeforces.com/
+    users:
+      # spares
+      team46132: passw0rd
+      team46133: passw0rd
+      team46134: passw0rd
+      team46150: passw0rd
+      team47137: passw0rd
+      team47138: passw0rd
+      team47150: passw0rd
+
 
   roles:
     - role: firefox_desktop
 
   tasks:
+    - name: Clear /home
+      ansible.builtin.command: "/root/sh.clear_home"
+
+    - name: Make sure /etc/skel/Desktop/samps doesn't exist
+      ansible.builtin.file:
+        state: absent
+        path: /etc/skel/Desktop/samps
+
+    - name: Create the user on named host
+      ansible.builtin.user:
+        name: "{{ inventory_hostname }}"
+        password: "{{ users[inventory_hostname] | password_hash('sha512') }}"
+        comment: "{{ inventory_hostname }},,,"
+        shell: /bin/bash
+        groups: teams
+        create_home: true
+
+    - name: Delete the domjudge/ccs shortcut from the applications menu
+      ansible.builtin.file:
+        state: absent
+        path: /usr/share/applications/ccs.desktop
+
     - name: Install "open-tests.zip"
       ansible.builtin.unarchive:
         src: files/challenge/open-tests.tar.gz

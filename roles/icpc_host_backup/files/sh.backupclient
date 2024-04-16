@@ -42,7 +42,7 @@ cp ../../ps.${host}.txt $id/tool_data.${id0}.txt
 )
 # new for wf2020, martkeys
 (
-scp -q @${host}:/tmp/keys.log $id/key_log.${id0}.txt
+scp -q @${host}:/root/keys.log $id/key_log.${id0}.txt
 )
 # new for wf2021, memory analysis
 (

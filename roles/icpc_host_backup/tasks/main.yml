@@ -17,6 +17,7 @@
       - git-cola
       - python3-passlib
         # consider adding these to the iso
+      - iotop
       - jq
       - htop
       - curl
@@ -103,21 +104,37 @@
     src: files/par
     dest: /root/contest/backup/scripts/par
     mode: '0755'
+    owner: root
+    group: root
 
 - name: Install sh.do_startbackup
   ansible.builtin.copy:
     src: files/sh.do_startbackup
     dest: /root/contest/backup/scripts/sh.do_startbackup
     mode: '0755'
+    owner: root
+    group: root
 
 - name: Install sh.backupclient
   ansible.builtin.copy:
     src: files/sh.backupclient
     dest: /root/contest/backup/scripts/sh.backupclient
     mode: '0755'
+    owner: root
+    group: root
 
 - name: Install ssh config
   ansible.builtin.copy:
     src: files/root.ssh.config
     dest: /root/.ssh.config
     mode: '0600'
+    owner: root
+    group: root
+
+- name: Ensure config.pl
+  ansible.builtin.template:
+    src: config.pl.j2
+    dest: /root/contest/backup/scripts/config.pl
+    mode: '0600'
+    owner: root
+    group: root

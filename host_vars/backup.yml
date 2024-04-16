@@ -1,3 +1,8 @@
+---
+# used by config.pl used by sh.do_startbackup
+contest_ids:
+  - challenge-wf46
+  - challenge-wf47
 ntp_servers:
   - 172.29.1.20
   - 10.3.3.208

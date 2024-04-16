@@ -5,7 +5,7 @@
 
   tasks:
     - name: Run apache-util
-      ansible.builtin.command: "ab -n 1000 -c 100 https://icpcluxor.contest.codeforces.com/enter?back=/group/2KWBNHo6Ww"
+      ansible.builtin.command: "ab -n 100 -c 8 https://icpcluxor.contest.codeforces.com/enter?back=/group/2KWBNHo6Ww"
       register: ab
       changed_when: false
 

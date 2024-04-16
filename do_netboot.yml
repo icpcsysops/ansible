@@ -2,16 +2,25 @@
 - name: Reboot to a netboot
   gather_facts: false
   hosts: contestants
-
+  vars:
+    efibootmgr: false
+    dellcctk: true # use the dell command to force pxe boot next boot
   tasks:
     - name: Install efibootmgr
       ansible.builtin.package:
         name: efibootmgr
         state: present
+      when: efibootmgr
 
     - name: Efibootmgr to force a netboot
       ansible.builtin.command: efibootmgr -n 1
       changed_when: false
+      when: efibootmgr
+
+    - name: Efibootmgr to force a netboot
+      ansible.builtin.command: /opt/dell/dcc/cctk --ForcePxeNextBoot=Enabled
+      changed_when: false
+      when: dellcctk
 
     - name: Reboot
       ansible.builtin.shell: reboot

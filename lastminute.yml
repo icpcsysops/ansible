@@ -83,6 +83,11 @@
       when: disable_martkeys is not defined or not disable_martkeys
 
   tasks:
+    - name: Cleanup domjudge.desktop,  renaming to ccs.desktop
+      ansible.builtin.file:
+        name: /usr/share/applications/domjudge.desktop
+        state: absent
+
     - name: Install stress-ng
       ansible.builtin.apt:
         pkg: stress-ng
@@ -135,6 +140,7 @@
         dest: "/root/{{ contest }}.teams.tar.gz"
         mode: '0600'
 
+    # TODO icpc2024 name it icpc
     - name: Remove icpc* user
       ansible.builtin.user:
         name: "{{ item }}"
@@ -238,9 +244,9 @@
     - role: firefox_desktop
 
   vars:
-    judging_notes: "{{ 'files/%s.JudgingNotes.%s.pdf'|format(contest_detail, papersize) }}"
-    tech_notes: "{{ 'files/%s.TechNotes.%s.pdf'|format(contest_detail, papersize) }}"
-    judging_addendum_notes: "{{ 'files/%s.JudgingNotes.Addendum.%s.pdf'|format(contest_detail, papersize) }}"
+    judging_notes: "{{ '/root/ansible/files/%s.JudgingNotes.%s.pdf'|format(contest_detail, papersize) }}"
+    tech_notes: "{{ '/root/ansible/files/%s.TechNotes.%s.pdf'|format(contest_detail, papersize) }}"
+    judging_addendum_notes: "{{ '/root/ansible/files/%s.JudgingNotes.Addendum.%s.pdf'|format(contest_detail, papersize) }}"
 
   tasks:
     # stat file first
@@ -254,7 +260,7 @@
         src: "{{ judging_notes }}"
         dest: /usr/share/doc/icpc/JudgingNotes.pdf
         mode: '0644'
-      when: judgingnotes.stat.exists
+          # when: judgingnotes.stat.exists
 
     - name: Get file stat of JudgingNotes.Addendum to be able to perform a check in the following task
       ansible.builtin.stat:
@@ -267,7 +273,7 @@
         src: "{{ judging_notes }}"
         dest: /usr/share/doc/icpc/JudgingNotes.Addendum.pdf
         mode: '0644'
-      when: judging_notes_addendum.stat.exists
+          # when: judging_notes_addendum.stat.exists
 
     - name: Get file stat of TechNotes to be able to perform a check in the following task
       ansible.builtin.stat:
@@ -279,7 +285,9 @@
         src: "{{ tech_notes }}"
         dest: /usr/share/doc/icpc/TechNotes.pdf
         mode: '0644'
-      when: technotes.stat.exists
+        owner: root
+        group: root
+          #      when: technotes.stat.exists == true
 
     - name: Pre-generate the kernel flags for ansible usage
       ansible.builtin.set_fact:

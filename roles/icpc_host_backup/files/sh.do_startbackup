@@ -9,7 +9,7 @@ openlog("sh.do_startbackup", 'pid', LOG_AUTH);
 
 $|=0;		# turn off buffering
 $mintime=20;	# in seconds, mininum time between loops
-$npar=20;	# number of processes to run at once 
+$npar=35;	# number of processes to run at once
 $script_dir="/root/contest/backup/scripts";
 $bdir="/backups";
 $logdir="$bdir/logs";
@@ -92,7 +92,7 @@ sub clear_logs {
     opendir(DIR, $dir) || warn("Unable to read $dir: $!\n");
     my(@files)=grep(/^backup\./, readdir(DIR));
     close(DIR);
-    
+
     foreach $f (@files) {
         rename("$dir/$f", "$dir/OLD/$f");
     }

@@ -1,0 +1,2 @@
+#!/bin/bash
+jq -r 'select(.data.event_type=="down") | .data.key'  | grep -v '<ba' | grep -v MOUSE | sed 's/KEY_SPACE/ /' | sed s/KEY_ENTER/ENTERKEY/ | grep -v KEY_ | uniq | tr -d  '\n' | sed 's/ENTERKEY/\n/g'

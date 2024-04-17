@@ -27,4 +27,7 @@ fi
 echo Run: scp $found @team${team_id}:
 echo Run: ansible-playbook --limit team${team_id} do_wf`echo $team_id | cut -b1-2`_${contest_id}.yml
 echo Run: ssh team${team_id}
-echo now extract zip under the teams new blank home dir,  and fix the ownership
+echo Comment: now extract zip under the teams new blank home dir,  and fix the ownership
+echo run: unzip -d /home/team${team_id}
+echo run: chown -R team${team_id} /home/team${team_id}
+

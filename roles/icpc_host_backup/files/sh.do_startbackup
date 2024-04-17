@@ -72,9 +72,9 @@ do {
 	# now create .tar of the .zip files
         @COMMAND = ("/bin/tar", "--exclude", "ps.team*", "-C", "$bdir/data/$date", "-cf", "$bdir/data/${date}.tar", ".");
 	system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
-        @COMMAND = ("/usr/bin/scp", "-q", "$bdir/data/${date}.tar", "root\@cds:backups.tar");
+        @COMMAND = ("/usr/bin/scp", "-q", "$bdir/data/${date}.tar", "cds\@cds:backups.tar");
 	system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
-        @COMMAND = ("/usr/bin/ssh", "-q", "root\@cds", "/usr/local/bin/deploy_backup_tar @contests");
+        @COMMAND = ("/usr/bin/ssh", "-q", "cds\@cds", "/usr/local/bin/deploy_backup_tar @contests");
 	system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
 	#        @COMMAND = ("/usr/bin/scp", "$bdir/data/${date}.tar", "\@sysops-mgmt:/mnt/team_backups.tar");
 	#system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");

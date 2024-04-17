@@ -1,0 +1,7 @@
+"workspace/.metadata/*"
+"*/core.*"
+"*/core"
+"*venv*"
+"core"
+"core.*"
+"Desktop/samps/*"

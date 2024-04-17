@@ -29,7 +29,11 @@ ulimit -t 30
 # old new
 #ssh ${host} "(cd /home/${host}; tar czf -  --exclude .metadata --exclude core.* --exclude core *)" > ${host}.tar.gz
 # 2018 new
-ssh -q ${host} "(cd /home/${host}; zip -q -x "workspace/.metadata/*" "*/core.*" "*/core" "*venv*" "core" "core.*" -r -  *)" > $id/backup.${id0}.zip
+# ssh -q ${host} "(cd /home/${host}; zip -q -x "workspace/.metadata/*" "*/core.*" "*/core" "*venv*" "core" "core.*" "Desktop/samps/*" -r -  *)" > $id/backup.${id0}.zip
+# wf2023 new -- this did not work
+# ssh -q ${host} "(cd /home/${host}; zip -q -x@exclude.lst -r -  *)" > $id/backup.${id0}.zip
+# wf2023 new
+ssh -q ${host} "(cd /home/${host}; zip -q -x "workspace/.metadata/*" "*/core.*" "*/core" "*venv*" "core" "core.*" "Desktop/samps/*" -r -  *)" > $id/backup.${id0}.zip
 )
 # new for 2019 for jetbrains
 (

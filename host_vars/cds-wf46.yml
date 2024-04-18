@@ -17,9 +17,8 @@ extra_nic_configs:
     ifc_name: enx0050b623c689
     routes: []
 
-cds_version: 2.5.984
-cds_contest_git_repo: /mnt/cds-wf46/git/wfluxor.git
-# cds_contest_git_repo: git@cds-wf46:/wfluxor.git
+cds_version: 2.5.991
+cds_contest_git_repo: git@cds-wf46:/wfluxor.git
 
 cds_config:
   cds-wf46:
@@ -32,8 +31,30 @@ cds_config:
         #   url: https://domjudge.nac.icpc.global/api/contests/NAC-2023-real
         #   username: cds
         #   password: hungry-SACRIFICE-LITIGATE-COHERENT
+      - name: finals-wf46
+        path: wf46/finals
+        id: wf46_finals
+        record_reactions: true
+        video:
+          desktop: http://team{0}:9090
+          webcam: http://team{0}:8080
+        ccs:
+          url: https://domjudge-wf46/api/contests/wf46_finals
+          username: cds
+          password: riot-unsnap-coffee-racing
     # Path to a yaml file inside vars/ containing an accounts array
     accounts: cds/cds-accounts.yaml
+    domains: &cds_domains
+      - - matveyAdmin
+        - matvey
+      - - presAdmin
+        - presentation
+        - balloon
+        - coachview
+        - deboer
+        - david
+        - nicky
+        - mattias
   cds-wf47:
     http_port: 8047
     https_port: 8447

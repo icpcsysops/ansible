@@ -34,3 +34,46 @@
     name: vlc-webcam
     enabled: true
     state: started
+
+- name: Create autostart file for things
+  ansible.builtin.copy:
+    content: |
+      [Desktop Entry]
+      Type=Application
+      Exec=touch /tmp/vlc-restart-screen
+      NoDisplay=true
+    dest: /etc/xdg/autostart/vlc-restart-screen.desktop
+    mode: "0644"
+
+- name: Create a systemd path activation to restart vlc
+  copy:
+    content: |
+      [Path]
+      PathChanged=/tmp/vlc-restart-screen
+      [Install]
+      WantedBy=multi-user.target
+    dest: /etc/systemd/system/vlc-restart-screen.path
+    mode: "0644"
+
+- name: Create systemd vlc-restart-screen service
+  copy:
+    dest: /etc/systemd/system/vlc-restart-screen.service
+    content: |
+      [Unit]
+      Description=Restart vlc-screen (to make sure it's happy)
+
+      [Service]
+      Type=oneshot
+      ExecStart=/bin/bash -c "systemctl restart vlc-screen"
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Make sure systemd is loaded
+  ansible.builtin.service:
+    enabled: true
+    name: "{{ item }}"
+    state: started
+  loop:
+    - vlc-restart-screen.service
+    - vlc-restart-screen.path

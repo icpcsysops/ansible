@@ -1,0 +1,25 @@
+- name: Create presentation client user
+  ansible.builtin.user:
+    name: v
+    home: /v
+    uid: 17262
+    shell: "/usr/bin/bash"
+
+- name: Add run script for v
+  ansible.builtin.template:
+    src: vlc.sh.j2
+    dest: /v/run
+    owner: v
+    group: v
+    mode: '0755'
+
+- name: Add .xsessionrc script for v
+  ansible.builtin.copy:
+    content: |
+      /v/run
+      exit 0
+    dest: /v/.xsessionrc
+    owner: v
+    group: v
+    mode: '0755'
+

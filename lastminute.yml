@@ -251,12 +251,14 @@
   tasks:
     # stat file first
     - name: Get file stat of JudgingNotes to be able to perform a check in the following task
+      tags: icpc_docs
       delegate_to: localhost
       ansible.builtin.stat:
         path: "{{ judging_notes }}"
       register: judgingnotes
 
     - name: Copy JudgingNotes.pdf
+      tags: icpc_docs
       ansible.builtin.copy:
         src: "{{ judging_notes }}"
         dest: /usr/share/doc/icpc/JudgingNotes.pdf
@@ -264,6 +266,7 @@
       when: judgingnotes.stat.exists
 
     - name: Get file stat of JudgingNotes.Addendum to be able to perform a check in the following task
+      tags: icpc_docs
       delegate_to: localhost
       ansible.builtin.stat:
         path: "{{ judging_addendum_notes }}"
@@ -271,20 +274,22 @@
 
     # TODO in future we might want to only drop judgingnotes_addendum.desktop if we have these.
     - name: Copy JudgingNotes.Addendum.pdf
+      tags: icpc_docs
       ansible.builtin.copy:
-        src: "{{ judging_notes }}"
+        src: "{{ judging_addendum_notes }}"
         dest: /usr/share/doc/icpc/JudgingNotes.Addendum.pdf
         mode: '0644'
       when: judging_notes_addendum.stat.exists
 
     - name: Get file stat of TechNotes to be able to perform a check in the following task
-      tags: icpc2024
+      tags: icpc_docs
       delegate_to: localhost
       ansible.builtin.stat:
         path: "{{ tech_notes }}"
       register: technotes
 
     - name: Copy TechNotes.pdf
+      tags: icpc_docs
       ansible.builtin.copy:
         src: "{{ tech_notes }}"
         dest: /usr/share/doc/icpc/TechNotes.pdf

@@ -3,17 +3,16 @@
 while [ 1 ]; do
   echo -n `date` copying html from\ 
   curl -s "https://domjudge-wf46/public?static=1" > index.46.html
-
   echo -n . # dot 1 after getting wf46 index.html from domjudge
   curl -s "https://domjudge-wf47/public?static=1" > index.47.html
-
+  echo -n . # dot 1 after getting wf47 index.html from domjudge
+  sed -i 's/id="teampicture"/id="teampicture" loading="lazy"/g' index.46.html
+  echo -n . # dot 1 after getting wf46 index.html from domjudge
+  sed -i 's/id="teampicture"/id="teampicture" loading="lazy"/g' index.47.html
   echo -n . # dot 2 after getting wf47 index.html from domjudge
   scp -q index.46.html index.47.html scoreboard@scoreboard.icpc.global:
-
   echo -n . # dot 3 after copying scorboards
   ssh scoreboard@scoreboard.icpc.global "mv ~/index.46.html /var/www/html/46/index.html; mv ~/index.47.html /var/www/html/47/index.html"
   echo done at `date`.
-
   sleep 30
 done
-

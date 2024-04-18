@@ -28,8 +28,24 @@
 # other cups snmp stuff to drop
 -A OUTPUT -p udp -m udp -d 10.3.3.149 --dport 161 -j DROP
 # some app is triggering these
--A OUTPUT -p udp -m udp --dport 53 -d 10.0.0.1 -j DROP
--A OUTPUT -p udp -m udp --dport 53 -d 10.1.1.1 -j DROP
+-A OUTPUT -p udp -m udp --dport 53 -d 1.0.0.1 -j REJECT
+-A OUTPUT -p udp -m udp --dport 53 -d 1.1.1.1 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 1.0.0.1 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 1.1.1.1 -j REJECT
+# something trying to reach multicast foo
+-A OUTPUT -d 224.0.0.22 -j REJECT
+-A OUTPUT -p udp -m udp --dport 3702 -d 239.255.255.250 -j REJECT
+# jetbrains crap
+-A OUTPUT -p udp -m udp --dport 53 -d 9.9.9.10 -j REJECT
+-A OUTPUT -p udp -m udp --dport 53 -d 149.112.112.10 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 9.9.9.10 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 149.112.112.10 -j REJECT
+# other dns crap
+-A OUTPUT -p udp -m udp --dport 53 -d 8.8.8.8 -j REJECT
+-A OUTPUT -p udp -m udp --dport 53 -d 8.8.4.4 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 8.8.8.8 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 8.8.4.4 -j REJECT
+
 
 # prom from the backup
 -A INPUT -p tcp -m tcp --dport 9100 -s 10.3.3.210 -j ACCEPT

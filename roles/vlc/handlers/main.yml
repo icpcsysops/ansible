@@ -10,4 +10,3 @@
     name: vlc-webcam
     state: restarted
     daemon_reload: true
-    

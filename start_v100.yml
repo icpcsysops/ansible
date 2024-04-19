@@ -3,7 +3,8 @@
   hosts: contestants
   gather_facts: false
   roles:
-    - name: v100
+    - role: v100
+
   tasks:
     - name: Stop vlc-webcam (to avoid conflicts)
       ansible.builtin.systemd:

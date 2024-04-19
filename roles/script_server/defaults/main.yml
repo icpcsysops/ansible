@@ -39,5 +39,5 @@ script_server_commands:
 
 script_server_command_defaults:
   output_format: terminal
-  #scheduling: # Don't allow scheduling, the ui for it is not good...
-    #enabled: false
+  # scheduling: # Don't allow scheduling, the ui for it is not good...
+    # enabled: false

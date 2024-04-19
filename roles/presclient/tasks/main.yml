@@ -108,7 +108,7 @@
   ansible.windows.win_copy:
     content: |
       set ICPC_BRANDING_PRES=org.icpc.tools.presentation.contest.internal.presentations.BrandingPresentation
-      c:/users/{{ ansible_user }}/desktop/presclient/client.bat {{ presclient_cds_url }} {{ presclient_user }} {{ presclient_pass }} --name {{ presclient_name|default(inventory_hostname) }}
+      c:/users/{{ ansible_user }}/desktop/presclient/client.bat {{ presclient_cds_url }} {{ presclient_user }} {{ presclient_pass }} --name {{ presclient_name | default(inventory_hostname) }}
     dest: /users/{{ ansible_user }}/desktop/launch_pres_client.bat
 
 - name: Copy a shortcut to launch the presentation client

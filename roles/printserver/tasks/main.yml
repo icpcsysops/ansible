@@ -64,8 +64,8 @@
   ansible.builtin.include_tasks: printer.yml
   vars:
     printer: "{{ item.name }}"
-    is_default: "{{ item.is_default|default(false) }}"
-    contestprinter: "{{ item.contestprinter|default(false) }}"
+    is_default: "{{ item.is_default | default(false) }}"
+    contestprinter: "{{ item.contestprinter | default(false) }}"
   loop: "{{ printserver_print_config }}"
 
 

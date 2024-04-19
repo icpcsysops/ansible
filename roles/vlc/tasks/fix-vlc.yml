@@ -10,7 +10,7 @@
     mode: "0644"
 
 - name: Create a systemd path activation to restart vlc
-  copy:
+  ansible.builtin.copy:
     content: |
       [Path]
       PathChanged=/tmp/vlc-restart-screen
@@ -20,7 +20,7 @@
     mode: "0644"
 
 - name: Create systemd vlc-restart-screen service
-  copy:
+  ansible.builtin.copy:
     dest: /etc/systemd/system/vlc-restart-screen.service
     content: |
       [Unit]
@@ -33,10 +33,12 @@
 
       [Install]
       WantedBy=multi-user.target
+    mode: "0644"
 
-- name: make sure systemd is loaded
+- name: Make sure systemd is loaded
   ansible.builtin.service:
-    state: enabled
+    enabled: true
+    state: started
     name: "{{ item }}"
   loop:
     - vlc-restart-screen.service

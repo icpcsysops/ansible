@@ -105,7 +105,7 @@
   ansible.builtin.stat:
     path: /mnt/{{ ansible_hostname }}/cds/contest_repo
   register: cds_repo_cloned
-    #check_mode: false
+    # check_mode: false
 - name: Clone the contest repo
   become: true
   become_user: cds

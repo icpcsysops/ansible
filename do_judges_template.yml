@@ -24,7 +24,7 @@
       register: wf46_samples_zip
 
     - name: If contest-samples.zip exist extract it
-      when: wf46_samples_zip.stat.exists == true
+      when: wf46_samples_zip.stat.exists
       block:
         - name: Create /etc/skel/Desktop/samps
           ansible.builtin.file:
@@ -59,7 +59,7 @@
       register: wf47_samples_zip
 
     - name: If contest-samples.zip exist extract it
-      when: wf47_samples_zip.stat.exists == true
+      when: wf47_samples_zip.stat.exists
       block:
         - name: Deploy contest-samples.zip to /etc/skel/Desktop/samps
           ansible.builtin.unarchive:

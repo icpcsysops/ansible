@@ -296,7 +296,7 @@
         mode: '0644'
         owner: root
         group: root
-      when: technotes.stat.exists == true
+      when: technotes.stat.exists
 
     - name: Pre-generate the kernel flags for ansible usage
       ansible.builtin.set_fact:

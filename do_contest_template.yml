@@ -22,7 +22,7 @@
       register: samples_zip
 
     - name: If contest-samples.zip exist extract it
-      when: samples_zip.stat.exists == true
+      when: samples_zip.stat.exists
       block:
         - name: Create /etc/skel/Desktop/samps
           ansible.builtin.file:

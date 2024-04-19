@@ -1,5 +1,5 @@
 ---
-- name: set isolcpus to 3 for pc2-ajs
+- name: Set isolcpus to 3 for pc2-ajs
   hosts: pc2-aj*,ccsadmin*
   tasks:
     - name: Pre-generate the kernel flags for ansible usage

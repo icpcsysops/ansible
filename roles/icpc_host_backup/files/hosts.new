@@ -1,4 +1,5 @@
 127.0.0.1	localhost
+127.0.1.1    firefox.settings.services.mozilla.com
 
 10.1.1.1  	team1
 10.1.1.2  	team2
@@ -300,29 +301,22 @@
 10.3.3.191   cdsadmin2
 10.3.3.192   cdsadmin3
 # ICPC Servers
-10.3.3.197 cds-wf47
-10.3.3.198 emergency-wf46
-10.3.3.199 emergency-wf47
+10.3.3.199  emergency
 10.3.3.205  reverseproxy
-10.3.3.206    media
-10.3.3.207    cds cds-wf46
+10.3.3.206  media
+10.3.3.207  cds
 # 10.3.3.208/28 for servers
-10.3.3.208    backup-wf47 scoreboard
-10.3.3.209    packages
-10.3.3.210    backup backup-wf46
-10.3.3.211    printsrv
+10.3.3.208  scoreboard
+10.3.3.209  packages
+10.3.3.210  backup
+10.3.3.211  printsrv
 10.3.3.212      kattis kattismaster kattis-test kattis-dress kattis-final
 10.3.3.213      kattisbackup ccsbackup
-10.3.3.214      pc2-wf46
-10.3.3.215      domjudge-wf46 domserver-wf46
-10.3.3.216      domjudge-wf46-1
-10.3.3.217      domjudge-wf46-2
-10.3.3.218      domjudge-wf47 domserver-wf47
-10.3.3.219      domjudge-wf47-1
-10.3.3.220      domjudge-wf47-2
-10.3.3.221      pc2-wf47
-10.3.3.222      pc2backup-wf46
-10.3.3.223      pc2backup-wf47
+10.3.3.214      pc2
+10.3.3.215      domjudge domserver
+10.3.3.216      domjudge-1
+10.3.3.217      domjudge-2
+10.3.3.223      pc2backup
 
 # 10.3.3.224/29 for domjudge-ccsadmin
 10.3.3.224    domjudge-ccsadmin1
@@ -403,66 +397,85 @@
 10.90.90.8    camera8
 10.90.90.90    camera_mgmt
 
+172.24.0.7  cds-red
+# coachview 172.24.0.80/29
+172.24.0.80 coachview1
+172.24.0.81 coachview2
+172.24.0.82 coachview3
+172.24.0.83 coachview4
+172.24.0.84 coachview5
+172.24.0.85 coachview6
+172.24.0.86 coachview7
+172.24.0.87 coachview8
+
 #Start of the Green Network (172.29.0.0/22)
-172.29.0.1     router
+172.29.0.1     green-router
 
-172.29.0.50 PresAdmin
-172.29.0.51 PreClient1
-172.29.0.52 PreClient2
-172.29.0.53 PreClient3
-172.29.0.54 PreClient4
-172.29.0.55 PreClient5
-172.29.0.56 PreClient6
-172.29.0.57 PreClient7
-172.29.0.58 PreClient8
-172.29.0.59 PreClient9
 
-# coachview
-172.24.0.84	coachview01
-172.24.0.85	coachview02
-172.24.0.86	coachview03
-172.24.0.87	coachview04
-172.24.0.88	coachview05
-172.24.0.89	coachview06
-172.24.0.90	coachview07
-172.24.0.91	coachview08
+# presentantion bits 172.29.0.32/27 (32-63)
+172.29.0.32 PresAdmin
+172.29.0.33 PresClient1
+172.29.0.34 PresClient2
+172.29.0.35 PresClient3
+172.29.0.36 PresClient4
+172.29.0.37 PresClient5
+172.29.0.38 PresClient6
+172.29.0.39 PresClient7
+172.29.0.40 PresClient8
+172.29.0.41 PresClient9
+172.29.0.42 PresClient10
+172.29.0.43 PresClient11
+172.29.0.44 PresClient12
+172.29.0.45 PresClient13
+172.29.0.46 PresClient14
+172.29.0.47 PresClient15
+172.29.0.48 PresClient16
+172.29.0.49 PresClient17
+172.29.0.50 PresClient18
+172.29.0.50 PresClient19
+172.29.0.50 PresClient20
+172.29.0.50 PresClient21
+172.29.0.50 PresClient22
+172.29.0.50 PresClient23
+172.29.0.50 PresClient24
+172.29.0.50 PresClient25
+172.29.0.50 PresClient26
+172.29.0.50 PresClient27
+172.29.0.60 PresClient28
+172.29.0.61 PresClient29
+172.29.0.62 PresClient30
+172.29.0.63 PresClient31
 
 # 172.29.0.100 - 172.29.0.149 ICPCLive
 
 # Analysts
 # 172.29.0.160/27 upto 191
-
-
+172.29.0.160 analyst1
+172.29.0.161 analyst2
+172.29.0.162 analyst3
+172.29.0.163 analyst4
+172.29.0.164 analyst5
+172.29.0.165 analyst6
+172.29.0.166 analyst7
+172.29.0.167 analyst8
+172.29.0.168 analyst9
+172.29.0.169 analyst10
+172.29.0.170 analyst11
+172.29.0.171 analyst12
+172.29.0.172 analyst13
+172.29.0.173 analyst14
+172.29.0.174 analyst15
+172.29.0.175 analyst16
+172.29.0.176 analyst17
+172.29.0.177 analyst18
+172.29.0.178 analyst19
+172.29.0.179 analyst20
+172.29.0.191    icat
 
 172.29.1.15    sniffer-vm01
 172.29.1.16    redirect1-green
 172.29.1.20  clock
 172.29.1.50  Sysops Printer
-
-172.29.1.64  presclient1
-172.29.1.65  presclient2
-172.29.1.66  presclient3
-172.29.1.67  presclient4
-172.29.1.68  presclient5
-172.29.1.69  presclient6
-172.29.1.70  presclient7
-172.29.1.71  presclient8
-172.29.1.72  presclient9
-172.29.1.73  presclient10
-172.29.1.74  presclient11
-172.29.1.75  presclient12
-172.29.1.76  presclient13
-172.29.1.77  presclient14
-172.29.1.78  presclient15
-172.29.1.79  presclient16
-172.29.1.80  presclient17
-172.29.1.81  presclient18
-172.29.1.82  presclient19
-172.29.1.83  presclient20
-172.29.1.84  presclient21
-172.29.1.85  presclient22
-172.29.1.86  presclient23
-172.29.1.87  presclient24
 
 172.29.1.101         Netmon
 172.29.1.191    builder
@@ -494,21 +507,9 @@
 172.29.1.250   gview-green
 
 172.29.2.5    CloudKeyManagement-hynan
-172.29.2.10 - 172.29.3.200 - DHCP Range
-172.29.3.201-172.29.3.250 - Switch MGMT area
-172.29.3.251 - FOG/Imaging Server
+# 172.29.2.10 - 172.29.3.200 - DHCP Range
+# 172.29.3.201-172.29.3.250 - Switch MGMT area
+172.29.3.251 FOG_Imaging_Server
 
 #VPN VLAN NETWORKS
 # MORE COMING HERE...
-
-# The following lines are desirable for IPv6 capable hosts
-::1     localhost ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-10.3.3.208	scoreboard
-10.3.3.209	packages
-10.3.3.210	backup
-10.3.3.211	printsrv
-127.0.0.1    firefox.settings.services.mozilla.com

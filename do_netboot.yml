@@ -23,6 +23,6 @@
       when: dellcctk
 
     - name: Reboot
-      ansible.builtin.shell: reboot
+      ansible.builtin.command: reboot
       failed_when: false # ignore failures, because reboot will disconnect us before the command returns
       changed_when: false

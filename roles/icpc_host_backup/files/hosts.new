@@ -1,6 +1,8 @@
 127.0.0.1	localhost
 127.0.1.1    firefox.settings.services.mozilla.com
 
+10.1.0.253      fog-server
+
 10.1.1.1  	team1
 10.1.1.2  	team2
 10.1.1.3  	team3
@@ -151,6 +153,37 @@
 10.1.1.148	team148
 10.1.1.149	team149
 10.1.1.150	team150
+10.1.1.151	team151
+10.1.1.152	team152
+10.1.1.153	team153
+10.1.1.154	team154
+10.1.1.155	team155
+10.1.1.156	team156
+10.1.1.157	team157
+10.1.1.158	team158
+10.1.1.159	team159
+10.1.1.160	team160
+10.1.1.161	team161
+10.1.1.162	team162
+10.1.1.163	team163
+10.1.1.164	team164
+10.1.1.165	team165
+10.1.1.166	team166
+10.1.1.167	team167
+10.1.1.168	team168
+10.1.1.169	team169
+10.1.1.170	team170
+10.1.1.171	team171
+10.1.1.172	team172
+10.1.1.173	team173
+10.1.1.174	team174
+10.1.1.175	team175
+10.1.1.176	team176
+10.1.1.177	team177
+10.1.1.178	team178
+10.1.1.179	team179
+10.1.1.180	team180
+
 10.1.1.254	gateway1
 
 #Judge Network (10.2.2.0/24)
@@ -297,26 +330,26 @@
 10.3.3.7    score7 # windows
 10.3.3.8    score8 # windows
 # Admin Machines
-10.3.3.190   cdsadmin1
-10.3.3.191   cdsadmin2
-10.3.3.192   cdsadmin3
+10.3.3.190    cdsadmin1
+10.3.3.191    cdsadmin2
+10.3.3.192    cdsadmin3
 # ICPC Servers
-10.3.3.199  emergency
-10.3.3.205  reverseproxy
-10.3.3.206  media
-10.3.3.207  cds
+10.3.3.199    emergency
+10.3.3.205    reverseproxy
+10.3.3.206    media
+10.3.3.207    cds cds-blue
 # 10.3.3.208/28 for servers
-10.3.3.208  scoreboard
-10.3.3.209  packages
-10.3.3.210  backup
-10.3.3.211  printsrv
-10.3.3.212      kattis kattismaster kattis-test kattis-dress kattis-final
-10.3.3.213      kattisbackup ccsbackup
-10.3.3.214      pc2
-10.3.3.215      domjudge domserver
-10.3.3.216      domjudge-1
-10.3.3.217      domjudge-2
-10.3.3.223      pc2backup
+10.3.3.208    scoreboard
+10.3.3.209    packages
+10.3.3.210    backup
+10.3.3.211    printsrv
+10.3.3.212    kattis kattismaster kattis-test kattis-dress kattis-final
+10.3.3.213    kattisbackup ccsbackup
+10.3.3.214    pc2
+10.3.3.215    domjudge domserver
+10.3.3.216    domjudge-1
+10.3.3.217    domjudge-2
+10.3.3.222    pc2backup
 
 # 10.3.3.224/29 for domjudge-ccsadmin
 10.3.3.224    domjudge-ccsadmin1
@@ -397,20 +430,21 @@
 10.90.90.8    camera8
 10.90.90.90    camera_mgmt
 
-172.24.0.7  cds-red
-# coachview 172.24.0.80/29
-172.24.0.80 coachview1
-172.24.0.81 coachview2
-172.24.0.82 coachview3
-172.24.0.83 coachview4
-172.24.0.84 coachview5
-172.24.0.85 coachview6
-172.24.0.86 coachview7
-172.24.0.87 coachview8
+# red network
+# coachview
+172.24.0.80	coachview01
+172.24.0.81	coachview02
+172.24.0.82	coachview03
+172.24.0.83	coachview04
+172.24.0.84	coachview05
+172.24.0.85	coachview06
+172.24.0.86	coachview07
+172.24.0.87	coachview08
+
+172.24.0.207    cds-red
 
 #Start of the Green Network (172.29.0.0/22)
-172.29.0.1     green-router
-
+172.29.0.1     router
 
 # presentantion bits 172.29.0.32/27 (32-63)
 172.29.0.32 PresAdmin
@@ -470,12 +504,24 @@
 172.29.0.177 analyst18
 172.29.0.178 analyst19
 172.29.0.179 analyst20
-172.29.0.191    icat
+172.29.0.180 analyst21
+172.29.0.181 analyst22
+172.29.0.182 analyst23
+172.29.0.183 analyst24
+172.29.0.184 analyst25
+172.29.0.185 analyst26
+172.29.0.186 analyst27
+172.29.0.187 analyst28
+172.29.0.188 analyst29
+172.29.0.189 analyst30
+172.29.0.190 analyst31
+172.29.0.191 icat
+
 
 172.29.1.15    sniffer-vm01
 172.29.1.16    redirect1-green
 172.29.1.20  clock
-172.29.1.50  Sysops Printer
+172.29.1.50  Sysops Printer?
 
 172.29.1.101         Netmon
 172.29.1.191    builder
@@ -488,6 +534,7 @@
 172.29.1.208   scoreboard-green
 172.29.1.209   packages-green
 172.29.1.210   backup-green
+172.29.1.211   nisprint-green
 172.29.1.215   green
 172.29.1.216   green-ccsadmin1
 172.29.1.217   green-ccsadmin2
@@ -509,7 +556,7 @@
 172.29.2.5    CloudKeyManagement-hynan
 # 172.29.2.10 - 172.29.3.200 - DHCP Range
 # 172.29.3.201-172.29.3.250 - Switch MGMT area
-172.29.3.251 FOG_Imaging_Server
+# 172.29.3.251 - FOG/Imaging Server
 
 #VPN VLAN NETWORKS
 # MORE COMING HERE...

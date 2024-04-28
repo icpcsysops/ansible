@@ -9,6 +9,7 @@
   tasks:
     - name: Clear /home
       ansible.builtin.command: "/root/sh.clear_home"
+      changed_when: false
 
     - name: Clear /etc/skel/Desktop/samps
       ansible.builtin.file:

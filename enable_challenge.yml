@@ -21,6 +21,7 @@
   tasks:
     - name: Clear /home
       ansible.builtin.command: "/root/sh.clear_home"
+      changed_when: false
 
     - name: Make sure /etc/skel/Desktop/samps doesn't exist
       ansible.builtin.file:
@@ -153,7 +154,8 @@
 
   handlers:
     - name: Iptables load
-      ansible.builtin.shell: /etc/network/if-pre-up.d/iptablesload
+      ansible.builtin.command: /etc/network/if-pre-up.d/iptablesload
+      changed_when: false
 
     - name: Systemd-resolved
       ansible.builtin.service:

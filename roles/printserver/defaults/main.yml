@@ -3,7 +3,7 @@
 contest_printer_enabled: true
 
 # this also supports a model: (defaults to everywhere)
-printserver_printer_config:
+printserver_print_config:
   - { name: judgeprinter, is_default: false }
   - { name: systemsprinter, is_default: true }
   - { name: balloonprinter, is_default: false }

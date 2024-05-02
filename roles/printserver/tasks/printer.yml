@@ -31,4 +31,4 @@
 - name: Add printer to contest class
   ansible.builtin.command: lpadmin -p {{ printer }} -c contest
   changed_when: true
-  when: contestprinter and not lpstat_contest.stdout is search("{{ item }}")
+  when: contestprinter and not lpstat_contest.stdout is search(printer)

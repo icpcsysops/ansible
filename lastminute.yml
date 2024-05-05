@@ -10,20 +10,51 @@
   roles:
     - role: icpc_host_packages
 
+- name: Configure scoreboard machine
+  hosts: scoreboard
+  roles:
+    - role: scoreboard
+      tags: scoreboard
+
 - name: Configure backups
   hosts: backup*
   roles:
+    - role: dnsmasq
+    - role: script_server
+      tags: script_server
     - role: icpc_host_backup
+      tags: icpc_host_backup
 
-- name: Configure dual_nic machines
-  hosts: backup*, scoreboard*, cds*, packages
-  roles:
-    - role: dual_nic
+- name: Configure extra_nic machines
+  hosts: backup, scoreboard, printsrv, cds, packages
+  tags: extra_nics
+  tasks:
+    - name: Configure nics
+      ansible.builtin.include_role:
+        name: extra_nic
+      vars:
+        extra_nic_config: "{{ item }}"
+      loop: "{{ extra_nic_configs }}"
 
 - name: Configure coachview machines
   hosts: coachview*
   roles:
     - role: coachview
+
+- name: Configure everything but contestants and ntpservers to use backup for dns
+  hosts: judges,others,!ntpservers
+  tasks:
+    - name: Configure dns client
+      ansible.builtin.import_role:
+        name: dnsmasq
+        tasks_from: client.yml
+      tags: dnsmasq
+
+- name: Configure servers (but not DOMjudge) to run node exporter
+  hosts: all:!dom*
+  roles:
+    - role: prometheus_target_all
+      tags: prom
 
 - name: Configure contestant machines
   hosts: contestants
@@ -40,15 +71,38 @@
       when: enable_reverseproxy is defined and enable_reverseproxy
     - role: p100
     - role: ccstools
+      tags: ccstools
       when: ccs  == "domjudge"
     - role: taskset_run_scripts
     - role: vlc
       when: enable_vlc is defined and enable_vlc
+      tags: vlc
     - role: iptablesrules
+      tags: iptablesrules
     - role: martkeys
       when: disable_martkeys is not defined or not disable_martkeys
 
   tasks:
+    - name: Cleanup domjudge.desktop,  renaming to ccs.desktop
+      ansible.builtin.file:
+        name: /usr/share/applications/domjudge.desktop
+        state: absent
+
+    - name: Install stress-ng
+      ansible.builtin.apt:
+        pkg: stress-ng
+        state: present
+
+    # TODO fix in icpc2024
+    - name: Remove ampersand from iptablesload
+      ansible.builtin.replace:
+        path: /etc/network/if-pre-up.d/iptablesload
+        regexp: " &"
+        replace: ""
+        owner: root
+        group: root
+        mode: '0755'
+
     - name: Switch from files to compat in nsswitch
       tags: nsswitch
       ansible.builtin.replace:
@@ -86,6 +140,7 @@
         dest: "/root/{{ contest }}.teams.tar.gz"
         mode: '0600'
 
+    # TODO icpc2024 name it icpc
     - name: Remove icpc* user
       ansible.builtin.user:
         name: "{{ item }}"
@@ -168,29 +223,42 @@
         name: rsyslog
         state: restarted
 
-- name: Lastminute config for all hosts
-  hosts: all
+- name: Install/configure systemd-timesyncd on everything but the ntp servers
+  hosts: all:!ntpservers
   roles:
-    - role: firefox_desktop
     - role: stuvusIT.systemd-timesyncd
       timesync_timezone: "{{ timezone }}"
       timesync_ntp_hosts: "{{ ntp_hosts }}"
       timesync_fallback_ntp_hosts: "{{ fallback_ntp_hosts }}"
       tags: systemd-timesyncd
 
+- name: Set up our ntp servers
+  hosts: ntpservers
+  roles:
+    - role: ntp
+      tags: ntp
+
+- name: Lastminute config for all hosts
+  hosts: all
+  roles:
+    - role: firefox_desktop
+
   vars:
-    judging_notes: "{{ 'files/%s.JudgingNotes.%s.pdf'|format(contest_detail, papersize) }}"
-    tech_notes: "{{ 'files/%s.TechNotes.%s.pdf'|format(contest_detail, papersize) }}"
-    judging_addendum_notes: "{{ 'files/%s.JudgingNotes.Addendum.%s.pdf'|format(contest_detail, papersize) }}"
+    judging_notes: "{{ '/root/ansible/files/%s.JudgingNotes.%s.pdf'|format(contest_detail, papersize) }}"
+    tech_notes: "{{ '/root/ansible/files/%s.TechNotes.%s.pdf'|format(contest_detail, papersize) }}"
+    judging_addendum_notes: "{{ '/root/ansible/files/%s.JudgingNotes.Addendum.%s.pdf'|format(contest_detail, papersize) }}"
 
   tasks:
     # stat file first
     - name: Get file stat of JudgingNotes to be able to perform a check in the following task
+      tags: icpc_docs
+      delegate_to: localhost
       ansible.builtin.stat:
         path: "{{ judging_notes }}"
       register: judgingnotes
 
     - name: Copy JudgingNotes.pdf
+      tags: icpc_docs
       ansible.builtin.copy:
         src: "{{ judging_notes }}"
         dest: /usr/share/doc/icpc/JudgingNotes.pdf
@@ -198,28 +266,36 @@
       when: judgingnotes.stat.exists
 
     - name: Get file stat of JudgingNotes.Addendum to be able to perform a check in the following task
+      tags: icpc_docs
+      delegate_to: localhost
       ansible.builtin.stat:
         path: "{{ judging_addendum_notes }}"
       register: judging_notes_addendum
 
     # TODO in future we might want to only drop judgingnotes_addendum.desktop if we have these.
     - name: Copy JudgingNotes.Addendum.pdf
+      tags: icpc_docs
       ansible.builtin.copy:
-        src: "{{ judging_notes }}"
+        src: "{{ judging_addendum_notes }}"
         dest: /usr/share/doc/icpc/JudgingNotes.Addendum.pdf
         mode: '0644'
       when: judging_notes_addendum.stat.exists
 
     - name: Get file stat of TechNotes to be able to perform a check in the following task
+      tags: icpc_docs
+      delegate_to: localhost
       ansible.builtin.stat:
         path: "{{ tech_notes }}"
       register: technotes
 
     - name: Copy TechNotes.pdf
+      tags: icpc_docs
       ansible.builtin.copy:
         src: "{{ tech_notes }}"
         dest: /usr/share/doc/icpc/TechNotes.pdf
         mode: '0644'
+        owner: root
+        group: root
       when: technotes.stat.exists
 
     - name: Pre-generate the kernel flags for ansible usage
@@ -261,7 +337,7 @@
       ansible.builtin.user:
         name: "root"
         state: present
-        password: "{{ root_password | password_hash('sha512', job_sheet) }}"
+        password: "{{ root_password | password_hash('sha512', root_password) }}"
       when:
         - root_password is defined
         - '"$6$" not in root_password'
@@ -304,6 +380,12 @@
       reverseproxy_server: true
       tags: reverseproxy
 
+- name: Configure cds-wf46 as the git server
+  hosts: cds-wf46
+  roles:
+    - role: cds_for_icpc
+      tags: cds_for_icpc
+
 - name: Configure the cds instances (new style)
   hosts: cds*
   roles:
@@ -313,7 +395,6 @@
 - name: Configure balloonmanager printers
   hosts: balloonmanager
   vars:
-    job_sheet: null
     device_uri: 'printers/balloonprinter'
     printer_name: balloonprinter
   roles:
@@ -323,7 +404,6 @@
 - name: Configure ccsadmin printers
   hosts: ccsadmin*
   vars:
-    job_sheet: null
     device_uri: 'printers/systemsprinter'
     printer_name: systemsprinter
   roles:
@@ -332,7 +412,6 @@
 - name: Configure judges printers
   hosts: judge*
   vars:
-    job_sheet: null
     device_uri: 'printers/systemsprinter'
     printer_name: systemsprinter
   roles:
@@ -341,15 +420,21 @@
       when: ccs  == "domjudge"
 
 - name: Configure others printers
-  hosts: others:!authprint
+  hosts: others:!printsrv
   vars:
-    job_sheet: null
     device_uri: 'printers/systemsprinter'
     printer_name: systemsprinter
   roles:
     - role: cups
 
 - name: Configure printserver
-  hosts: authprint
+  hosts: printsrv
   roles:
     - role: printserver
+      tags: printserver
+
+
+- name: Configure analysts
+  hosts: analysts
+  roles:
+    - role: ccstools

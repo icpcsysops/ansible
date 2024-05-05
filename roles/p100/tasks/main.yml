@@ -40,11 +40,12 @@
         status_code: 200
         body_format: json
       register: latest_presentationclient_release_array
-      when: not pres.stat.exists
+      when: internet and not pres.stat.exists
 
     - name: Set presentation client latest version
       ansible.builtin.set_fact:
         pres_version: "{{ latest_presentationclient_release_array.json[0].name | replace('v', '') }}"
+      when: internet
 
     - name: Download the client once
       delegate_to: localhost
@@ -52,12 +53,16 @@
         url: https://github.com/icpctools/icpctools/releases/download/v{{ pres_version }}/presentations-{{ pres_version }}.zip
         dest: /tmp/presentations-{{ pres_version }}.zip
         mode: '0640'
+      when: internet
 
     - name: Unpack the client
       ansible.builtin.unarchive:
-        src: /tmp/presentations-{{ pres_version }}.zip
+        src: "{{ item }}"
         dest: /p/
         owner: p
         group: p
       become_user: p
       become: true
+      with_first_found:
+        - /tmp/presentations-{{ pres_version }}.zip
+        - files/presentations-{{ pres_version }}.zip

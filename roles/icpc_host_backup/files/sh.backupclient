@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-if [ "$2." == "." ]; then 
+if [ "$2." == "." ]; then
   exit
 fi
 dir=$2
@@ -29,7 +29,11 @@ ulimit -t 30
 # old new
 #ssh ${host} "(cd /home/${host}; tar czf -  --exclude .metadata --exclude core.* --exclude core *)" > ${host}.tar.gz
 # 2018 new
-ssh -q ${host} "(cd /home/${host}; zip -q -x "workspace/.metadata/*" "*/core.*" "*/core" "*venv*" "core" "core.*" -r -  *)" > $id/backup.${id0}.zip
+# ssh -q ${host} "(cd /home/${host}; zip -q -x "workspace/.metadata/*" "*/core.*" "*/core" "*venv*" "core" "core.*" "Desktop/samps/*" -r -  *)" > $id/backup.${id0}.zip
+# wf2023 new -- this did not work
+# ssh -q ${host} "(cd /home/${host}; zip -q -x@exclude.lst -r -  *)" > $id/backup.${id0}.zip
+# wf2023 new
+ssh -q ${host} "(cd /home/${host}; zip -q -x "workspace/.metadata/*" "Desktop/samps/*" "*/core.*" "*/core" "*venv*" "core" "core.*" -r -  *)" > $id/backup.${id0}.zip
 )
 # new for 2019 for jetbrains
 (
@@ -42,8 +46,17 @@ cp ../../ps.${host}.txt $id/tool_data.${id0}.txt
 )
 # new for wf2020, martkeys
 (
-scp -q @${host}:/tmp/keys.log $id/key_log.${id0}.txt
+scp -q @${host}:/root/keys.log $id/key_log.${id0}.txt
 )
+
+# shinier way to get active processes
+(
+  ulimit -t 10
+  # new for 2023
+  ssh -q ${host} "(sudo -u ${host} /bin/env DISPLAY=:1 /usr/local/bin/s.py)" >> ../../spy.${host}.json
+  cp ../../spy.${host}.json $id/tool_data_spy.${id0}.json
+)
+
 # new for wf2021, memory analysis
 (
 ulimit -t 10

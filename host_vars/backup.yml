@@ -1,16 +1,201 @@
-ntp_hosts:
-  - 172.29.1.20"
-  - 10.3.3.208"
-  - 10.3.3.209"
-  - 0.ubuntu.pool.ntp.org"
-  - 1.ubuntu.pool.ntp.org"
-  - 2.ubuntu.pool.ntp.org"
-  - 3.ubuntu.pool.ntp.org"
-fallback_ntp_hosts:
-  - 172.29.1.20"
-  - 10.3.3.208"
-  - 10.3.3.209"
-  - 0.ubuntu.pool.ntp.org"
-  - 1.ubuntu.pool.ntp.org"
-  - 2.ubuntu.pool.ntp.org"
-  - 3.ubuntu.pool.ntp.org"
+---
+# used by config.pl used by sh.do_startbackup
+contest_ids:
+  - challenge-wf46
+  - challenge-wf47
+ntp_servers:
+  - 172.29.1.20
+  - 10.3.3.208
+  - 10.3.3.209
+ntp_pool:
+  - 0.ubuntu.pool.ntp.org
+  - 1.ubuntu.pool.ntp.org
+  - 2.ubuntu.pool.ntp.org
+  - 3.ubuntu.pool.ntp.org
+extra_nic_configs:
+  # blue
+  - gateway: false
+    address: 10.3.3.210/24
+    ifc_name: enp0s31f6
+    routes:
+      - { network: 10.0.0.0/8, via: 10.3.3.254 }
+  # green
+  - gateway: 172.29.0.1
+    address: 172.29.1.210/22
+    ifc_name: enx0050b623c335
+    routes: []
+  # red
+  - gateway: false
+    address: 172.24.0.100/24
+    ifc_name: enx0050b623c699
+    routes: []
+
+# script server config below here:
+script_server_url: files/script-server.zip
+
+script_server_admin_users: &admin_users
+  # hostnames or ips
+  - backup
+  - 127.0.0.1
+
+script_server_commands:
+  - name: run-lastminute
+    description: Runs lastminute.yml
+    group: ansible # for organization in script-server
+    content: |
+      #!/usr/bin/bash -ex
+      cd /root/ansible
+      ansible-playbook --limit "$PARAM_HOSTNAME" lastminute.yml
+    parameters:
+      - name: hostname
+        env_var: PARAM_HOSTNAME
+        type: text
+        default: ${auth.audit_name}
+        constant: true
+        required: true
+
+  - name: refresh-git
+    description: Update git on the CDS
+    group: cds
+    allowed_users: &cds_allowed_users
+      - cds-wf46 # cds host
+      - cds-wf47 # cds host
+      - cdsadmin1
+      - cdsadmin2
+      - cdsadmin3
+    content: |
+      #!/usr/bin/bash -ex
+      ssh root@cds "bash -ec 'set -x; cd /mnt/cds-wf46/cds/contest_repo && sudo -u cds git pull'"
+    parameters: []
+
+  - name: status-cds
+    description: Show service status of cds instances
+    group: cds
+    allowed_users: *cds_allowed_users
+    content: |
+      #!/usr/bin/bash -ex
+      for x in $CDS_INSTANCE; do
+        ssh root@cds systemctl status $CDS_INSTANCE
+      done
+    parameters:
+      - name: instance
+        env_var: CDS_INSTANCE
+        type: multiselect
+        required: true
+        separator: ' '
+        values: &cds_instances
+          - cds-wf46
+          - cds-wf47
+          - p100-wf46
+          - p100-wf47
+          - live-wf46
+          - live-wf47
+
+  - name: restart-cds
+    description: Restarts cds and p100 instances
+    group: cds
+    allowed_users: *cds_allowed_users
+    content: |
+      #!/usr/bin/bash -ex
+      for x in $CDS_INSTANCE; do
+        ssh root@cds systemctl restart $x
+      done
+    parameters:
+      - name: instance
+        env_var: CDS_INSTANCE
+        type: multiselect
+        required: true
+        separator: ' '
+        values: *cds_instances
+
+  - name: domjudge-lastminute
+    description: Runs the ansible playbook lastminute.yml (against domjudge resources)
+    group: ansible
+    allowed_users: &domjudge_ccsadmin
+      - domjudge-ccsadmin1
+      - domjudge-ccsadmin2
+      - domjudge-ccsadmin3
+      - domjudge-ccsadmin4
+      - domjudge-ccsadmin5
+      - domjudge-ccsadmin6
+      - domjudge-ccsadmin7
+      - domjudge-ccsadmin8
+    content: |
+      #!/usr/bin/bash -ex
+      cd /root/ansible
+      ansible-playbook --limit "$HOST_PATTERN" lastminute.yml
+    parameters:
+      - name: host_pattern
+        env_var: HOST_PATTERN # default is same as name
+        separator: ','
+        type: multiselect
+        required: true
+        values: &domjudge_systems
+          - domjudge-judgehost*
+          - domjudge-ccsadmin*
+          - domjudge-wf*
+          - domjudge-wf46-*
+          - domjudge-wf47-*
+          - emergency-wf*
+          - domjudge_analysts
+          - green-judge*
+
+          # These two are "virtual" ips
+          # - domjudge-wf46 domserver-wf46
+          # - domjudge-wf47 domserver-wf47
+          - domjudge-wf46-1
+          - domjudge-wf46-2
+          - domjudge-wf47-1
+          - domjudge-wf47-2
+          - emergency-wf46
+          - emergency-wf47
+          - domjudge-ccsadmin1
+          - domjudge-ccsadmin2
+          - domjudge-ccsadmin3
+          - domjudge-ccsadmin4
+          - domjudge-ccsadmin5
+          - domjudge-ccsadmin6
+          - domjudge-ccsadmin7
+          - domjudge-ccsadmin8
+
+          # Individual judgehosts
+          - domjudge-judgehost1
+          - domjudge-judgehost2
+          - domjudge-judgehost3
+          - domjudge-judgehost4
+          - domjudge-judgehost5
+          - domjudge-judgehost6
+          - domjudge-judgehost7
+          - domjudge-judgehost8
+          - domjudge-judgehost9
+          - domjudge-judgehost10
+          - domjudge-judgehost11
+          - domjudge-judgehost12
+          - domjudge-judgehost13
+          - domjudge-judgehost14
+          - domjudge-judgehost15
+          - domjudge-judgehost16
+          - domjudge-judgehost17
+          - domjudge-judgehost18
+          - domjudge-judgehost19
+          - domjudge-judgehost20
+          - domjudge-judgehost21
+          - domjudge-judgehost22
+          - domjudge-judgehost23
+          - domjudge-judgehost24
+          # - domjudge-judgehost25
+          # - domjudge-judgehost26
+          # - domjudge-judgehost27
+          # - domjudge-judgehost28
+          # - domjudge-judgehost29
+          # - domjudge-judgehost30
+          # - domjudge-judgehost31
+          # - domjudge-judgehost32
+
+          - analysts-green
+          - green-judgehost1
+          - green-judgehost2
+          - green-judgehost3
+          - green-judgehost4
+          - green-judgehost5
+          - green-judgehost6

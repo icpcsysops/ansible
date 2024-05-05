@@ -43,10 +43,11 @@ if [ -f $DATAPATH/UniversityNames/$team.txt ]; then
 fi
 
 text=$(cat <<EOF
-Affiliation: $affiliation
 Host: $originating_host
+
+$affiliation
+
 Created: $created_at
-Processed: $processed_at
 EOF
 )
 

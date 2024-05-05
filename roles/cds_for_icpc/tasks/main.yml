@@ -1,8 +1,12 @@
 ---
+- name: Set the git home directory
+  ansible.builtin.set_fact:
+    git_home_dir: /mnt/{{ ansible_hostname }}/git
+
 - name: Ensure git is installed
   ansible.builtin.package:
     name: git
-    state: installed
+    state: present
 
 - name: Ensure git group
   ansible.builtin.group:
@@ -14,61 +18,63 @@
   ansible.builtin.user:
     name: "git"
     password: "{{ git_user_password }}"
-    shell: /bin/bash
+    shell: /usr/bin/git-shell
     group: git
+    home: "{{ git_home_dir }}"
+    create_home: true
     state: present
 
-- name: Ensure /home/git/git-shell-commands exists
+- name: Ensure ~git/git-shell-commands exists
   ansible.builtin.file:
-    path: /home/git/git-shell-commands
+    path: "{{ git_home_dir }}/git-shell-commands"
     owner: git
     group: git
     state: directory
     mode: "0755"
 
 - name: Ensure no-interactive-login is installed
-  ansible.builtin.file:
-    src: no-interactive-login
-    dest: /home/git/git-shell-commands/no-interactive-login
+  ansible.builtin.copy:
+    src: files/no-interactive-login
+    dest: "{{ git_home_dir }}/git-shell-commands/no-interactive-login"
     owner: git
     group: git
     mode: "0755"
 
+- name: Ensure the .ssh directory exists
+  ansible.builtin.file:
+    path: "{{ git_home_dir }}/.ssh"
+    mode: "0700"
+    state: directory
+    owner: git
+    group: git
+
+# TODO: there's probably an authorized keys ansible task
 - name: Ensure git user .ssh authorized_keys is installed
   ansible.builtin.template:
     src: authorized_keys.j2
-    dest: /home/git/.ssh/authorized_keys
+    dest: "{{ git_home_dir }}/.ssh/authorized_keys"
     owner: git
     group: git
     mode: "0600"
-
-- name: Ansible fact for year
-  ansible.builtin.set_fact:
-    year: ansible_date_time.year
-
-- name: Setup local git repo
-  become: true
-  become_user: git
-  ansible.builtin.git:
-    bare: true
-    clone: false
-    repo: /home/git/wf{{ year }}.git # noqa: latest[git]
 
 - name: Make git user hushlogin
   ansible.builtin.file:
-    path: /home/git/.hushlogin
+    path: "{{ git_home_dir }}/.hushlogin"
     owner: git
     group: git
     mode: "0600"
+    state: touch
+    modification_time: preserve
+    access_time: preserve
 
 - name: Install deploy_backup_tar
   ansible.builtin.copy:
-    src: deploy_backup_tar
+    src: files/deploy_backup_tar
     dest: /usr/local/bin/deploy_backup_tar
     mode: '0755'
 
 - name: Install deploy_backup_tar
   ansible.builtin.copy:
-    src: deploy_backup_tar
+    src: files/deploy_backup_tar
     dest: /usr/local/bin/deploy_backup_tar
-    mode: '0x755'
+    mode: '0755'

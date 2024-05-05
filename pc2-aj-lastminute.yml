@@ -1,0 +1,33 @@
+---
+- name: Set isolcpus to 3 for pc2-ajs
+  hosts: pc2-aj*,ccsadmin*
+  tasks:
+    - name: Pre-generate the kernel flags for ansible usage
+      ansible.builtin.set_fact:
+        procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1 i915.force_probe=4690 isolcpus=3"
+    - name: Ensure /etc/default/grub has proper GRUB_CMDLINE_LINUX_DEFAULT
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=.*$'
+        replace: "GRUB_CMDLINE_LINUX_DEFAULT=\"{{ procline }}\""
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - Update grub
+
+    - name: Ensure /etc/default/grub has proper GRUB_TIMEOUT
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: "GRUB_TIMEOUT=.*"
+        replace: "GRUB_TIMEOUT=3"
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - Update grub
+
+  handlers:
+    - name: Update grub
+      ansible.builtin.command: /usr/sbin/update-grub
+      changed_when: false

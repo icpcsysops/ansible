@@ -9,6 +9,9 @@ TimeoutStopSec=20s
 Environment=WLP_OUTPUT_DIR=/var/lib/cds
 Environment=WLP_USER_DIR=/srv/cds/wlp/usr
 Environment=JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+{% if hide_country_info|default(false) -%}
+Environment=HIDE_COUNTRY_INFO=true
+{% endif -%}
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 
 [Install]

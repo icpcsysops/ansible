@@ -5,8 +5,14 @@
 
   roles:
     - role: firefox_desktop
+    - role: iptablesrules
 
   tasks:
+    - name: Remove open-tests
+      ansible.builtin.file:
+        state: absent
+        path: /home/{{ inventory_hostname }}/Desktop/open-tests
+
     - name: Disable DNS bits in resolved.conf
       ansible.builtin.replace:
         path: /etc/systemd/resolved.conf
@@ -23,59 +29,8 @@
         enabled: false
         masked: true
 
-    - name: Firewall blocks domjudge {{ item }}
-      ansible.builtin.iptables:
-        state: absent
-        chain: OUTPUT
-        protocol: tcp
-        destination: "{{ item }}"
-        destination_ports:
-          - "80"
-          - "443"
-          - "53"
-        jump: drop-n-log
-        action: insert
-      loop:
-        - "10.3.3.215/32"
-        - "10.3.3.216/32"
-
-    - name: Firewall blocks \#1
-      ansible.builtin.iptables:
-        state: absent
-        chain: OUTPUT
-        protocol: tcp
-        destination: 10.3.3.216/31
-        destination_ports:
-          - "80"
-          - "443"
-          - "53"
-        jump: drop-n-log
-        action: insert
-
-
-    - name: Firewall additions input
-      ansible.builtin.iptables:
-        state: absent
-        chain: INPUT
-        ctstate: ESTABLISHED,RELATED
-        jump: ACCEPT
-
-    - name: Firewall additions output tcp
-      ansible.builtin.iptables:
-        state: absent
-        chain: OUTPUT
-        protocol: tcp
-        destination_ports:
-          - "80"
-          - "443"
-          - "53"
-        jump: ACCEPT
-
-    - name: Firewall additions output udp
-      ansible.builtin.iptables:
-        state: absent
-        chain: OUTPUT
-        protocol: udp
-        destination_ports:
-          - "53"
-        jump: ACCEPT
+  handlers:
+    - name: Systemd-resolved
+      ansible.builtin.service:
+        name: systemd-resolved
+        state: restarted

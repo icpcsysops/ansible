@@ -1,0 +1,42 @@
+---
+- name: Playbook to enable autologin
+  hosts: contestants
+  gather_facts: false
+  roles:
+    - role: v100
+
+  tasks:
+    - name: Stop vlc-webcam (to avoid conflicts)
+      ansible.builtin.systemd:
+        name: vlc-webcam
+        state: stopped
+
+    - name: Enable autologin to user v
+      ansible.builtin.copy:
+        content: |
+          [daemon]
+          AutomaticLoginEnable = true
+          AutomaticLogin = v
+          [security]
+
+          [xdmcp]
+
+          [chooser]
+
+          [debug]
+        dest: /etc/gdm3/custom.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Check if v is currently running
+      ansible.builtin.command: pgrep --uid v
+      register: v_running
+      ignore_errors: true
+      changed_when: false
+
+    - name: Restart gdm3
+      ansible.builtin.systemd:
+        name: gdm3
+        state: restarted
+#     when: v_running.rc != 0

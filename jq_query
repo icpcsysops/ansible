@@ -1,0 +1,1 @@
+jq -r  '.plays[0].tasks[].hosts[]| (.ansible_facts.ansible_hostname+ " "+ (.ansible_facts.ansible_memtotal_mb | tostring))'

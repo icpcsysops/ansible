@@ -30,7 +30,7 @@ $|=1;
 my $result = GetOptions('nofork');
 $SIG{CHLD}="IGNORE";
 $tobj = new Proc::ProcessTable;
-$pidfile="$ENV{HOME}/$me.pid";
+$pidfile="/var/run/$me.pid";
 if(-f $pidfile) {
     open(PID, $pidfile) || die("Could not read $me:$! \n");
     $pid = <PID>;

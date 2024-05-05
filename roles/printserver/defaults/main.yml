@@ -1,0 +1,11 @@
+---
+# useful to disbale during imaging phase
+contest_printer_enabled: true
+
+# this also supports a model: (defaults to everywhere)
+printserver_print_config:
+  - { name: judgeprinter, is_default: false }
+  - { name: systemsprinter, is_default: true }
+  - { name: balloonprinter, is_default: false }
+  - { name: teamprint1, contestprinter: true }
+  - { name: teamprint2, contestprinter: true }

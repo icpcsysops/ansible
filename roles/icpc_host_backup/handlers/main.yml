@@ -8,6 +8,11 @@
 #     name: ntp
 #     state: restarted
 
+- name: Restart dnsmasq
+  ansible.builtin.service:
+    name: dnsmasq
+    state: restarted
+
 - name: Rsyslog
   ansible.builtin.service:
     name: rsyslog

@@ -19,6 +19,10 @@
 -A OUTPUT -o lo -j ACCEPT
 
 # open up server to server communication
+-A OUTPUT -d 10.3.3.197 -j ACCEPT
+-A INPUT -s 10.3.3.197 -j ACCEPT
+-A OUTPUT -d 10.3.3.207 -j ACCEPT
+-A INPUT -s 10.3.3.207 -j ACCEPT
 -A OUTPUT -d 10.3.3.208/29 -j ACCEPT
 -A INPUT -s 10.3.3.208/29 -j ACCEPT
 
@@ -46,6 +50,17 @@
 -A INPUT -p udp --sport 53 -j ACCEPT
 -A OUTPUT -p udp --dport 53 -j ACCEPT
 
+# DNS (udp) inbound from 10.3 (servers) and 10.2(judges)
+-A INPUT -p udp --dport 5353 -s 10.3.3.0/24 -j ACCEPT
+-A OUTPUT -p udp --sport 5353 -d 10.3.3.0/24 -j ACCEPT
+-A INPUT -p udp --dport 5353 -s 10.2.2.0/24 -j ACCEPT
+-A OUTPUT -p udp --sport 5353 -d 10.2.2.0/24 -j ACCEPT
+# DNS (tcp)
+-A INPUT -p tcp --dport 5353 -s 10.3.3.0/24 -j ACCEPT
+-A OUTPUT -p tcp --sport 5353 -d 10.3.3.0/24 -j ACCEPT
+-A INPUT -p tcp --dport 5353 -s 10.2.2.0/24 -j ACCEPT
+-A OUTPUT -p tcp --sport 5353 -d 10.2.2.0/24 -j ACCEPT
+
 # http outbound
 -A INPUT -p tcp --sport 80 -j ACCEPT
 -A OUTPUT -p tcp --dport 80 -j ACCEPT
@@ -58,9 +73,19 @@
 -A INPUT -p udp --sport 443 -j ACCEPT
 -A OUTPUT -p udp --dport 443 -j ACCEPT
 
+# winrm outbound
+-A INPUT -p tcp --sport 5985 -j ACCEPT
+-A OUTPUT -p tcp --dport 5985 -j ACCEPT
+
 # http
 -A OUTPUT -p tcp --dport 80 -d 10.3.3.208 -j ACCEPT
 -A INPUT -p tcp --sport 80 -s 10.3.3.208 -j ACCEPT
+
+# script-server
+-A INPUT -p tcp --dport 5000 -s 10.3.3.0/24 -j ACCEPT
+-A OUTPUT -p tcp --sport 5000 -d 10.3.3.0/24 -j ACCEPT
+-A INPUT -p tcp --dport 5000 -s 10.2.2.0/24 -j ACCEPT
+-A OUTPUT -p tcp --sport 5000 -d 10.2.2.0/24 -j ACCEPT
 
 # ntp in
 -A OUTPUT -p tcp --sport 123 -j ACCEPT
@@ -81,9 +106,11 @@
 
 # ssh outbound
 -A OUTPUT -p tcp -m tcp --dport 22 -j ACCEPT
--A OUTPUT -p tcp -m tcp --dport 22 -j ACCEPT
 -A INPUT -p tcp -m tcp --sport 22 -j ACCEPT
--A INPUT -p tcp -m tcp --sport 22 -j ACCEPT
+
+# node exporter outbound
+-A OUTPUT -p tcp -m tcp --dport 9100 -j ACCEPT
+-A INPUT  -p tcp -m tcp --sport 9100 -j ACCEPT
 
 # syslog
 -A INPUT -p tcp --dport 514 -d 10.3.3.208/29 -j ACCEPT
@@ -113,9 +140,11 @@
 # go ahead and send destination unreachable message
 -A INPUT -p icmp --icmp-type 3 -j ACCEPT
 
+{% if green_network_ifc is defined -%}
 # drop green network crap that we do not care about
 -A INPUT -i {{ green_network_ifc }} -m state --state ESTABLISHED,RELATED -j ACCEPT
 -A INPUT -i {{ green_network_ifc }} -j DROP
+{% endif -%}
 
 # drop rest
 -A OUTPUT -j drop-n-log

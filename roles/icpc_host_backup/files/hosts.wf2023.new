@@ -477,8 +477,14 @@
 10.3.3.6    score6 # windows
 10.3.3.7    score7 # windows
 10.3.3.8    score8 # windows
+# Admin Machines
+10.3.3.190   cdsadmin1
+10.3.3.191   cdsadmin2
+10.3.3.192   cdsadmin3
 # ICPC Servers
 10.3.3.197 cds-wf47
+10.3.3.198 emergency-wf46
+10.3.3.199 emergency-wf47
 10.3.3.205  reverseproxy
 10.3.3.206    media
 10.3.3.207    cds cds-wf46
@@ -519,8 +525,17 @@
 10.3.3.238    ccsadmin7
 10.3.3.239    ccsadmin8
 
-# 10.3.3.240/28 mostly unused
+# 10.3.3.240/29 for pc2-ccsadmin
+10.3.3.240    pc2-ccsadmin1
+10.3.3.241    pc2-ccsadmin2
+10.3.3.242    pc2-ccsadmin3
+10.3.3.243    pc2-ccsadmin4
+10.3.3.244    pc2-ccsadmin5
+10.3.3.245    pc2-ccsadmin6
+10.3.3.246    pc2-ccsadmin7
+10.3.3.247    pc2-ccsadmin8
 
+# 10.3.3.248/29 mostly unused
 10.3.3.254    gateway3
 
 #Print/Balloon Network (10.4.4.0/24)
@@ -528,6 +543,7 @@
 # as it is located by the printers
 10.4.4.149    balloonmanager
 # 10.4.4.200/29 for printers
+10.4.4.200    balloonprinter
 10.4.4.201    teamprint1
 10.4.4.202    teamprint2
 10.4.4.203    teamprint3
@@ -586,13 +602,49 @@
 
 # Analysts
 # 172.29.0.160/27 upto 191
+172.29.0.161 analyst1
+172.29.0.162 analyst2
+172.29.0.163 analyst3
+172.29.0.164 analyst4
+172.29.0.165 analyst5
+172.29.0.166 analyst6
+172.29.0.167 analyst7
+172.29.0.168 analyst8
 
+172.29.0.186 icat46
+172.29.0.187 icat47
 
 
 172.29.1.15    sniffer-vm01
 172.29.1.16    redirect1-green
 172.29.1.20  clock
 172.29.1.50  Sysops Printer
+
+172.29.1.64  presclient1
+172.29.1.65  presclient2
+172.29.1.66  presclient3
+172.29.1.67  presclient4
+172.29.1.68  presclient5
+172.29.1.69  presclient6
+172.29.1.70  presclient7
+172.29.1.71  presclient8
+172.29.1.72  presclient9
+172.29.1.73  presclient10
+172.29.1.74  presclient11
+172.29.1.75  presclient12
+172.29.1.76  presclient13
+172.29.1.77  presclient14
+172.29.1.78  presclient15
+172.29.1.79  presclient16
+172.29.1.80  presclient17
+172.29.1.81  presclient18
+172.29.1.82  presclient19
+172.29.1.83  presclient20
+172.29.1.84  presclient21
+172.29.1.85  presclient22
+172.29.1.86  presclient23
+172.29.1.87  presclient24
+
 172.29.1.101         Netmon
 172.29.1.191    builder
 172.29.1.192    myicpc2
@@ -628,6 +680,27 @@
 #172.29.3.251 - FOG/Imaging Server
 
 #VPN VLAN NETWORKS
+172.24.0.7	cds-red
+
+# coachview
+172.24.0.84	coachview4601
+172.24.0.85	coachview4602
+172.24.0.86	coachview4603
+172.24.0.87	coachview4604
+172.24.0.88	coachview4605
+172.24.0.89	coachview4606
+172.24.0.90	coachview4607
+172.24.0.91	coachview4608
+
+172.24.0.92	coachview4701
+172.24.0.93	coachview4702
+172.24.0.94	coachview4703
+172.24.0.95	coachview4704
+172.24.0.96	coachview4705
+172.24.0.97	coachview4706
+172.24.0.98	coachview4707
+172.24.0.99	coachview4708
+
 # MORE COMING HERE...
 
 # The following lines are desirable for IPv6 capable hosts

@@ -28,8 +28,28 @@
 # other cups snmp stuff to drop
 -A OUTPUT -p udp -m udp -d 10.3.3.149 --dport 161 -j DROP
 # some app is triggering these
--A OUTPUT -p udp -m udp --dport 53 --d 10.0.0.1 -j DROP
--A OUTPUT -p udp -m udp --dport 53 --d 10.1.1.1 -j DROP
+-A OUTPUT -p udp -m udp --dport 53 -d 1.0.0.1 -j REJECT
+-A OUTPUT -p udp -m udp --dport 53 -d 1.1.1.1 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 1.0.0.1 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 1.1.1.1 -j REJECT
+# something trying to reach multicast foo
+-A OUTPUT -d 224.0.0.22 -j REJECT
+-A OUTPUT -p udp -m udp --dport 3702 -d 239.255.255.250 -j REJECT
+# jetbrains crap
+-A OUTPUT -p udp -m udp --dport 53 -d 9.9.9.10 -j REJECT
+-A OUTPUT -p udp -m udp --dport 53 -d 149.112.112.10 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 9.9.9.10 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 149.112.112.10 -j REJECT
+# other dns crap
+-A OUTPUT -p udp -m udp --dport 53 -d 8.8.8.8 -j REJECT
+-A OUTPUT -p udp -m udp --dport 53 -d 8.8.4.4 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 8.8.8.8 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 8.8.4.4 -j REJECT
+
+
+# prom from the backup
+-A INPUT -p tcp -m tcp --dport 9100 -s 10.3.3.210 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 9100 -d 10.3.3.210 -j ACCEPT
 
 # http to/from scoreboard
 -A INPUT -p tcp --sport 80 -s 10.3.3.208/31 -j ACCEPT
@@ -54,19 +74,16 @@
 -A OUTPUT -p tcp --dport 123 -d 10.3.3.254 -j ACCEPT
 -A OUTPUT -p udp --dport 123 -d 10.3.3.254 -j ACCEPT
 
-# cds uses https
--A OUTPUT -p tcp --dport 443 -d {{ cds_ip }}/32 -j ACCEPT
--A INPUT -p tcp --sport 443 -s {{ cds_ip }}/32 -j ACCEPT
-# p100 uses https on port 9443
--A OUTPUT -p tcp --dport 9443 -d {{ cds_ip }}/32 -j ACCEPT
--A INPUT -p tcp --sport 9443 -s {{ cds_ip }}/32 -j ACCEPT
+# p100 uses https on port {{ cds_port }}
+-A OUTPUT -p tcp --dport {{ cds_port }} -d {{ cds_ip }}/32 -j ACCEPT
+-A INPUT -p tcp --sport {{ cds_port }} -s {{ cds_ip }}/32 -j ACCEPT
 
 # ssh inbound
 -A INPUT -p tcp -m tcp --dport 22 -s 10.3.3.208/29 -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 22 -d 10.3.3.208/29 -j ACCEPT
 
-{% if vlc -%}
-# vlc camera inbound
+{% if enable_vlc -%}
+# vlc webcam inbound
 -A INPUT -p tcp -m tcp --dport 8080 -s {{ cds_ip }}/32 -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 8080 -d {{ cds_ip }}/32 -j ACCEPT
 
@@ -75,7 +92,7 @@
 -A OUTPUT -p tcp -m tcp --sport 9090 -d {{ cds_ip }}/32 -j ACCEPT
 
 {% endif %}
-{% if mediamtx %}
+{% if enable_mediamtx %}
 # mediamtx
 -A INPUT -p tcp -m tcp --dport 8888 -s {{ cds_ip }}/32 -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 8888 -d {{ cds_ip }}/32 -j ACCEPT

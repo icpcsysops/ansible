@@ -1,0 +1,5 @@
+---
+- name: Pre-configure apt
+  hosts: all
+  roles:
+    - role: apt

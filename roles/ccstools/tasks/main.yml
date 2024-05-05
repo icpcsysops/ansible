@@ -11,47 +11,57 @@
     url: https://raw.githubusercontent.com/DOMjudge/domjudge/main/submit/submit
     dest: "{{ role_path }}/files/submit"
     mode: '0755'
-  when: submit.stat.islnk is not defined
-
-- name: Add correct base URL
-  delegate_to: localhost
-  ansible.builtin.lineinfile:
-    path: "{{ role_path }}/files/submit"
-    regexp: "^baseurl.*"
-    line: 'baseurl = "{{ browser_urls | default(["https://domjudge"]) | first }}"'
-
-- name: Add correct path to python3
-  delegate_to: localhost
-  ansible.builtin.lineinfile:
-    path: "{{ role_path }}/files/submit"
-    regexp: "^#!/usr/bin/env python3$"
-    line: "#!/usr/bin/python3"
+  when: internet and submit.stat.islnk is not defined
 
 - name: Install submit client
   ansible.builtin.copy:
-    src: submit
+    src: "{{ item }}"
     dest: /usr/local/bin/submit
     owner: root
     group: root
     mode: '0555'
+    # only install this file once (otherwise updating the baseurl in it causes it to change every time)
+    force: false
+  with_first_found:
+    - submit
+    - /root/git/domjudge/submit/submit
+
+- name: Add correct base URL
+  ansible.builtin.lineinfile:
+    path: /usr/local/bin/submit
+    regexp: "^baseurl.*"
+    line: 'baseurl = "{{ browser_urls | default(["https://domjudge"]) | first }}"'
+
+- name: Add correct path to python3
+  ansible.builtin.lineinfile:
+    path: /usr/local/bin/submit
+    regexp: "^#!/usr/bin/env python3$"
+    line: "#!/usr/bin/python3"
 
 - name: Is contest_detail TeamGuide.pdf available?
   delegate_to: localhost
   ansible.builtin.stat:
-    path: files/"{{ contest_detail }}-domjudge-team-manual.pdf"
+    path: "files/{{ contest_detail }}-domjudge-team-manual.pdf"
   register: domjudge_team_manual
 
 - name: Copy domjudge TeamGuide.pdf (if ccs == domjudge)
   ansible.builtin.copy:
-    src: files/"{{ contest_detail }}-domjudge-team-manual.pdf"
+    src: "files/{{ contest_detail }}-domjudge-team-manual.pdf"
     dest: /usr/share/doc/icpc/TeamGuide.pdf
     mode: '0644'
   when: domjudge_team_manual.stat.exists
 
+- name: Remove bad domjudge /etc/hosts entries (from imaging)
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regex: "^.*domjudge$"
+    state: absent
+  when: enable_reverseproxy is not defined or not enable_reverseproxy
+
 - name: Add domjudge to /etc/hosts
   ansible.builtin.lineinfile:
     path: /etc/hosts
-    line: "{{ baseip }}.{{ domjudge_ip }}   domjudge" # noqa: no-tabs
+    line: "{{ baseip }}.{{ domjudge_ip }}   domjudge # ANSIBLE MANAGED" # noqa: no-tabs
     owner: root
     group: root
     mode: '0644'
@@ -72,5 +82,5 @@
 - name: Add domjudge desktop entry
   ansible.builtin.copy:
     src: files/domjudge.desktop
-    dest: /usr/share/applications/domjudge.desktop
+    dest: /usr/share/applications/ccs.desktop
     mode: '0644'

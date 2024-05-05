@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# Purpose: display presentations controlled by a CDS
+#
+exec 1> /v/log/stdout
+exec 2> /v/log.stderr
+
+export ROOTDIR=$( dirname "${BASH_SOURCE}[0]" )
+cd $ROOTDIR
+
+# additions for run
+DISPLAY=:0
+export DISPLAY
+umask 0077
+ulimit -c unlimited
+xset -dpms s off s noblank s 0 0 s noexpose
+gsettings set org.gnome.settings-daemon.plugins.power active false
+gsettings set org.gnome.desktop.screensaver idle-activation-enabled false
+gsettings set org.gnome.desktop.session idle-delay 0
+# end additions for run
+
+sleep 2
+while true; do
+  /usr/bin/vlc --fullscreen v4l2://{{ v100_video_device }}
+  sleep 2
+done

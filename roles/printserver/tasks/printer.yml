@@ -1,0 +1,34 @@
+---
+- name: Check if the printer exists
+  ansible.builtin.command: lpstat -p {{ printer }}
+  register: lpstat_printer
+  changed_when: false
+  ignore_errors: true
+
+- name: Lpadmin add printer
+  ansible.builtin.command: lpadmin -p {{ printer }} -E -v ipp://{{ printer }} -m {{ model | default("everywhere") }} # noqa: yaml[line-length]
+  when: lpstat_printer.rc != 0
+  changed_when: false
+
+- name: Set as default
+  ansible.builtin.command: lpadmin -d {{ printer }}
+  when: lpstat_printer.rc != 0
+  changed_when: false
+
+- name: Update ppd to call icpc-banner
+  ansible.builtin.lineinfile:
+    path: /etc/cups/ppd/{{ printer }}.ppd
+    state: present
+    insertbefore: '^\*ModelName:.*$'
+    line: '*cupsFilter2: "application/vnd.cups-pdf application/pdf 0 icpc-banner"'
+  register: printer_ppd
+  until: "printer_ppd is not failed"
+  retries: 5
+  delay: 5
+  notify: Restart cups
+  when: contestprinter
+
+- name: Add printer to contest class
+  ansible.builtin.command: lpadmin -p {{ printer }} -c contest
+  changed_when: true
+  when: contestprinter and not lpstat_contest.stdout is search(printer)

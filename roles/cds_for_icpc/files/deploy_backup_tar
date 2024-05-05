@@ -3,19 +3,27 @@
 from os import listdir, chdir, mkdir
 from os.path import isfile, islink, getmtime, join, realpath, isdir
 import tarfile
+import argparse
+
+parser = argparse.ArgumentParser(prog='deploy_backup_tar',
+        description="What contest to deploy the backup tar to.")
+
+parser.add_argument("contests", metavar='contest', type=str, nargs='+')
+args = parser.parse_args()
 
 # this file is dropped by the backup host
 # who then ssh's over to run this script.
 # constant
 BACKUP_FILE = "backups.tar"
 
-if isfile(backup_file):
-    path = "/srv/cds/contests/cds/"
-    destdir = join(realpath(path), "teams")
-    if not isdir(destdir):
-        mkdir(destdir)
-    with tarfile.open(BACKUP_FILE, "r") as tar:
-        tar.extractall(destdir)
-        print(f"extracted {BACKUP_FILE} to {destdir}")
+if isfile(BACKUP_FILE):
+    for contest in args.contests:
+        path = f"/srv/cds/contests/{contest}/"
+        destdir = join(realpath(path), "teams")
+        if not isdir(destdir):
+            mkdir(destdir)
+        with tarfile.open(BACKUP_FILE, "r") as tar:
+            tar.extractall(destdir)
+            print(f"extracted {BACKUP_FILE} to {destdir}")
 else:
     print(f"ERROR: {BACKUP_FILE} does not exist")

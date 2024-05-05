@@ -3,11 +3,13 @@
 use File::Temp qw/ tempdir /;
 use Sys::Syslog qw(:standard :macros);
 
+do './config.pl';
+
 openlog("sh.do_startbackup", 'pid', LOG_AUTH);
 
 $|=0;		# turn off buffering
 $mintime=20;	# in seconds, mininum time between loops
-$npar=20;	# number of processes to run at once 
+$npar=35;	# number of processes to run at once
 $script_dir="/root/contest/backup/scripts";
 $bdir="/backups";
 $logdir="$bdir/logs";
@@ -70,9 +72,9 @@ do {
 	# now create .tar of the .zip files
         @COMMAND = ("/bin/tar", "--exclude", "ps.team*", "-C", "$bdir/data/$date", "-cf", "$bdir/data/${date}.tar", ".");
 	system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
-        @COMMAND = ("/usr/bin/scp", "-q", "$bdir/data/${date}.tar", "root\@cds:backups.tar");
+        @COMMAND = ("/usr/bin/scp", "-q", "$bdir/data/${date}.tar", "cds\@cds:backups.tar");
 	system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
-        @COMMAND = ("/usr/bin/ssh", "-q", "deboer\@cds", "/usr/local/bin/deploy_backup_tar");
+        @COMMAND = ("/usr/bin/ssh", "-q", "cds\@cds", "/usr/local/bin/deploy_backup_tar @contests");
 	system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
 	#        @COMMAND = ("/usr/bin/scp", "$bdir/data/${date}.tar", "\@sysops-mgmt:/mnt/team_backups.tar");
 	#system(@COMMAND) == 0 or warn("system @COMMAND failed: $?");
@@ -90,7 +92,7 @@ sub clear_logs {
     opendir(DIR, $dir) || warn("Unable to read $dir: $!\n");
     my(@files)=grep(/^backup\./, readdir(DIR));
     close(DIR);
-    
+
     foreach $f (@files) {
         rename("$dir/$f", "$dir/OLD/$f");
     }

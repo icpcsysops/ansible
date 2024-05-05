@@ -1,0 +1,16 @@
+---
+- name: Install ntp
+  ansible.builtin.apt:
+    pkg:
+      - ntp
+      - ntpstat
+    state: present
+
+- name: Install ntp config file
+  ansible.builtin.template:
+    src: ntp.conf.j2
+    dest: /etc/ntp.conf
+    mode: "0644"
+    owner: root
+    group: root
+  notify: Restart ntp

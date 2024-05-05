@@ -1,14 +1,5 @@
 ---
-- name: Add upstream prometheus apt key
-  ansible.builtin.apt_key:
-    url: https://packagecloud.io/the_asten/prometheus/gpgkey
-    state: present
 
-- name: Add upstream prometheus apt repo
-  ansible.builtin.apt_repository:
-    repo: deb https://packagecloud.io/the_asten/prometheus/ubuntu/ focal main
-    state: present
-  register: prometheus_repo
 
 - name: Install dependencies
   ansible.builtin.apt:
@@ -82,7 +73,7 @@
 ## Setup grafana
 - name: Install grafana
   ansible.builtin.apt:
-    deb: https://dl.grafana.com/enterprise/release/grafana-enterprise_8.4.6_amd64.deb
+    name: grafana-enterprise
     state: present
   notify: Restart grafana
 
@@ -121,7 +112,7 @@
     content: "{{ grafana_ssl_cert }}"
     dest: /etc/ssl/certs/grafana.crt
     mode: "0644"
-  when: grafana_ssl_cert is not None
+  when: grafana_ssl_cert is defined
   notify: Restart nginx
 
 - name: Dump grafana key if found
@@ -129,7 +120,7 @@
     content: "{{ grafana_ssl_key }}"
     dest: /etc/ssl/private/grafana.key
     mode: "0644"
-  when: grafana_ssl_cert is not None
+  when: grafana_ssl_cert is defined
   notify: Restart nginx
 
 # Setup nginx with selfsigned certificate
@@ -139,7 +130,7 @@
     dest: /etc/ssl/certs/grafana.crt
     mode: "0644"
     remote_src: true
-  when: grafana_ssl_cert is None
+  when: grafana_ssl_cert is not defined
   notify: Restart nginx
 
 - name: Copy ssl key
@@ -148,8 +139,13 @@
     dest: /etc/ssl/private/grafana.key
     mode: "0600"
     remote_src: true
-  when: grafana_ssl_key is None
+  when: grafana_ssl_key is not defined
   notify: Restart nginx
+
+- name: Remove default nginx config
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
 
 - name: Copy default nginx config
   ansible.builtin.template:

@@ -58,10 +58,12 @@
         status_code: 200
         body_format: json
       register: latest_coachview_release_array
+      when: coachview_version is not defined
 
     - name: Set coachview latest version
       ansible.builtin.set_fact:
         coachview_version: "{{ latest_coachview_release_array.json[0].name | replace('v', '') }}"
+      when: coachview_version is not defined
 
     - name: Download the coachview once
       delegate_to: localhost

@@ -1,0 +1,2 @@
+#!/bin/bash
+echo -n "team$1  "; test "$(curl --max-time 1.0 --connect-timeout 0.5 -s http://team$1:8080 | head -c2 | wc -c )" = "2"  && echo "-" || echo "FAILURE"

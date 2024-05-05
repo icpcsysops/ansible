@@ -1,0 +1,4 @@
+---
+- name: Interface up all auto
+  ansible.builtin.command: ifup -a
+  changed_when: false

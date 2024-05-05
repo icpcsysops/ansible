@@ -14,6 +14,14 @@
       - exfat-fuse
       - awscli
       - python3.10-venv
+      - git-cola
+      - python3-passlib
+        # consider adding these to the iso
+      - iotop
+      - jq
+      - htop
+      - curl
+      - vim
     state: present
 
 - name: Enable DNS bits in resolved.conf
@@ -27,24 +35,15 @@
   notify:
     - Systemd-resolved
 
-- name: Get file stat of per contest hosts to be able to perform a check in the following tasks
-  ansible.builtin.stat:
-    path: "hosts.{{ contest }}.new"
-  register: per_contest_hosts
-
 - name: Copy per contest hosts to /etc/hosts
   ansible.builtin.copy:
-    src: "files/hosts.{{ contest }}.new"
+    src: "{{ item }}"
     dest: /etc/hosts
     mode: '0644'
-  when: per_contest_hosts.stat.exists
-
-- name: Copy hosts to /etc/hosts
-  ansible.builtin.copy:
-    src: files/hosts.new
-    dest: /etc/hosts
-    mode: '0644'
-  when: not per_contest_hosts.stat.exists
+  with_first_found:
+    - files/hosts.{{ contest }}.new
+    - files/hosts.new
+  notify: Restart dnsmasq
 
 - name: Install rsyslog.d config
   ansible.builtin.copy:
@@ -100,26 +99,31 @@
         daemon_reload: true
         name: backup_watchdog.service
 
-- name: Install par
+- name: Install contest/backup/scripts
   ansible.builtin.copy:
-    src: files/par
-    dest: /root/contest/backup/scripts/par
-    mode: '0755'
-
-- name: Install sh.do_startbackup
-  ansible.builtin.copy:
-    src: files/sh.do_startbackup
-    dest: /root/contest/backup/scripts/sh.do_startbackup
-    mode: '0755'
-
-- name: Install sh.backupclient
-  ansible.builtin.copy:
-    src: files/sh.backupclient
-    dest: /root/contest/backup/scripts/sh.backupclient
-    mode: '0755'
+    src: files/{{ item.name }}
+    dest: /root/contest/backup/scripts/{{ item.name }}
+    mode: "{{ item.mode | default('0755') }}"
+    owner: root
+    group: root
+  loop:
+    - { name: par }
+    - { name: sh.do_startbackup }
+    - { name: sh.backupclient }
+    - { name: exclude.lst, mode: "0644" }
 
 - name: Install ssh config
   ansible.builtin.copy:
     src: files/root.ssh.config
     dest: /root/.ssh.config
     mode: '0600'
+    owner: root
+    group: root
+
+- name: Ensure config.pl
+  ansible.builtin.template:
+    src: config.pl.j2
+    dest: /root/contest/backup/scripts/config.pl
+    mode: '0600'
+    owner: root
+    group: root

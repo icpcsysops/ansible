@@ -1,0 +1,6 @@
+## Only define if you want a specific version
+# presadmin_version: 2.5.913 # the version from github icpctools releases
+presadmin_user: presAdmin
+presadmin_pass: REDACTED
+presadmin_cds_url: https://172.29.1.207/api/contests/
+skip_chocolatey: false

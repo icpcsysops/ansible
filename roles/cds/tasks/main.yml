@@ -16,24 +16,6 @@
     - /srv/cds
     - /var/lib/cds
 
-- name: Get the CDS release
-  ansible.builtin.uri:
-    url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=1
-    method: GET
-    return_content: true
-    status_code: 200
-    body_format: json
-  register: latest_cds_release_array
-  check_mode: false
-
-- name: Set CDS latest version
-  ansible.builtin.set_fact:
-    cds_version: "{{ latest_cds_release_array.json[0].name | replace('v', '') }}"
-
-- name: Set CDS minor version
-  ansible.builtin.set_fact:
-    cds_version_minor: "{{ cds_version | regex_replace('\\.\\d+$', '') }}"
-
 - name: Check if CDS is installed
   ansible.builtin.stat:
     path: /srv/cds/wlp/usr/servers
@@ -46,6 +28,35 @@
   register: cds_war
   check_mode: false
 
+- name: Install a local copy of the CDS WLP Server if present (offline)
+  ansible.builtin.unarchive:
+    src: "{{ lookup('ansible.builtin.fileglob', 'wlp.CDS-' + cds_version + '.zip', wantlist=True) | sort | last }}"
+    dest: /srv/cds
+    owner: cds
+    group: cds
+  register: local_cds_installed
+  failed_when: false
+  ignore_errors: true
+
+- name: Get the CDS release
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=1
+    method: GET
+    return_content: true
+    status_code: 200
+    body_format: json
+  register: latest_cds_release_array
+  check_mode: false
+  when: local_cds_installed.failed
+- name: Set CDS latest version
+  ansible.builtin.set_fact:
+    cds_version: "{{ latest_cds_release_array.json[0].name | replace('v', '') }}"
+  when: local_cds_installed.failed
+
+- name: Set CDS minor version
+  ansible.builtin.set_fact:
+    cds_version_minor: "{{ cds_version | regex_replace('\\.\\d+$', '') }}"
+
 - name: Download and unpack full CDS
   ansible.builtin.unarchive:
     src: https://github.com/icpctools/icpctools/releases/download/v{{ cds_version }}/wlp.CDS-{{ cds_version }}.zip
@@ -53,13 +64,22 @@
     remote_src: true
     owner: cds
     group: cds
-  when: not cds_pkg.stat.exists
+  when: local_cds_installed.failed and not cds_pkg.stat.exists and latest_cds_release_array.success
+
+- name: Install a local copy of the CDS WAR if present (offline)
+  ansible.builtin.unarchive:
+    src: "{{ lookup('ansible.builtin.fileglob', 'CDS-' + cds_version + '.zip', wantlist=True) | sort | last }}"
+    dest: /root
+  register: local_cds_war_installed
+  failed_when: false
+  ignore_errors: true
 
 - name: Download and unpack CDS WAR
   ansible.builtin.unarchive:
     src: https://github.com/icpctools/icpctools/releases/download/v{{ cds_version }}/CDS-{{ cds_version }}.zip
     dest: /root
     remote_src: true
+  when: local_cds_war_installed.failed
 
 - name: Copy new CDS war
   ansible.builtin.copy:
@@ -72,6 +92,27 @@
     force: true
   when: not cds_war.stat.exists
   register: updated_war
+
+- name: Make sure the cds directory exists
+  ansible.builtin.file:
+    path: /mnt/{{ ansible_hostname }}/cds
+    state: directory
+    mode: '0755'
+    owner: cds
+    group: cds
+
+- name: Check if CDS repo is cloned already
+  ansible.builtin.stat:
+    path: /mnt/{{ ansible_hostname }}/cds/contest_repo
+  register: cds_repo_cloned
+    # check_mode: false
+- name: Clone the contest repo
+  become: true
+  become_user: cds
+  ansible.builtin.git: # noqa: latest
+    repo: "{{ cds_contest_git_repo }}"
+    dest: /mnt/{{ ansible_hostname }}/cds/contest_repo
+  when: not cds_repo_cloned.stat.exists
 
 - name: Create contests config directory
   ansible.builtin.file:
@@ -87,6 +128,6 @@
     cds_name: "{{ outeritem.key }}"
     cds_instance: "{{ outeritem.value }}"
     needs_restart: updated_war.changed
-  with_dict: "{{ CDS }}"
+  with_dict: "{{ cds_config }}"
   loop_control:
     loop_var: outeritem

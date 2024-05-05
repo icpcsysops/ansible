@@ -1,0 +1,46 @@
+## Start of FOG Settings
+## Created by the FOG Installer
+## Find more information about this file in the FOG Project wiki:
+##     https://wiki.fogproject.org/wiki/index.php?title=.fogsettings
+## Version: 1.5.10
+## Install time: Mon 11 Sep 2023 05:12:12 AM EET
+ipaddress='10.1.0.250'
+copybackold='0'
+interface='{{ fog_ifc }}'
+submask='255.255.255.0'
+hostname='fog-server'
+routeraddress='# No router address added'
+plainrouter=''
+dnsaddress='# No dns added'
+username='fogproject'
+password='{{ fog_password | default("f0g_pa$$w0rd") }}'
+osid='2'
+osname='Debian'
+dodhcp='N'
+bldhcp='0'
+dhcpd='isc-dhcp-server'
+blexports='1'
+installtype='N'
+snmysqluser='fogmaster'
+snmysqlpass='{{ for_mysql_password | default("f0gma$ter") }}'
+snmysqlhost='localhost'
+mysqldbname='fog'
+installlang='0'
+storageLocation='/images'
+fogupdateloaded=1
+docroot='/var/www/'
+webroot='/fog/'
+caCreated='yes'
+httpproto='https'
+startrange=''
+endrange=''
+packages='apache2 bc build-essential cpp curl g++ gawk gcc genisoimage git gzip htmldoc isolinux lftp libapache2-mod-php libc6 libcurl4 liblzma-dev m4 mariadb-client mariadb-server net-tools nfs-kernel-server openssh-server php php-bcmath php-cli php-curl php-fpm php-gd php-json php-ldap php-mbstring php-mysql tar tftpd-hpa tftp-hpa unzip vsftpd wget zlib1g'
+noTftpBuild=''
+tftpAdvOpts=''
+sslpath='/opt/fog/snapins/ssl/'
+backupPath='/home/'
+armsupport=''
+php_ver='8.1'
+sslprivkey='/opt/fog/snapins/ssl/.srvprivate.key'
+sendreports='N'
+## End of FOG Settings

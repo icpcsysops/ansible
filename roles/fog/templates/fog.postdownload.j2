@@ -1,0 +1,157 @@
+#!/bin/bash
+## This file serves as a starting point to call your custom postimaging scripts.
+## <SCRIPTNAME> should be changed to the script you're planning to use.
+## Syntax of post download scripts are
+#. ${postdownpath}<SCRIPTNAME>
+
+#ICPC specific settings - 9.30.2023 - PH
+
+
+############################################
+# Setting up some testing variables
+############################################
+#export isdebug=y
+#postdownpath=./
+#setting testing variable for now
+#export testing=/home/icpc/testing
+
+
+# Get a copy of some functions.  These are located within the 
+#  Virtual hard drive within fog.  They are not on the server or local system.
+. /usr/share/fog/lib/funcs.sh
+#. ./funcs.sh
+
+# Call the icpc Functions to overide some of the fog functions
+. /images/postdownloadscripts/icpc/icpcfuncs.sh
+
+
+############################################
+# Begin Processing
+############################################
+
+dots "Into ICPC post-install script"
+echo
+
+dots "Host name seen by fog"
+echo -e "${Green}$hostname${RST}"
+
+# not Linux just bail
+if [ $osid != 50 ]; then
+   exit 0
+fi
+
+debugPause
+
+############################################
+# mounting filesystem
+############################################
+
+error=0;
+dots "Mounting the filesystem..."
+
+#Making our life easier...
+if test -e ${hd}p2
+then
+   # nvme partition
+   icpcHD=${hd}p2
+   icpcboot=${hd}p1
+else
+   # sdX type partition
+   icpcHD=${hd}2
+   icpcboot=${hd}1
+fi
+
+logfile=/tmp/mountdebug.log
+
+mount $icpcHD /mnt >>  $logfile 2>&1
+error=`expr $error + $?`
+
+mount -t proc proc /mnt/proc >> $logfile 2>&1
+error=`expr $error + $?`
+
+mount --bind -t sysfs /sys /mnt/sys >> $logfile 2>&1
+error=`expr $error + $?`
+
+mount --bind /dev /mnt/dev >> $logfile 2>&1
+error=`expr $error + $?`
+
+mount --bind /dev/pts /mnt/dev/pts >> $logfile 2>&1
+error=`expr $error + $?`
+
+mount --bind /sys/firmware/efi/efivars /mnt/sys/firmware/efi/efivars >> $logfile 2>&1
+
+mount -t vfat $icpcboot /mnt/boot/efi >> $logfile 2>&1
+error=`expr $error + $?`
+
+case $error in
+        0)
+                echo -e "${Green}Done${RST}"
+                ;;
+        *)
+                echo -e "${Red}Failed${RST}"
+                debugPause
+                handleError "Could not mount filesystem"
+                ;;
+esac
+
+debugPause
+
+
+###############################################
+# Copying scripts out to new root partition
+###############################################
+PD=/images/postdownloadscripts/icpc/
+LIB=/usr/share/fog/lib/
+scriptDir=/mnt/root/icpcimage/
+#for i in ${PD}fog.stage2 ${PD}fog.icpcC ${LIB}funcs.sh
+echo 
+echo -e "${Green}Copying ICPC Files to system root:${RST}"
+mkdir -p ${scriptDir}
+for i in ${PD}* ${LIB}funcs.sh
+do
+	dots "   -$i"
+
+	cp -f $i ${scriptDir}
+#	if [ $? -ne 0 ]
+	checkfile=$(basename $i)
+	if [ -f $i ] && [ ! -f  ${scriptDir}/$checkfile ]
+	then
+		echo -e "     ${RED}Copy of Stage2 script $i failed${RST}"
+		debugPause
+		handleError "Copy of Stage2 script $i failed"
+	else
+		echo -e "${Green}Done${RST}"
+	fi
+done
+
+debugPause
+
+
+###############################################
+# Changing to Root Filesystem
+###############################################
+
+dots "Changing root filesystems and passing"
+echo -e "${Green}$hostname${RST}"
+
+#chroot /mnt bash /root/icpcimage/fog.stage2 $hostname
+chroot /mnt bash /root/icpcimage/fog.stage2 $hostname | tee /mnt/root/icpcimage/stage2-out.txt
+
+#echo -e "${Green}Done with stage2${RST}"
+debugPause
+
+
+###############################################
+# reset boot order
+###############################################
+
+dots "Setting EFI Boot order"
+# efibootmgr -o 2,1
+# efibootmgr -o 4,1
+efibootmgr -o {{ fog_hd | default("2") }},{{ fog_net | default("1") }}
+
+echo -e "${Green}Completed Fog Post Download script${RST}"
+
+dots "Done.....  REBOOTING...."
+echo -e "${Green}Done${RST}"
+

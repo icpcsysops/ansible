@@ -12,23 +12,23 @@ ntp_pool:
   - 1.ubuntu.pool.ntp.org
   - 2.ubuntu.pool.ntp.org
   - 3.ubuntu.pool.ntp.org
-extra_nic_configs:
-  # blue
-  - gateway: false
-    address: 10.3.3.210/24
-    ifc_name: enp0s31f6
-    routes:
-      - { network: 10.0.0.0/8, via: 10.3.3.254 }
-  # green
-  - gateway: 172.29.0.1
-    address: 172.29.1.210/22
-    ifc_name: enx0050b623c335
-    routes: []
-  # red
-  - gateway: false
-    address: 172.24.0.100/24
-    ifc_name: enx0050b623c699
-    routes: []
+# extra_nic_configs:
+#   # blue
+#   - gateway: false
+#     address: 10.3.3.210/24
+#     ifc_name: enp0s31f6
+#     routes:
+#       - { network: 10.0.0.0/8, via: 10.3.3.254 }
+#   # green
+#   - gateway: 172.29.0.1
+#     address: 172.29.1.210/22
+#     ifc_name: enx0050b623c335
+#     routes: []
+#   # red
+#   - gateway: false
+#     address: 172.24.0.100/24
+#     ifc_name: enx0050b623c699
+#     routes: []
 
 # script server config below here:
 script_server_url: files/script-server.zip
@@ -58,14 +58,13 @@ script_server_commands:
     description: Update git on the CDS
     group: cds
     allowed_users: &cds_allowed_users
-      - cds-wf46 # cds host
-      - cds-wf47 # cds host
+      - cds # cds host
       - cdsadmin1
       - cdsadmin2
       - cdsadmin3
     content: |
       #!/usr/bin/bash -ex
-      ssh root@cds "bash -ec 'set -x; cd /mnt/cds-wf46/cds/contest_repo && sudo -u cds git pull'"
+      ssh root@cds "bash -ec 'set -x; cd /mnt/cds/cds/contest_repo && sudo -u cds git pull'"
     parameters: []
 
   - name: status-cds
@@ -84,12 +83,9 @@ script_server_commands:
         required: true
         separator: ' '
         values: &cds_instances
-          - cds-wf46
-          - cds-wf47
-          - p100-wf46
-          - p100-wf47
-          - live-wf46
-          - live-wf47
+          - cds
+          - p100
+          - live
 
   - name: restart-cds
     description: Restarts cds and p100 instances
@@ -133,22 +129,17 @@ script_server_commands:
         values: &domjudge_systems
           - domjudge-judgehost*
           - domjudge-ccsadmin*
-          - domjudge-wf*
-          - domjudge-wf46-*
-          - domjudge-wf47-*
-          - emergency-wf*
+          - domjudge
+          - emergency
           - domjudge_analysts
           - green-judge*
 
           # These two are "virtual" ips
-          # - domjudge-wf46 domserver-wf46
-          # - domjudge-wf47 domserver-wf47
-          - domjudge-wf46-1
-          - domjudge-wf46-2
-          - domjudge-wf47-1
-          - domjudge-wf47-2
-          - emergency-wf46
-          - emergency-wf47
+          # - domjudge-1 domserver-1
+          # - domjudge-2 domserver-2
+          - domjudge-1
+          - domjudge-2
+          - emergency
           - domjudge-ccsadmin1
           - domjudge-ccsadmin2
           - domjudge-ccsadmin3

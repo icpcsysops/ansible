@@ -1,0 +1,52 @@
+# dhcpd.conf
+#
+# ICPC configuration file for ISC dhcpd
+#
+# Attention: If /etc/ltsp/dhcpd.conf exists, that will be used as
+# configuration file instead of this file.
+
+default-lease-time 300;
+max-lease-time 300;
+ddns-update-style none;
+option domain-name "icpc.local";
+option space PXE;
+option PXE.mtftp-ip    code 1 = ip-address;
+option PXE.mtftp-cport code 2 = unsigned integer 16;
+option PXE.mtftp-sport code 3 = unsigned integer 16;
+option PXE.mtftp-tmout code 4 = unsigned integer 8;
+option PXE.mtftp-delay code 5 = unsigned integer 8;
+option arch code 93 = unsigned integer 16; # RFC4578
+use-host-decl-names on;
+ddns-update-style none;
+ignore client-updates;
+next-server {{ fog_server_ip | default("10.1.0.250") }};
+authoritative;
+
+subnet {{ fog_subnet | default("10.0.1.0") }}  netmask {{ fog_subnet_mask | default("255.255.254.0") }} {
+    option subnet-mask {{ fog_subnet_mask | default("255.255.254.0") }};
+    range dynamic-bootp {{ fog_dynamic_bootp_start | default("10.1.0.11") }} {{ fog_dynamic_bootp_end | default("10.1.0.250") }};
+    default-lease-time 600;
+    max-lease-time 600;
+    option routers {{ fog_router_ip | default("10.1.1.254") }};
+    option broadcast-address {{ fog_broadcast_ip | default("10.1.1.255") }};
+
+    class "UEFI-64-1" {
+     match if substring(option vendor-class-identifier, 0, 20) = "PXEClient:Arch:00007";
+     filename "ipxe.efi";
+    }
+
+    class "UEFI-64-2" {
+     match if substring(option vendor-class-identifier, 0, 20) = "PXEClient:Arch:00008";
+    filename "ipxe.efi";
+    }
+
+    class "UEFI-64-3" {
+     match if substring(option vendor-class-identifier, 0, 20) = "PXEClient:Arch:00009";
+     filename "ipxe.efi";
+    }
+
+    class "Legacy" {
+     match if substring(option vendor-class-identifier, 0, 20) = "PXEClient:Arch:00000";
+     filename "undionly.kkpxe";
+    }
+}

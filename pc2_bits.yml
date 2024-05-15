@@ -1,22 +1,22 @@
 ---
 - name: Configure pc2 machines
-  hosts: ccsadmin*,pc2-aj*
+  hosts: pc2-ccsadmin,pc2-aj
 
   roles:
     - role: hyperthreadingdisabled
 
   tasks:
-    - name: Create ~icpc2023/.ssh if it does not exist
+    - name: Create ~icpc/.ssh if it does not exist
       ansible.builtin.file:
-        path: /home/icpc2023/.ssh
+        path: /home/icpc/.ssh
         state: directory
         mode: "0700"
-        group: icpc2023
-        owner: icpc2023
+        group: icpc
+        owner: icpc
 
     - name: Copy authorized_keys2 to icpc
       ansible.posix.authorized_key:
-        user: icpc2023
+        user: icpc
         state: present
         key: "{{ lookup('file', 'files/pc2.authorized_keys2') }}"
 
@@ -27,16 +27,8 @@
         key: "{{ lookup('file', 'files/pc2.authorized_keys2') }}"
 
 
-- name: Configure wf46 pc2 machines
-  hosts: pc2server-wf46,ccsadmin-wf46,pc2-aj-wf46
-
-  roles:
-    - role: pc2client
-
-- name: Configure wf47 pc2 machines
-  hosts: pc2server-wf47,ccsadmin-wf47,pc2-aj-wf47
-  vars:
-    pc2server: 10.3.3.221
+- name: Configure pc2 machines
+  hosts: pc2server,pc2-ccsadmin,pc2-aj
 
   roles:
     - role: pc2client

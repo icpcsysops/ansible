@@ -27,6 +27,10 @@
 -A INPUT -s 10.3.3.205/32 -p tcp -m tcp --dport 9090 -j ACCEPT
 -A INPUT -s 10.3.3.207/32 -p tcp -m tcp --dport 9090 -j ACCEPT
 -A INPUT -s 10.3.3.208/28 -p tcp -m tcp --dport 9090 -j ACCEPT
+
+-A INPUT -s 10.3.3.205/32 -p tcp -m tcp --dport 80 -j ACCEPT
+-A INPUT -s 10.3.3.205/32 -p tcp -m tcp --dport 443 -j ACCEPT
+
 -A INPUT -s 10.3.3.213/32 -p tcp -m tcp --sport 22 -j ACCEPT
 -A INPUT -s 10.3.3.210/32 -p tcp -m tcp --sport 22 -j ACCEPT
 -A INPUT -s 10.3.3.208/29 -p udp -m udp --sport 514 -j ACCEPT
@@ -70,6 +74,10 @@
 -A OUTPUT -d 10.3.3.205/32 -p tcp -m tcp --sport 9090 -j ACCEPT
 -A OUTPUT -d 10.3.3.207/32 -p tcp -m tcp --sport 9090 -j ACCEPT
 -A OUTPUT -d 10.3.3.208/28 -p tcp -m tcp --sport 9090 -j ACCEPT
+
+-A OUTPUT -d 10.3.3.205/32 -p tcp -m tcp --sport 80 -j ACCEPT
+-A OUTPUT -d 10.3.3.205/32 -p tcp -m tcp --sport 443 -j ACCEPT
+
 -A OUTPUT -d 10.3.3.213/32 -p tcp -m tcp --dport 22 -j ACCEPT
 -A OUTPUT -d 10.3.3.210/32 -p tcp -m tcp --dport 22 -j ACCEPT
 -A OUTPUT -d 10.3.3.208/29 -p udp -m udp --dport 514 -j ACCEPT

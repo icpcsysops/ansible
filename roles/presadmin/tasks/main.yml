@@ -44,5 +44,5 @@
 
 - name: Copy a shortcut to launch the presentation client
   community.windows.win_shortcut:
-    src: "c:/Users/{{ ansible_user }}/Desktop/presadmin.lnk"
+    src: "c:/Users/{{ ansible_user }}/Desktop/launch_pres_admin.bat"
     dest: "%ProgramData%/Microsoft/Windows/Start Menu/Programs/Startup/presadmin.lnk"

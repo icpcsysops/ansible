@@ -195,6 +195,16 @@
         group: root
         mode: '0644'
       notify: Glib-compile-schemas
+    - name: copy fixed runc and runcpp scripts
+      ansible.builtin.copy:
+        src: files/{{ item }}
+        dest: /usr/local/bin/{{ item }}
+        mode: 0755
+        owner: root
+        group: root
+      loop:
+        - runc
+        - runcpp
   handlers:
     - name: Glib-compile-schemas
       ansible.builtin.command: glib-compile-schemas /usr/share/glib-2.0/schemas

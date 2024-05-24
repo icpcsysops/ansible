@@ -89,13 +89,13 @@
 
     - name: Set presentation admin latest version
       ansible.builtin.set_fact:
-        presclient_version: "{{ latest_presentation_release_array.json[0].name | replace('v', '') }}"
+        presadmin_version: "{{ latest_presentation_release_array.json[0].name | replace('v', '') }}"
       when: presadmin_version is not defined
 
     - name: Download presentation admin
       ansible.windows.win_get_url:
-        url: https://github.com/icpctools/icpctools/releases/download/v{{ presadmin_version }}/presentations-{{ presadmin_version }}.zip
-        dest: /Users/{{ ansible_user }}/Desktop/presentations-{{ presadmin_version }}.zip
+        url: https://github.com/icpctools/icpctools/releases/download/v{{ presadmin_version }}/presentationAdmin-{{ presadmin_version }}.zip
+        dest: /Users/{{ ansible_user }}/Desktop/presentationAdmin-{{ presadmin_version }}.zip
 
     - name: Unzip presentation admin
       community.windows.win_unzip:
@@ -110,7 +110,6 @@
       c:/users/{{ ansible_user }}/desktop/presadmin/presAdmin.bat
       {{ presadmin_cds_url }}
       {{ presadmin_user }} {{ presadmin_pass }}
-      --name {{ inventory_hostname }}
     dest: /users/{{ ansible_user }}/desktop/launch_pres_admin.bat
 
 - name: Copy a shortcut to launch the presentation client

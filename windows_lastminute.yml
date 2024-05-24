@@ -14,6 +14,11 @@
   gather_facts: false
   roles:
     - role: presclient
+- name: Presentation admin hosts
+  hosts: presentation_admins
+  gather_facts: false
+  roles:
+    - role: presadmin
 - name: Balloon printer hosts
   hosts: win_balloonprinters
   gather_facts: true

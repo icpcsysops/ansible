@@ -1,0 +1,1 @@
+ansible -m shell -a "pkill -u p" contestants

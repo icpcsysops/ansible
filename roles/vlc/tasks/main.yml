@@ -28,12 +28,12 @@
   ansible.builtin.service:
     name: vlc-screen
     enabled: true
-    state: started
+   #state: started
 - name: Enable and start vlc-webcam.service
   ansible.builtin.service:
     name: vlc-webcam
     enabled: true
-    state: started
+   #state: started
 
 - name: Create autostart file for things
   ansible.builtin.copy:

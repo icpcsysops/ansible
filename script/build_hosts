@@ -11,33 +11,33 @@ contestants = {}
 judges = {}
 others = {}
 if args.wf:
-    name = "wf2023"
-    detail = "2023Luxor"
+    name = "wf2024"
+    detail = "2023Astana"
     timezone = "Africa/Cairo"
     max_team = 146
     max_human_judge = 14
-    max_pc2_autojudge = 20
+    max_pc2_autojudge = 10
     max_kattis_autojudge = 0
-    max_domjudge_autojudge = 24
-    max_domjudge_ccsadmin = 8
+    max_domjudge_autojudge = 12
+    max_domjudge_ccsadmin = 4
     # pc2 for wf2023
     max_ccsadmin = 8
     papersize = "A4"
-    enable_vlc = False
+    enable_vlc = True
     ccs = "domjudge"
 else:
-    name = "nac2023"
-    detail = "2023Florida"
+    name = "nac2024"
+    detail = "2024Florida"
     timezone = "America/New_York"
     max_team = 53
     max_human_judge = 12
-    max_pc2_autojudge = 0
+    max_pc2_autojudge = 5
     max_kattis_autojudge = 0
-    max_domjudge_autojudge = 0
+    max_domjudge_autojudge = 5
     max_domjudge_ccsadmin = 0
     max_ccsadmin = 0
     papersize = "letter"
-    enable_vlc = False
+    enable_vlc = True
     ccs = "domjudge"
 
 

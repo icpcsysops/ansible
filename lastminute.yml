@@ -137,9 +137,13 @@
 
     - name: Copy the per contest bits
       ansible.builtin.copy:
-        src: "{{ contest }}.teams.tar.gz"
+        src: "{{ item }}"
         dest: "/root/{{ contest }}.teams.tar.gz"
         mode: '0600'
+      with_first_found:
+        - files:
+            - "{{ contest }}.teams.tar.gz"
+          skip: true
 
     # TODO icpc2024 name it icpc
     - name: Remove icpc* user

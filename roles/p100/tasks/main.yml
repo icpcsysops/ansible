@@ -28,8 +28,8 @@
     path: /p/client.sh
   register: pres
 
-- name: Download and install the presentation client
-  when: not pres.stat.exists
+- name: Get presclient version
+  when: internet and pres_version is not defined
   block:
     - name: Get prerelease version once
       delegate_to: localhost
@@ -40,13 +40,14 @@
         status_code: 200
         body_format: json
       register: latest_presentationclient_release_array
-      when: internet and not pres.stat.exists
 
     - name: Set presentation client latest version
       ansible.builtin.set_fact:
         pres_version: "{{ latest_presentationclient_release_array.json[0].name | replace('v', '') }}"
-      when: internet
 
+- name: Download and install the presentation client
+  when: not pres.stat.exists
+  block:
     - name: Download the client once
       delegate_to: localhost
       ansible.builtin.get_url:
@@ -64,5 +65,7 @@
       become_user: p
       become: true
       with_first_found:
-        - /tmp/presentations-{{ pres_version }}.zip
-        - files/presentations-{{ pres_version }}.zip
+        - files:
+            - /tmp/presentations-{{ pres_version }}.zip
+            - files/presentations-{{ pres_version }}.zip
+          skip: true

@@ -1,0 +1,25 @@
+---
+- name: Configure domjudge machines
+  hosts: domjudge_judgehost, domjudge_ccs
+
+  tasks:
+    - name: Create ~icpc/.ssh if it does not exist
+      ansible.builtin.file:
+        path: /home/icpc/.ssh
+        state: directory
+        mode: "0700"
+        group: icpc
+        owner: icpc
+
+    - name: Copy authorized_keys2 to icpc
+      ansible.posix.authorized_key:
+        user: icpc
+        state: present
+        key: "{{ lookup('file', 'files/domjudge.authorized_keys2') }}"
+
+    - name: Copy authorized_keys2 to root
+      ansible.posix.authorized_key:
+        user: root
+        state: present
+        key: "{{ lookup('file', 'files/domjudge.authorized_keys2') }}"
+

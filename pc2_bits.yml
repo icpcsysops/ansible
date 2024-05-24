@@ -1,6 +1,6 @@
 ---
 - name: Configure pc2 machines
-  hosts: pc2-ccsadmin,pc2-aj
+  hosts: pc2_ccs,pc2_aj
 
   roles:
     - role: hyperthreadingdisabled
@@ -28,7 +28,7 @@
 
 
 - name: Configure pc2 machines
-  hosts: pc2server,pc2-ccsadmin,pc2-aj
+  hosts: pc2server,pc2_ccs,pc2_aj
 
   roles:
     - role: pc2client

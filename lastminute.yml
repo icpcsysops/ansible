@@ -20,10 +20,11 @@
   hosts: backup*
   roles:
     - role: dnsmasq
-    - role: script_server
-      tags: script_server
     - role: icpc_host_backup
       tags: icpc_host_backup
+    # script_server needs to come after the hosts file has been configured (because it needs to lookup some hostnames)
+    - role: script_server
+      tags: script_server
 
 - name: Configure extra_nic machines
   hosts: backup, scoreboard, printsrv, cds, packages

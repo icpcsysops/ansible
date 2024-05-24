@@ -12,19 +12,19 @@
         state: absent
         path: /etc/skel/Desktop/samps
 
-    - name: Clear /home/icpc2023/Desktop/samps
+    - name: Clear /home/icpc/Desktop/samps
       ansible.builtin.file:
         state: absent
-        path: /home/icpc2023/Desktop/samps
+        path: /home/icpc/Desktop/samps
 
-    - name: Check if contest-wf46-samples.zip exists
+    - name: Check if contest-samples.zip exists
       delegate_to: localhost
       ansible.builtin.stat:
-        path: "files/{{ contest }}-wf46-samples.zip"
-      register: wf46_samples_zip
+        path: "files/{{ contest }}-samples.zip"
+      register: samples_zip
 
     - name: If contest-samples.zip exist extract it
-      when: wf46_samples_zip.stat.exists
+      when: samples_zip.stat.exists
       block:
         - name: Create /etc/skel/Desktop/samps
           ansible.builtin.file:
@@ -36,37 +36,18 @@
 
         - name: Deploy contest-samples.zip to /etc/skel/Desktop/samps
           ansible.builtin.unarchive:
-            src: "{{ contest }}-wf46-samples.zip"
+            src: "{{ contest }}-samples.zip"
             dest: /etc/skel/Desktop/samps
 
-        - name: Create /home/icpc2023/Desktop/samps
+        - name: Create /home/icpc/Desktop/samps
           ansible.builtin.file:
-            path: /home/icpc2023/Desktop/samps
+            path: /home/icpc/Desktop/samps
             state: directory
             mode: '0755'
-            owner: icpc2023
-            group: icpc2023
+            owner: icpc
+            group: icpc
 
         - name: Deploy contest-samples.zip to /home/icpc2023/Desktop/samps
           ansible.builtin.unarchive:
-            src: "{{ contest }}-wf46-samples.zip"
-            dest: /home/icpc2023/Desktop/samps
-
-    - name: Check if contest-wf47-samples.zip exists
-      delegate_to: localhost
-      ansible.builtin.stat:
-        path: "files/{{ contest }}-wf47-samples.zip"
-      register: wf47_samples_zip
-
-    - name: If contest-samples.zip exist extract it
-      when: wf47_samples_zip.stat.exists
-      block:
-        - name: Deploy contest-samples.zip to /etc/skel/Desktop/samps
-          ansible.builtin.unarchive:
-            src: "{{ contest }}-wf47-samples.zip"
-            dest: /etc/skel/Desktop/samps
-
-        - name: Deploy contest-samples.zip to /home/icpc2023/Desktop/samps
-          ansible.builtin.unarchive:
-            src: "{{ contest }}-wf47-samples.zip"
-            dest: /home/icpc2023/Desktop/samps
+            src: "{{ contest }}-samples.zip"
+            dest: /home/icpc/Desktop/samps

@@ -2,17 +2,37 @@
   chocolatey.chocolatey.win_chocolatey:
     name: openjdk11jre
     state: present
+  when: not skip_chocolatey
 
-- name: Download balloon client
-  ansible.windows.win_get_url:
-    url: https://github.com/icpctools/icpctools/releases/download/v{{ balloon_version }}/balloonUtil-{{ balloon_version }}.zip
-    dest: /Users/{{ ansible_user }}/Desktop/balloonUtil-{{ balloon_version }}.zip
+- name: Update/download and install the balloon manager client
+  block:
+    - name: Get prerelease version
+      delegate_to: 127.0.0.1
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=3
+        method: GET
+        return_content: true
+        status_code: 200
+        body_format: json
+      register: latest_balloonutil_release_array
+      when: balloon_version is not defined
 
-- name: Unzip balloon client
-  community.windows.win_unzip:
-    src: /Users/{{ ansible_user }}/Desktop/balloonUtil-{{ balloon_version }}.zip
-    dest: /Users/{{ ansible_user }}/Desktop/balloon
-    remote_src: true
+    - name: Set balloonutil latest version
+      ansible.builtin.set_fact:
+        balloon_version: "{{ latest_balloonutil_release_array.json[0].name | replace('v', '') }}"
+      when: balloon_version is not defined
+
+    - name: Download balloonutil admin
+      ansible.windows.win_get_url:
+        url: https://github.com/icpctools/icpctools/releases/download/v{{ balloon_version }}/balloonUtil-{{ balloon_version }}.zip
+        dest: /Users/{{ ansible_user }}/Desktop/balloonUtil-{{ balloon_version }}.zip
+
+    - name: Unzip balloonutil
+      community.windows.win_unzip:
+        src: /Users/{{ ansible_user }}/Desktop/balloonUtil-{{ balloon_version }}.zip
+        dest: /Users/{{ ansible_user }}/Desktop/balloon
+        remote_src: true
+        creates: /Users/{{ ansible_user }}/Desktop/balloon
 
 - name: Copy a shortcut to launch the balloon client
   community.windows.win_shortcut:

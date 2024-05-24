@@ -1,0 +1,54 @@
+- name: Install jre
+  chocolatey.chocolatey.win_chocolatey:
+    name: openjdk11jre
+    state: present
+  when: not skip_chocolatey
+
+- name: Install vlc
+  chocolatey.chocolatey.win_chocolatey:
+    name: vlc
+    state: present
+  when: not skip_chocolatey
+
+- name: Update/download and install coachview
+  block:
+    - name: Get prerelease version
+      delegate_to: 127.0.0.1
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=3
+        method: GET
+        return_content: true
+        status_code: 200
+        body_format: json
+      register: latest_coachview_release_array
+      when: coachview_version is not defined
+
+    - name: Set coachview admin latest version
+      ansible.builtin.set_fact:
+        coachview_version: "{{ latest_coachview_release_array.json[0].name | replace('v', '') }}"
+      when: coachview_version is not defined
+
+    - name: Download coachview
+      ansible.windows.win_get_url:
+        url: https://github.com/icpctools/icpctools/releases/download/v{{ coachview_version }}/coachview-{{ coachview_version }}.zip
+        dest: /Users/{{ ansible_user }}/Desktop/coachview-{{ coachview_version }}.zip
+
+    - name: Unzip coachview
+      community.windows.win_unzip:
+        src: /Users/{{ ansible_user }}/Desktop/coachview-{{ coachview_version }}.zip
+        dest: /Users/{{ ansible_user }}/Desktop/coachview
+        remote_src: true
+        creates: /Users/{{ ansible_user }}/Desktop/coachview
+
+- name: Add bat script to launch the coachview admin
+  ansible.windows.win_copy:
+    content: >
+      c:/users/{{ ansible_user }}/desktop/coachview/coachView.bat
+      {{ coachview_cds_url }}
+      {{ coachview_user }} {{ coachview_pass }}
+    dest: /users/{{ ansible_user }}/desktop/launch_coachview_admin.bat
+
+- name: Copy a shortcut to launch the coachview client
+  community.windows.win_shortcut:
+    src: "c:/Users/{{ ansible_user }}/Desktop/launch_coachview_admin.bat"
+    dest: "%ProgramData%/Microsoft/Windows/Start Menu/Programs/Startup/coachview.lnk"

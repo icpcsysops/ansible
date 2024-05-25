@@ -85,6 +85,7 @@
 
   tasks:
     # TODO add this to icpc2024
+    # TODO fixed in this to icpc2024
     - name: Disable idle-dim
       ansible.builtin.copy:
         dest: /usr/share/glib-2.0/schemas/21_icpc_power_schema.gschema.override
@@ -104,7 +105,7 @@
         pkg: stress-ng
         state: present
 
-    # TODO fix in icpc2024
+    # TODO fixed in icpc2024
     - name: Remove ampersand from iptablesload
       ansible.builtin.replace:
         path: /etc/network/if-pre-up.d/iptablesload

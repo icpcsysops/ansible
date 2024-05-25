@@ -65,7 +65,7 @@
 
       [Service]
       Type=oneshot
-      ExecStart=/bin/bash -c "systemctl restart vlc-screen"
+      ExecStart=/bin/bash -c "systemctl restart --no-block vlc-screen"
 
       [Install]
       WantedBy=multi-user.target

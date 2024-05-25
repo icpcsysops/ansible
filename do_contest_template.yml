@@ -44,5 +44,5 @@
         password: "{{ users[inventory_hostname] | password_hash('sha512') }}"
         comment: "{{ inventory_hostname }},,,"
         shell: /bin/bash
-        groups: teams
+        group: teams
         create_home: true

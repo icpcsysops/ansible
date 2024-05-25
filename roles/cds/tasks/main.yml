@@ -126,7 +126,7 @@
 - name: Clone the contest repo
   become: true
   become_user: cds
-  ansible.builtin.git: # noqa: git-latest
+  ansible.builtin.git: # noqa: latest[git]
     repo: "{{ cds_contest_git_repo }}"
     dest: /mnt/{{ ansible_hostname }}/cds/contest_repo
   when: not cds_repo_cloned.stat.exists

@@ -94,7 +94,7 @@
       ansible.builtin.unarchive:
         src: files/pycharm/python_stubs.tar.gz
         dest: /etc/skel/.config/JetBrains/PyCharmCE2022.3/system
-      when: python_stubs.stat.exists == false
+      when: not python_stubs.stat.exists
 
     # fixed in package icpc-pycharm
     - name: Fix pycharm .config/JetBrains/PyCharmCE2022.3 with pypy3

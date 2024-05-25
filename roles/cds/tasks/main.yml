@@ -5,6 +5,21 @@
     home: /srv/cds
     shell: "/usr/bin/bash"
 
+- name: Give cds user the root authorized_keys2
+  ansible.builtin.copy:
+    src: /root/.ssh/authorized_keys2
+    dest: /srv/cds/.ssh/authorized_keys2
+    owner: cds
+    group: cds
+    mode: '0644'
+
+- name: Ensure id_ed25519 key for cds@cds
+  community.crypto.openssh_keypair:
+    path: /srv/cds/.ssh/id_ed25519
+    type: ed25519
+    owner: cds
+    group: cds
+
 - name: Create CDS directories
   ansible.builtin.file:
     path: "{{ item }}"

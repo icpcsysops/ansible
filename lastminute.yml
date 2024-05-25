@@ -84,6 +84,16 @@
       when: disable_martkeys is not defined or not disable_martkeys
 
   tasks:
+    # TODO add this to icpc2024
+    - name: Disable idle-dim
+      ansible.builtin.copy:
+        dest: /usr/share/glib-2.0/schemas/21_icpc_power_schema.gschema.override
+        content: |
+          [org.gnome.settings-daemon.plugins.power]
+          idle-dim=false
+        mode: '0644'
+      notify: Glib-compile-schemas
+
     - name: Cleanup domjudge.desktop,  renaming to ccs.desktop
       ansible.builtin.file:
         name: /usr/share/applications/domjudge.desktop

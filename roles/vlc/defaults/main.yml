@@ -1,3 +1,5 @@
 ---
 vlc_webcam_cpu_affinity: 8,10
 vlc_screen_cpu_affinity: 6
+# run arecord -l to determine this
+vlc_alsa_device: 1,0

@@ -2,15 +2,17 @@
   hosts: all
   gather_facts: false
   tasks:
-    - name: lsusb
+    - name: Run lsusb
       ansible.builtin.shell: >
         lsusb
       register: lsusb_out
+      changed_when: false
 
     - name: Write to a file on the management machine
       ansible.builtin.copy:
         content: "{{ lsusb_out.stdout }}"
-        dest: /tmp/lsusb/{{inventory_hostname}}
+        dest: /tmp/lsusb/{{ inventory_hostname }}
+        mode: '0644'
       delegate_to: localhost
 
 

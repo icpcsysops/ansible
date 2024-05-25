@@ -40,7 +40,7 @@ reverseproxy_sites_kattis:
   # The next entries are for the orange help widget on kattis.com
   euc-widget.freshworks.com:
     - {path: "/widgets/79000000133.js", exact: true}
-    - {path: "/widgets/79000000133.json", exact: true, with_args: true, }
+    - {path: "/widgets/79000000133.json", exact: true, with_args: true}
     - {path: "/widgetBase"}
   kattis.freshdesk.com: [{path: "/"}]
   support.kattis.com: [{path: "/"}]

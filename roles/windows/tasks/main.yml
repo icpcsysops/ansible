@@ -5,9 +5,9 @@
     data: "{{ item.value }}"
     type: "{{ item.type }}"
   loop:
-    - { name: DefaultUserName, value: "{{ ansible_user }}", type: string }
-    - { name: DefaultPassword, value: "{{ ansible_password }}", type: string } # TODO: mask this out of the ansible output
-    - { name: AutoAdminLogon, value: 1, type: dword }
+    - {name: DefaultUserName, value: "{{ ansible_user }}", type: string}
+    - {name: DefaultPassword, value: "{{ ansible_password }}", type: string} # TODO: mask this out of the ansible output
+    - {name: AutoAdminLogon, value: 1, type: dword}
 
 - name: Disable lid/power button/sleep button actions
   ansible.windows.win_regedit:
@@ -17,14 +17,14 @@
     type: "{{ item.type }}"
   loop:
     # Power button action
-    - { key: "7648EFA3-DD9C-4E3E-B566-50F929386280", name: "DCSettingIndex", value: 0, type: "dword"}
-    - { key: "7648EFA3-DD9C-4E3E-B566-50F929386280", name: "ACSettingIndex", value: 0, type: "dword"}
+    - {key: "7648EFA3-DD9C-4E3E-B566-50F929386280", name: "DCSettingIndex", value: 0, type: "dword"}
+    - {key: "7648EFA3-DD9C-4E3E-B566-50F929386280", name: "ACSettingIndex", value: 0, type: "dword"}
     # Lid Switch action
-    - { key: "5CA83367-6E45-459F-A27B-476B1D01C936", name: "DCSettingIndex", value: 0, type: "dword"}
-    - { key: "5CA83367-6E45-459F-A27B-476B1D01C936", name: "ACSettingIndex", value: 0, type: "dword"}
+    - {key: "5CA83367-6E45-459F-A27B-476B1D01C936", name: "DCSettingIndex", value: 0, type: "dword"}
+    - {key: "5CA83367-6E45-459F-A27B-476B1D01C936", name: "ACSettingIndex", value: 0, type: "dword"}
     # Sleep button action
-    - { key: "96996BC0-AD50-47EC-923B-6F41874DD9EB", name: "DCSettingIndex", value: 0, type: "dword"}
-    - { key: "96996BC0-AD50-47EC-923B-6F41874DD9EB", name: "ACSettingIndex", value: 0, type: "dword"}
+    - {key: "96996BC0-AD50-47EC-923B-6F41874DD9EB", name: "DCSettingIndex", value: 0, type: "dword"}
+    - {key: "96996BC0-AD50-47EC-923B-6F41874DD9EB", name: "ACSettingIndex", value: 0, type: "dword"}
 
 - name: Disable windows updates
   ansible.windows.win_regedit:
@@ -75,7 +75,7 @@
     src: /usr/share/ca-certificates/ICPC_WF_Intermediate_CA.crt
     dest: c:\windows\temp\intermediate.crt
 
-- name: trust the ca cert
+- name: Trust the ca cert
   ansible.windows.win_certificate_store:
     file_type: pem
     path: c:\windows\temp\{{ item }}
@@ -84,4 +84,3 @@
   loop:
     - root.crt
     - intermediate.crt
-

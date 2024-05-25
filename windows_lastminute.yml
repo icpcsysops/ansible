@@ -10,7 +10,7 @@
 # Also need (or put in inventory.yml): -e ansible_connection=winrm -e ansible_winrm_scheme=http -e ansible_winrm_transport=basic -e ansible_port=5985
 # this was done to group_vars/windows.yml
 
-- name: windows hosts
+- name: Windows hosts
   hosts: windows
   gather_facts: false
   roles:
@@ -28,13 +28,15 @@
   roles:
     - role: presadmin
 
-- name: windows coachview hosts
+- name: Windows coachview hosts
   hosts: win_coachviews
   gather_facts: false
   tasks:
-    - ansible.builtin.import_role:
+    - name: Import roles
+      ansible.builtin.import_role:
         name: coachview
         tasks_from: windows.yml
+      when: false
 
 - name: Balloon printer hosts
   hosts: win_balloonprinters

@@ -22,4 +22,3 @@
         user: root
         state: present
         key: "{{ lookup('file', 'files/domjudge.authorized_keys2') }}"
-

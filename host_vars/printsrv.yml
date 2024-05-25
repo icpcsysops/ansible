@@ -1,6 +1,6 @@
 ---
 extra_nic_configs: []
-#extra_nic_configs:
+# extra_nic_configs:
 # - gateway: false
 #   address: 10.3.3.211/24
 #   ifc_name: enp0s31f6

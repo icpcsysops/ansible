@@ -36,7 +36,7 @@
         creates: /Users/{{ ansible_user }}/Desktop/presclient
 
 - name: Add bat script to launch the presentation client
-  ansible.windows.win_copy:
+  ansible.windows.win_copy: # noqa: yaml[line-length]
     content: |
       REM set ICPC_BRANDING_PRES=org.icpc.tools.presentation.contest.internal.presentations.BrandingPresentation
       c:/users/{{ ansible_user }}/desktop/presclient/client.bat {{ presclient_cds_url }} {{ presclient_user }} {{ presclient_pass }} --name {{ presclient_name | default(inventory_hostname) }}

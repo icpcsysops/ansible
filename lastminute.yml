@@ -503,6 +503,8 @@
     - role: cups
     - role: ccstools
       when: ccs  == "domjudge"
+    - role: reverseproxy
+      when: enable_reverseproxy is defined and enable_reverseproxy
 
 - name: Configure others printers
   hosts: others:!printsrv

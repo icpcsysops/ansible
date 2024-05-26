@@ -9,7 +9,10 @@ CPUAffinity={{ vlc_webcam_cpu_affinity }}
 #ExecStart=/usr/bin/cvlc --play-and-exit v4l2:///dev/video0:chroma=mjpg:width=1280:height=720 :input-slave=alsa://hw:{{ vlc_alsa_device }} --sout '#transcode{vcodec=h264,venc=x264{keyint=25},acodec=mpga,vb=0}:standard{access=http,mux=ts,dst=:8080,name=stream,mime=video/ts}'
 
 # n_forced*1 means a keyint every second
-ExecStart=/bin/bash -c "ffmpeg -hide_banner -loglevel error -f alsa -i hw:0,0 -f v4l2 -video_size 1280x720 -framerate 30 -c:v mjpeg_qsv -input_format mjpeg -i /dev/video0 -c:v h264_qsv -preset veryfast -g 30 -b:v 5M -force_key_frames 'expr:gte(t,n_forced*1)' -f mpegts - | cvlc --play-and-exit - --sout '#transcode{}:standard{access=http,mux=ts,dst=:8080,name=stream,mime=video/ts}'"
+# ExecStart=/bin/bash -c "ffmpeg -hide_banner -loglevel error -f alsa -i hw:0,0 -f v4l2 -video_size 1280x720 -framerate 30 -c:v mjpeg_qsv -input_format mjpeg -i /dev/video0 -c:v h264_qsv -preset veryfast -g 30 -b:v 5M -force_key_frames 'expr:gte(t,n_forced*1)' -f mpegts - | cvlc --play-and-exit - --sout '#transcode{}:standard{access=http,mux=ts,dst=:8080,name=stream,mime=video/ts}'"
+# ExecStart=/bin/bash -c "ffmpeg -hide_banner -f alsa -i hw:0,0 -f v4l2 -video_size 1280x720 -framerate 30 -c:v mjpeg_qsv -input_format mjpeg -i /dev/video0 -c:v h264_qsv -preset veryfast -g 30 -b:v 5M -force_key_frames 'expr:gte(t,n_forced*1)' -c:a aac -f mpegts -mpegts_m2ts_mode 1 - | cvlc --play-and-exit - --sout '#transcode{}:standard{access=http,mux=ts,dst=:8080,name=stream,mime=video/ts}'"
+# with software encoding
+ExecStart=/bin/bash -c "ffmpeg -hide_banner -f alsa -i hw:0,0 -f v4l2 -video_size 1280x720 -framerate 30 -c:v mjpeg_qsv -input_format mjpeg -i /dev/video0 -c:v libx264 -preset veryfast -g 30 -b:v 5M -force_key_frames 'expr:gte(t,n_forced*1)' -profile:v main -c:a aac -f mpegts - | cvlc --play-and-exit - --sout '#transcode{}:standard{access=http,mux=ts,dst=:8080,name=stream,mime=video/ts}'"
 
 Restart=always
 RestartSec=5

@@ -12,19 +12,55 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: node_backup
+  - job_name: systems
     static_configs:
       - targets:
         - localhost:9100
-
-  - job_name: node_cds
-    static_configs:
+        labels:
+          instance: backup
       - targets:
         - {{ hostvars['cds'].ansible_host }}:9100
+        labels:
+          instance: cds
+      - targets:
+        - {{ hostvars['packages'].ansible_host }}:9100
+        labels:
+          instance: packages
+      - targets:
+        - {{ hostvars['printsrv'].ansible_host }}:9100
+        labels:
+          instance: printsrv
+      - targets:
+        - {{ hostvars['reverseproxy'].ansible_host }}:9100
+        labels:
+          instance: reverseproxy
+      - targets:
+        - {{ hostvars['scoreboard'].ansible_host }}:9100
+        labels:
+          instance: scoreboard
 
   - job_name: node_teams
     static_configs:
-      - targets:
 {%if "contestants" in groups %}{% for host in groups["contestants"] %}
+      - targets:
         - {{ hostvars[host].ansible_host }}:9100
+        labels:
+          instance: {{ host }}
 {% endfor %}{% endif %}
+
+  - job_name: blackbox
+    metrics_path: /probe
+    params:
+      module: [icmp]
+    static_configs:
+      - targets:
+{% for host in hostvars %}
+        - {{ host }}
+{% endfor %}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 127.0.0.1:9115  # The blackbox exporter's real hostname:port.

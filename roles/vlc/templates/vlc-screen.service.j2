@@ -5,9 +5,8 @@ After=network.target multi-user.target
 [Service]
 User=camera
 Type=simple
-Environment=DISPLAY=:1.0
 CPUAffinity={{ vlc_screen_cpu_affinity }}
-ExecStart=/usr/bin/vlc -I dummy -q --play-and-exit screen:// --screen-fps=10 --sout "#transcode{venc=x264{keyint=2},vcodec=h264,vb=0}:standard{access=http,mux=ts,dst=:9090/}"
+ExecStart=/usr/local/bin/start-vlc-screen
 Restart=always
 RestartSec=5
 

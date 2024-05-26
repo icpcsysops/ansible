@@ -8,6 +8,7 @@
     pkg:
       - nginx
       - prometheus
+      - prometheus-blackbox-exporter
 
 # Setup Prometheus, which scrapes all metrics from the monitored machines
 # The client exposes the metrics (on different ports/URIs) and we collect those

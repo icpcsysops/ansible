@@ -4,9 +4,9 @@ global:
   # scrape_timeout is set to the global default (10s).
 scrape_configs:
 
-  - job_name: 'grafana'
-    static_configs:
-      - targets: ['localhost:443']
+# - job_name: 'grafana'
+#   static_configs:
+#     - targets: ['localhost:443']
 
   - job_name: 'prometheus'
     static_configs:
@@ -20,9 +20,7 @@ scrape_configs:
   - job_name: node_cds
     static_configs:
       - targets:
-{%if "cds" in groups %}{% for host in groups["cds"] %}
-        - {{ hostvars[host].ansible_host }}:9100
-{% endfor %}{% endif %}
+        - {{ hostvars['cds'].ansible_host }}:9100
 
   - job_name: node_teams
     static_configs:

@@ -80,6 +80,8 @@
       [Install]
       WantedBy=multi-user.target
     dest: /etc/systemd/system/cups-exporter.service
+    owner: root
+    mode: '0644'
 
 - name: Enable/start cups_exporter
   ansible.builtin.service:

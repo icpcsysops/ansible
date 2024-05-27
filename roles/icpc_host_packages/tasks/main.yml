@@ -57,13 +57,14 @@
         mode: '0644'
       notify: Reload nginx
 
+    - name: Link sites-available to sites-enabled
       ansible.builtin.file:
         dest: /etc/nginx/sites-enabled/packages.conf
         src: /etc/nginx/sites-available/packages.conf
         state: link
       notify: Reload nginx
 
-    - name: Remove default.conf
+    - name: Remove default site
       ansible.builtin.file:
         path: /etc/nginx/sites-enabled/default
         state: absent

@@ -1,19 +1,13 @@
 ---
-- name: Apache2
+- name: Reload nginx
   ansible.builtin.service:
-    name: apache2
-    state: restarted
+    name: Reload nginx
+    state: reloaded
 
 - name: Systemd-resolved
   ansible.builtin.service:
     name: systemd-resolved
     state: restarted
-
-# We use systemd-timesyncd instead
-# - name: NTP
-#   ansible.builtin.service:
-#     name: ntp
-#     state: restarted
 
 - name: IptablesLoad
   ansible.builtin.command: /etc/network/if-pre-up.d/iptablesload

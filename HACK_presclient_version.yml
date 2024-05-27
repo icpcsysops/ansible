@@ -1,0 +1,23 @@
+---
+# on windows boxes
+# set password on account (if none set)
+#   (CTRL-ALT-DELETE, change password)
+# run:
+# elavated powershell
+# bootstrap_windows.ps1
+# on unix side:
+# ansible-playbook --limit ballonprinter1 --extra-vars ansible_user=windows_user -e ansible_password=windows_password windows_lastminute.yml
+# Also need (or put in inventory.yml): -e ansible_connection=winrm -e ansible_winrm_scheme=http -e ansible_winrm_transport=basic -e ansible_port=5985
+# this was done to group_vars/windows.yml
+
+- name: Force version of presclient
+  hosts: presentation_clients
+  gather_facts: false
+  vars:
+    presclient_version: 2.5.1055 # luxor version of presclient
+    # presclient_version: 2.5.1065 # current version we're running
+  tasks:
+    - name: Import roles
+      ansible.builtin.import_role:
+        name: presclient
+        tasks_from: force_version.yml

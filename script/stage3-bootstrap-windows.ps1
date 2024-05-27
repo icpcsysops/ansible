@@ -15,14 +15,16 @@ $ErrorActionPreference='Stop'
 if(1,3,4,5 -contains (Get-WmiObject win32_computersystem).DomainRole) { return }
 
 # Get network connections
-$networkListManager = [Activator]::CreateInstance([Type]::GetTypeFromCLSID([Guid]"{DCB00C01-570F-4A9B-8D69-199FDBA5723B}"))
-$connections = $networkListManager.GetNetworkConnections()
+#$networkListManager = [Activator]::CreateInstance([Type]::GetTypeFromCLSID([Guid]"{DCB00C01-570F-4A9B-8D69-199FDBA5723B}"))
+#$connections = $networkListManager.GetNetworkConnections()
+#foreach ($net in $connections) {
+#	Write-Host $net.GetNetwork().GetName()"category was previously set to"$net.GetNetwork().GetCategory()
+#	$net.GetNetwork().SetCategory(1)
+#	Write-Host $net.GetNetwork().GetName()"changed to category"$net.GetNetwork().GetCategory()
+#}
 
-foreach ($net in $connections) {
-	Write-Host $net.GetNetwork().GetName()"category was previously set to"$net.GetNetwork().GetCategory()
-	$net.GetNetwork().SetCategory(1)
-	Write-Host $net.GetNetwork().GetName()"changed to category"$net.GetNetwork().GetCategory()
-}
+# Set network connection profile to private
+Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private
 
 # Set Execution Policy 64 Bit
 cmd.exe /c powershell -Command "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force"
@@ -32,9 +34,15 @@ C:\Windows\SysWOW64\cmd.exe /c powershell -Command "Set-ExecutionPolicy -Executi
 # Disable Network prompt
 cmd.exe /c reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Network\NewNetworkWindowOff" /f
 
+# Enable psremoting
+Enable-PSRemoting -Force
+
 # Set quickconfig for winrmm
 cmd.exe /c winrm quickconfig -q
-# winrm quickconfig# Win RM MaxTimoutms
+cmd.exe /c winrm quickconfig -transport:http
+# winrm quickconfig
+
+# Win RM MaxTimoutms
 cmd.exe /c winrm set winrm/config '@{MaxTimeoutms="1800000"}'
 # Win RM MaxMemoryPerShellMB
 cmd.exe /c winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="800"}'
@@ -57,3 +65,7 @@ cmd.exe /c net start winrm
 # open port 5985 in the firewall
 cmd.exe /c netsh advfirewall firewall add rule name="Port 5985" protocol=TCP localport=5985 dir=in action=allow
 Enable-NetFirewallRule -DisplayGroup 'Windows Remote Management'
+
+Set-Service -Name 'WinRM' -StartupType Automatic
+Restart-Service -Name 'WinRM'
+

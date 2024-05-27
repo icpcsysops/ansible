@@ -4,6 +4,7 @@ collections:
  - name: chocolatey.chocolatey
  - name: community.general
  - name: community.windows
+ - name: community.crypto
 
 roles:
  - src: stuvusIT.systemd-timesyncd

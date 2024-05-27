@@ -8,6 +8,14 @@
     owner: root
     group: root
     mode: '0644'
+- name: Copy a smart start-vlc-screen script (it detects active xorg sessions)
+  ansible.builtin.copy:
+    src: start-vlc-screen
+    dest: /usr/local/bin/start-vlc-screen
+    mode: 0755
+    owner: root
+    group: root
+
 - name: Deploy vlc-screen.service
   ansible.builtin.template:
     src: vlc-screen.service.j2
@@ -16,6 +24,16 @@
     group: root
     mode: '0644'
   notify: Restart vlc-screen
+
+- name: Install QSV required packages (for hw accel encode/decode)
+  ansible.builtin.apt:
+    pkg:
+      - libmfx-gen1.2
+- name: Add camera to the render group (so it has access for HW accelerated encoding/decoding)
+  ansible.builtin.user:
+    name: camera
+    groups: render
+    append: true
 - name: Deploy vlc-webcam.service
   ansible.builtin.template:
     src: vlc-webcam.service.j2
@@ -28,12 +46,12 @@
   ansible.builtin.service:
     name: vlc-screen
     enabled: true
-    state: started
+   # state: started
 - name: Enable and start vlc-webcam.service
   ansible.builtin.service:
     name: vlc-webcam
     enabled: true
-    state: started
+   # state: started
 
 - name: Create autostart file for things
   ansible.builtin.copy:
@@ -65,7 +83,7 @@
 
       [Service]
       Type=oneshot
-      ExecStart=/bin/bash -c "systemctl restart vlc-screen"
+      ExecStart=/bin/bash -c "systemctl restart --no-block vlc-screen"
 
       [Install]
       WantedBy=multi-user.target

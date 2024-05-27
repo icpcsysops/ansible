@@ -5,6 +5,21 @@
     home: /srv/cds
     shell: "/usr/bin/bash"
 
+- name: Give cds user the root authorized_keys2
+  ansible.builtin.copy:
+    src: /root/.ssh/authorized_keys2
+    dest: /srv/cds/.ssh/authorized_keys2
+    owner: cds
+    group: cds
+    mode: '0644'
+
+- name: Ensure id_ed25519 key for cds@cds
+  community.crypto.openssh_keypair:
+    path: /srv/cds/.ssh/id_ed25519
+    type: ed25519
+    owner: cds
+    group: cds
+
 - name: Create CDS directories
   ansible.builtin.file:
     path: "{{ item }}"
@@ -35,7 +50,7 @@
     owner: cds
     group: cds
   register: local_cds_installed
-  failed_when: false
+    #  failed_when: false
   ignore_errors: true
 
 - name: Get the CDS release
@@ -48,6 +63,7 @@
   register: latest_cds_release_array
   check_mode: false
   when: local_cds_installed.failed
+
 - name: Set CDS latest version
   ansible.builtin.set_fact:
     cds_version: "{{ latest_cds_release_array.json[0].name | replace('v', '') }}"
@@ -64,7 +80,7 @@
     remote_src: true
     owner: cds
     group: cds
-  when: local_cds_installed.failed and not cds_pkg.stat.exists and latest_cds_release_array.success
+  when: local_cds_installed.failed and not cds_pkg.stat.exists and not latest_cds_release_array.failed
 
 - name: Install a local copy of the CDS WAR if present (offline)
   ansible.builtin.unarchive:
@@ -106,10 +122,11 @@
     path: /mnt/{{ ansible_hostname }}/cds/contest_repo
   register: cds_repo_cloned
     # check_mode: false
+
 - name: Clone the contest repo
   become: true
   become_user: cds
-  ansible.builtin.git: # noqa: latest
+  ansible.builtin.git: # noqa: latest[git]
     repo: "{{ cds_contest_git_repo }}"
     dest: /mnt/{{ ansible_hostname }}/cds/contest_repo
   when: not cds_repo_cloned.stat.exists

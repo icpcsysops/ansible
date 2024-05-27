@@ -4,7 +4,7 @@ resolver 8.8.8.8 ipv6=off;
 {% for server,config in reverseproxy_sites.items() %}
 server {
         listen 80;
-        listen 443 ssl;
+        listen 443 ssl http2;
         server_name {{ server }};
         ssl_certificate /etc/ssl/reverseproxy.cert;
         ssl_certificate_key /etc/ssl/reverseproxy.key;

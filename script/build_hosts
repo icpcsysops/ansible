@@ -3,121 +3,291 @@
 import yaml
 import argparse
 
-parser = argparse.ArgumentParser(description='script to build hosts.yml')
-parser.add_argument('-w', action='store_true', dest='wf', help='enable world finals mode')
+parser = argparse.ArgumentParser(description="script to build hosts.yml")
+parser.add_argument(
+    "-w", action="store_true", dest="wf", help="enable world finals mode"
+)
 args = parser.parse_args()
 
-contestants = {}
 judges = {}
+autojudges = {}  # kattis autojudges
+pc2aj = {}
+domjudge_judges = {}
 others = {}
+kattis_ccsadmin = {}
+domjudge_ccsadmin = {}
+pc2_ccsadmin = {}
 if args.wf:
-    name = "wf2023"
-    detail = "2023Luxor"
+    name = "wf2024"
+    detail = "2024astana"
     timezone = "Africa/Cairo"
     max_team = 146
     max_human_judge = 14
     max_pc2_autojudge = 20
+    max_pc2_ccsadmin = 8
+    max_kattis_ccsadmin = 0
     max_kattis_autojudge = 0
     max_domjudge_autojudge = 24
     max_domjudge_ccsadmin = 8
-    # pc2 for wf2023
-    max_ccsadmin = 8
     papersize = "A4"
     enable_vlc = False
     ccs = "domjudge"
+    need_reverse_proxy = False
+    local_kattis_server = False
+    local_pc2_server = True
+    local_domjudge_server = True
 else:
-    name = "nac2023"
-    detail = "2023Florida"
+    name = "nac2024"
+    detail = "2024Florida"
     timezone = "America/New_York"
     max_team = 53
-    max_human_judge = 12
-    max_pc2_autojudge = 0
+    max_human_judge = 4
+    max_pc2_autojudge = 5
     max_kattis_autojudge = 0
-    max_domjudge_autojudge = 0
-    max_domjudge_ccsadmin = 0
-    max_ccsadmin = 0
+    max_pc2_ccsadmin = 4
+    max_domjudge_autojudge = 5
+    max_domjudge_ccsadmin = 1
+    max_kattis_ccsadmin = 0
     papersize = "letter"
     enable_vlc = False
     ccs = "domjudge"
+    need_reverse_proxy = True
+    local_kattis_server = False
+    local_pc2_server = False
+    local_domjudge_server = False
+
+contestants = {}
+humanjudges = {}
 
 
 def print_host(num, hostname, ip, list_fh, group, base_ip=0):
     group[f"{hostname}{num}"] = {"ansible_host": f"{ip}.{base_ip+num}"}
     print(f"{hostname}{num}", file=list_fh)
 
+
 def print_host_wf(base, num, hostname, ip, list_fh, group, base_ip=0):
     group[f"{hostname}{num}"] = {"ansible_host": f"{ip}.{base_ip+num-base}"}
     print(f"{hostname}{num}", file=list_fh)
 
-def print_host_wf46(num, hostname, ip, list_fh, group, base_ip=0):
-    print_host_wf(46000, num+46000, hostname, ip, list_fh, group, base_ip)
-
-def print_host_wf47(num, hostname, ip, list_fh, group, base_ip=0):
-    print_host_wf(47000, num+47000, hostname, ip, list_fh, group, base_ip)
 
 def print_server(hostname, ip, group=[]):
     group[f"{hostname}"] = {"ansible_host": f"{ip}"}
 
 
+def print_children(max_label, item, document):
+    if max_label:
+        document += f"""
+    {item}:"""
+    return document
+
+
 if __name__ == "__main__":
+    document = f"""---
+all:
+  vars:
+    ccs: {ccs}
+    timezone: {timezone}
+    root_password: null
+    disable_sources_list_changes: false
+    enable_reverseproxy: {str(need_reverse_proxy).lower()}
+    contest: {name}
+    contest_detail: {detail}
+    papersize: {papersize}
+    enable_vlc: {str(enable_vlc).lower()}"""
+
     with open("../hosts.yml", "wt") as fh:
-        with open("../list.team", "wt") as list_fh:
-            # revert after wf2023
-            if args.wf:
-                for i in range(max_team):
-                   print_host_wf46(i + 1, "team", "10.1.46", list_fh, contestants)
-                for i in range(max_team):
-                    print_host_wf47(i + 1, "team", "10.1.47", list_fh, contestants)
-            else:
-                for i in range(max_team):
-                    print_host(i + 1, "team", "10.1.1", list_fh, contestants)
-        document = f"""
-contestants:
-  hosts: {contestants}
-"""
-        print(yaml.dump(yaml.safe_load(document), explicit_start=True), file=fh)
+        print(document, file=fh)
+        document2 = ""
+        document = ""
         with open("../list.judge", "wt") as list_fh:
             for i in range(max_human_judge):
-                print_host(i + 1, "judge", "10.2.2", list_fh, judges)
+                print_host(i + 1, "judge", "10.2.2", list_fh, humanjudges)
         with open("../list.autojudges", "wt") as list_fh:
             for i in range(max_kattis_autojudge):
-                print_host(i + 1, "autojudge", "10.2.2", list_fh, judges, 31)
+                print_host(i + 1, "autojudge", "10.2.2", list_fh, autojudges, 31)
         with open("../list.pc2judges", "wt") as list_fh:
             for i in range(max_pc2_autojudge):
-                print_host(i + 1, "pc2-aj", "10.2.2", list_fh, judges, 127)
+                print_host(i + 1, "pc2-aj", "10.2.2", list_fh, pc2aj, 127)
         with open("../list.domjudges", "wt") as list_fh:
             for i in range(max_domjudge_autojudge):
-                print_host(i + 1, "domjudge-judgehost", "10.2.2", list_fh, judges, 191)
-        document = f"""
+                print_host(
+                    i + 1, "domjudge-judgehost", "10.2.2", list_fh, domjudge_judges, 191
+                )
+        document3 = ""
+        document2 += f"""
+autojudges:
+  children:"""
+        document2 += print_children(
+            max_label=max_domjudge_autojudge,
+            item="domjudge_judgehost",
+            document=document3,
+        )
+        document2 += print_children(
+            max_label=max_kattis_autojudge, item="kattis_autojudge", document=document3
+        )
+        document2 += print_children(
+            max_label=max_pc2_autojudge, item="pc2_aj", document=document3
+        )
+        document2 += """
 judges:
-  hosts: {judges}
+  children:"""
+        document2 += print_children(
+            max_label=max_human_judge, item="human_judge", document=document3
+        )
+        document2 += print_children(
+            max_label=1,
+            item="autojudges",
+            document=document3,
+        )
+
+        document = ""
+        if max_human_judge:
+            document += f"""
+human_judge:
+  hosts: {humanjudges}
 """
+        if max_domjudge_autojudge:
+            document += f"""
+domjudge_judgehost:
+  hosts: {domjudge_judges}
+"""
+        if max_kattis_autojudge:
+            document += f"""
+kattis_autojudge:
+  hosts: {kattis_judges}
+"""
+        if max_pc2_autojudge:
+            document += f"""
+pc2_aj:
+    hosts: {pc2aj}
+"""
+
         print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)
+        document = ""
+        print(document2, file=fh)
         with open("../list.domjudges_ccsadmin", "wt") as list_fh:
             for i in range(max_domjudge_ccsadmin):
-                print_host(i + 1, "domjudge-ccsadmin", "10.3.3", list_fh, others, 223)
+                print_host(
+                    i + 1,
+                    "domjudge-ccsadmin",
+                    "10.3.3",
+                    list_fh,
+                    domjudge_ccsadmin,
+                    223,
+                )
         with open("../list.ccsadmin", "wt") as list_fh:
-            for i in range(max_ccsadmin):
-                print_host(i + 1, "ccsadmin", "10.3.3", list_fh, others, 231)
-        print_server("reverseproxy", "10.3.3.205", others)
+            for i in range(max_kattis_ccsadmin):
+                print_host(i + 1, "kattis-ccsadmin", "10.3.3", list_fh, ccsadmin, 231)
+        with open("../list.pc2_ccsadmin", "wt") as list_fh:
+            for i in range(max_pc2_ccsadmin):
+                print_host(i + 1, "pc2-ccsadmin", "10.3.3", list_fh, pc2_ccsadmin, 239)
+        if need_reverse_proxy:
+            print_server("reverseproxy", "10.3.3.205", others)
         # print_server("media", "10.3.3.206", others);
         print_server("cds", "10.3.3.207", others)
         print_server("scoreboard", "10.3.3.208", others)
         print_server("packages", "10.3.3.209", others)
         print_server("backup", "10.3.3.210", others)
         print_server("printsrv", "10.3.3.211", others)
-        print_server("balloonmanager", "10.4.4.149", others)
-        # print_server("kattis", "10.3.3.212", others)
-        # print_server("kattisbackup", "10.3.3.213", others)
-        print_server("pc2-shadowccs", "10.3.3.214", others)
+        # this is windows box
+        # print_server("balloonmanager", "10.4.4.149", others)
+        if local_kattis_server:
+            print_server("kattis", "10.3.3.212", others)
+            print_server("kattisbackup", "10.3.3.213", others)
+        if local_pc2_server:
+            print_server("pc2", "10.3.3.214", others)
         # print_server("domjudge-shadowccs", "10.3.3.215", others)
-        print_server("domserver", "10.3.3.216", others)
-        document = f"""
+        if local_domjudge_server:
+            print_server("domserver", "10.3.3.216", others)
+
+        document2 = f"""
 others:
+  children:"""
+
+        document3 = ""
+        document2 += print_children(
+            max_label=max_kattis_ccsadmin, item="kattis_ccsadmin", document=document3
+        )
+        document2 += print_children(
+            max_label=domjudge_ccsadmin, item="domjudge_ccsadmin", document=document3
+        )
+        document2 += print_children(
+            max_label=pc2_ccsadmin, item="pc2_ccsadmin", document=document3
+        )
+        document2 += print_children(max_label=1, item="servers", document=document3)
+        document = f"""
+servers:
   hosts:
     {others}
 """
+        if domjudge_ccsadmin:
+            document += f"""
+domjudge_ccsadmin:
+    hosts:
+       {domjudge_ccsadmin}
+"""
+        if pc2_ccsadmin:
+            document += f"""
+pc2_ccsadmin:
+    hosts:
+       {pc2_ccsadmin}
+"""
+        document += f"""
+windows:
+  children:
+    presentation_admins:
+      hosts:
+        presadmin1:
+          ansible_host: 10.3.3.190
+    presentation_clients:
+      hosts:
+        presclient1:
+          ansible_host: 10.3.3.1
+          presclient_name: "preclient1"
+        presclient2:
+          ansible_host: 10.3.3.2
+          presclient_name: "preclient2"
+        presclient3:
+          ansible_host: 10.3.3.3
+          presclient_name: "preclient3"
+        presclient4:
+          ansible_host: 10.3.3.4
+          presclient_name: "preclient4"
+        presclient5:
+          ansible_host: 10.3.3.5
+          presclient_name: "preclient5"
+        presclient6:
+          ansible_host: 10.3.3.6
+          presclient_name: "preclient6"
+        presclient7:
+          ansible_host: 10.3.3.7
+          presclient_name: "preclient7"
+    win_balloonprinters:
+      hosts:
+        balloonmanager:
+          ansible_host: 10.4.4.149
+    win_coachviews:
+      hosts:
+        coachview1:
+          ansible_host: 10.4.4.11
+        coachview2:
+          ansible_host: 10.4.4.12
+        coachview3:
+          ansible_host: 10.4.4.13
+        coachview4:
+          ansible_host: 10.4.4.14
+        coachview5:
+          ansible_host: 10.4.4.15
+        coachview6:
+          ansible_host: 10.4.4.16
+        coachview7:
+          ansible_host: 10.4.4.17
+        coachview8:
+          ansible_host: 10.4.4.18
+"""
+
         print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)
+        print(document2, file=fh)
         document_unused = f"""
 ldapserver:
   hosts:
@@ -133,23 +303,22 @@ grafana:
       ansible_host: 10.3.3.210
 ntpservers:
   hosts:
-     backup:
-       ansible_host: 10.3.3.210
-     scoreboard:
-       ansible_host: 10.3.3.208
-     packages:
-       ansible_host: 10.3.3.209
-all:
-  vars:
-    ccs: {ccs}
-    timezone: {timezone}
-    root_password:  null
-    disable_sources_list_changes: false
-    enable_reverseproxy: {not args.wf}
-    contest:  {name}
-    contest_detail: {detail}
-    papersize:  {papersize}
-    enable_vlc: {enable_vlc}
-
-"""
-        print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)
+    backup:
+      ansible_host: 10.3.3.210
+    scoreboard:
+      ansible_host: 10.3.3.208
+    packages:
+      ansible_host: 10.3.3.209"""
+        print(document, file=fh)
+        with open("../list.team", "wt") as list_fh:
+            for i in range(max_team):
+                print_host(i + 1, "team", "10.1.1", list_fh, contestants)
+            document = f"""
+contestants:
+  children:
+    floor:"""
+            document2 = f"""
+floor:
+  hosts: {contestants}"""
+            print(yaml.dump(yaml.safe_load(document2), explicit_start=False), file=fh)
+            print(document, file=fh)

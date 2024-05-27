@@ -17,6 +17,10 @@ gsettings set org.gnome.desktop.screensaver idle-activation-enabled false
 gsettings set org.gnome.desktop.session idle-delay 0
 # end additions for run
 
+{% if p100_default_presentation|default(false) -%}
+export ICPC_DEFAULT_PRESENTATION={{ p100_default_presentation }}
+{% endif -%}
+
 sleep 5
 while true; do
   java -Xmx1024m -cp "lib/*" org.icpc.tools.presentation.contest.internal.ClientLauncher https://{{ cds_ip }}:{{ cds_port }}/api/contests/{{ cds_endpoint | default("") }} presentation {{ cds_p100_password }} --name team

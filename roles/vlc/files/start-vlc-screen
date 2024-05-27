@@ -1,0 +1,20 @@
+#!/bin/bash
+
+SESSIONS=$(find /tmp/.X11-unix -group teams -print0 | xargs -n1 -0 basename | sed 's/^X//' | tr -dc "0-4\n")
+echo "Found possible X sessions: $SESSIONS"
+
+for D in $SESSIONS; do
+	export DISPLAY=":$D"
+	if xset -q &>/dev/null; then
+		break
+	fi
+	unset DISPLAY
+done
+
+if [ -z "$DISPLAY" ]; then
+	echo "Unable to find valid X display"
+	exit 1
+fi
+
+echo $DISPLAY
+/usr/bin/vlc -I dummy -q --play-and-exit screen:// --screen-fps=10 --sout "#transcode{venc=x264{keyint=2},vcodec=h264,vb=0}:standard{access=http,mux=ts,dst=:9090/}"

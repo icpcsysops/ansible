@@ -1,8 +1,7 @@
 ---
 # used by config.pl used by sh.do_startbackup
 contest_ids:
-  - challenge-wf46
-  - challenge-wf47
+  - systest1
 ntp_servers:
   - 172.29.1.20
   - 10.3.3.208
@@ -12,6 +11,8 @@ ntp_pool:
   - 1.ubuntu.pool.ntp.org
   - 2.ubuntu.pool.ntp.org
   - 3.ubuntu.pool.ntp.org
+# We don't do extra nic configs at NAC
+extra_nic_configs: []
 # extra_nic_configs:
 #   # blue
 #   - gateway: false

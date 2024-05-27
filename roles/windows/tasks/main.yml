@@ -1,0 +1,86 @@
+- name: Set autologin
+  ansible.windows.win_regedit:
+    path: HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon
+    name: "{{ item.name }}"
+    data: "{{ item.value }}"
+    type: "{{ item.type }}"
+  loop:
+    - {name: DefaultUserName, value: "{{ ansible_user }}", type: string}
+    - {name: DefaultPassword, value: "{{ ansible_password }}", type: string} # TODO: mask this out of the ansible output
+    - {name: AutoAdminLogon, value: 1, type: dword}
+
+- name: Disable lid/power button/sleep button actions
+  ansible.windows.win_regedit:
+    path: HKLM:\Software\Policies\Microsoft\Power\PowerSettings\{{ item.key }}
+    name: "{{ item.name }}"
+    data: "{{ item.value }}"
+    type: "{{ item.type }}"
+  loop:
+    # Power button action
+    - {key: "7648EFA3-DD9C-4E3E-B566-50F929386280", name: "DCSettingIndex", value: 0, type: "dword"}
+    - {key: "7648EFA3-DD9C-4E3E-B566-50F929386280", name: "ACSettingIndex", value: 0, type: "dword"}
+    # Lid Switch action
+    - {key: "5CA83367-6E45-459F-A27B-476B1D01C936", name: "DCSettingIndex", value: 0, type: "dword"}
+    - {key: "5CA83367-6E45-459F-A27B-476B1D01C936", name: "ACSettingIndex", value: 0, type: "dword"}
+    # Sleep button action
+    - {key: "96996BC0-AD50-47EC-923B-6F41874DD9EB", name: "DCSettingIndex", value: 0, type: "dword"}
+    - {key: "96996BC0-AD50-47EC-923B-6F41874DD9EB", name: "ACSettingIndex", value: 0, type: "dword"}
+
+- name: Disable windows updates
+  ansible.windows.win_regedit:
+    path: HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate\AU
+    name: NoAutoUpdate
+    type: dword
+    data: 1
+
+- name: Turn off screen sleep/disk sleep while on AC
+  ansible.windows.win_command: powercfg -setacvalueindex scheme_balanced {{ item }} 0
+  loop:
+    - sub_video videoidle
+    - sub_disk diskidle
+    - sub_sleep standbyidle
+
+- name: Turn off screen sleep/disk sleep while on DC/Battery
+  ansible.windows.win_command: powercfg -setdcvalueindex scheme_balanced {{ item }} 0
+  loop:
+    - sub_video videoidle
+    - sub_disk diskidle
+    - sub_sleep standbyidle
+
+- name: Set the power plan to balanced (which is what we changed settings for)
+  community.windows.win_power_plan:
+    name: balanced
+
+- name: Force 96dpi to LogPixels (i.e. 100% scaling)
+  ansible.windows.win_regedit:
+    path: HKCU:\Control Panel\Desktop
+    name: LogPixels
+    type: dword
+    data: 96
+
+- name: Force 96dpi to Win8DpiScaling (i.e. 100% scaling)
+  ansible.windows.win_regedit:
+    path: HKCU:\Control Panel\Desktop
+    name: Win8DpiScaling
+    type: dword
+    data: 1
+
+- name: Copy the certificates
+  ansible.windows.win_copy:
+    src: /usr/share/ca-certificates/ICPC_WF_Root_CA.crt
+    dest: c:\windows\temp\root.crt
+
+- name: Copy the intermediate cert too
+  ansible.windows.win_copy:
+    src: /usr/share/ca-certificates/ICPC_WF_Intermediate_CA.crt
+    dest: c:\windows\temp\intermediate.crt
+
+- name: Trust the ca cert
+  ansible.windows.win_certificate_store:
+    file_type: pem
+    path: c:\windows\temp\{{ item }}
+    store_location: LocalMachine
+    store_name: AuthRoot
+  loop:
+    - root.crt
+    - intermediate.crt

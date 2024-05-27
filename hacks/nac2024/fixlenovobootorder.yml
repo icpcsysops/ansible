@@ -1,0 +1,8 @@
+---
+- name: Fix boot order on things
+  hosts: contestants
+
+  tasks:
+    - name: Run the fix script
+      ansible.builtin.script:
+        cmd: files/fixlenovobootorder.sh

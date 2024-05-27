@@ -2,7 +2,11 @@ listen-address={{ ansible_all_ipv4_addresses | join(",") }}
 port={{ dnsmasq_port }}
 
 # We are the only dns server, don't try to forward queries elsewhere
-no-resolv
+{% if dnsmasq_allow_resolve -%}
+#no-resolv
+{% else -%}
+no-resolve
+{% endif -%}
 
 # if you want it to read another file, as well as /etc/hosts, use
 # this.

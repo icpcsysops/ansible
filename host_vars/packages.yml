@@ -7,7 +7,7 @@ ntp_pool:
   - 1.ubuntu.pool.ntp.org
   - 2.ubuntu.pool.ntp.org
   - 3.ubuntu.pool.ntp.org
-# extra_nic_configs:
+extra_nic_configs: []
 #   - gateway: false
 #     address: 10.3.3.209/24
 #     ifc_name: enp0s31f6

@@ -18,8 +18,8 @@
     mode: "{{ item.mode }}"
   notify: Reload nginx
   loop:
-    - { content: "{{ reverseproxy_key }}", dest: reverseproxy.key, mode: "0600" }
-    - { content: "{{ reverseproxy_cert }}", dest: reverseproxy.cert, mode: "0644" }
+    - {content: "{{ reverseproxy_key }}", dest: reverseproxy.key, mode: "0600"}
+    - {content: "{{ reverseproxy_cert }}", dest: reverseproxy.cert, mode: "0644"}
 
 - name: Install our kattis reverse proxy config
   ansible.builtin.template:

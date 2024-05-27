@@ -13,12 +13,12 @@
     line: "{{ item.ip }} {{ item.name }}"
     path: /etc/hosts
   loop:
-    - { ip: 10.4.4.200, name: balloonprinter }
-    - { ip: 10.4.4.201, name: teamprint1 }
-    - { ip: 10.4.4.202, name: teamprint2 }
-    - { ip: 10.4.4.203, name: teamprint3 }
-    - { ip: 10.4.4.204, name: judgeprint }
-    - { ip: 10.4.4.205, name: systemsprint }
+    - {ip: 10.4.4.200, name: balloonprinter}
+    - {ip: 10.4.4.201, name: teamprint1}
+    - {ip: 10.4.4.202, name: teamprint2}
+    - {ip: 10.4.4.203, name: teamprint3}
+    - {ip: 10.4.4.204, name: judgeprint}
+    - {ip: 10.4.4.205, name: systemsprint}
 
 - name: Install packages needed to munging pdfs
   ansible.builtin.package:
@@ -51,6 +51,45 @@
   changed_when: false
   ignore_errors: true
 
+
+- name: Install pre-reqs for cups_exporter (from ThoreKr/cups_exporter)
+  ansible.builtin.apt:
+    pkg:
+      - python3-cups
+      - python3-prometheus-client
+
+- name: Install cups_exporter
+  ansible.builtin.copy:
+    src: cups_exporter.py
+    dest: /usr/local/bin/cups_exporter.py
+    mode: 0755
+
+- name: Setup cups_exporter as a systemd service
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      Description=cups-exporter exports prometheus metrics for cups printers
+      After=network.target multi-user.target
+
+      [Service]
+      Type=simple
+      ExecStart=/usr/local/bin/cups_exporter.py
+      Restart=always
+      RestartSec=5
+
+      [Install]
+      WantedBy=multi-user.target
+    dest: /etc/systemd/system/cups-exporter.service
+    owner: root
+    mode: '0644'
+
+- name: Enable/start cups_exporter
+  ansible.builtin.service:
+    name: cups-exporter
+    enabled: true
+    state: started
+    daemon_reload: true
+
 # may need two icpc-banners one for letter, one for a4
 - name: Add icpc-banner filter
   ansible.builtin.copy:
@@ -74,3 +113,5 @@
 # /usr/share/cups/data/UniversityNames/$user.txt
 # /usr/share/cups/data/Pictures/$user.png
 # /usr/share/cups/data/Logos/$user.png
+#
+#

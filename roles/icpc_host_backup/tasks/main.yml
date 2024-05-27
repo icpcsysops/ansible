@@ -107,10 +107,10 @@
     owner: root
     group: root
   loop:
-    - { name: par }
-    - { name: sh.do_startbackup }
-    - { name: sh.backupclient }
-    - { name: exclude.lst, mode: "0644" }
+    - {name: par}
+    - {name: sh.do_startbackup}
+    - {name: sh.backupclient}
+    - {name: exclude.lst, mode: "0644"}
 
 - name: Install ssh config
   ansible.builtin.copy:

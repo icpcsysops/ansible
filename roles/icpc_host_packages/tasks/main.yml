@@ -18,24 +18,29 @@
   notify:
     - IptablesLoad
 
+- name: Install nginx
+  ansible.builtin.apt:
+    pkg: nginx
+    state: present
+    policy_rc_d: 101 # prevent nginx from starting after installation
+
 - name: Ensure required packages are installed
   ansible.builtin.apt:
     pkg:
-      - apache2
       - iptables
       - bash
       - ssl-cert
       - awscli
     state: present
 
-- name: Configure apache2
+- name: Configure nginx for packages
   block:
     - name: Install packages.pem
       ansible.builtin.copy:
         src: /root/ca/intermediate/certs/packages.cert.pem
         dest: /etc/ssl/certs/packages.pem
         mode: '0644'
-      notify: Apache2
+      notify: Reload nginx
 
     - name: Install packages.key
       ansible.builtin.copy:
@@ -43,65 +48,24 @@
         dest: /etc/ssl/private/packages.key
         group: ssl-cert
         mode: '0640'
-      notify: Apache2
+      notify: Reload nginx
 
     - name: Install sites-available/packages.conf
       ansible.builtin.copy:
-        src: files/sites.packages.conf
-        dest: /etc/apache2/sites-available/packages.conf
+        src: files/nginx.packages.conf
+        dest: /etc/nginx/sites-available/packages.conf
         mode: '0644'
-      notify: Apache2
+      notify: Reload nginx
 
-    - name: Install conf-available/packages.conf
-      ansible.builtin.copy:
-        src: files/conf.packages.conf
-        dest: /etc/apache2/conf-available/packages.conf
-        mode: '0644'
-      notify: Apache2
-
-    - name: Ensure we are not listening on port 80
-      ansible.builtin.lineinfile:
-        path: /etc/apache2/ports.conf
-        regexp: '^Listen 80'
-        line: "# Listen 80"
-        owner: root
-        group: root
-        mode: '0644'
-      notify: Apache2
-
-    # creates symlinks in /etc/apache2/mods-enabled
-    - name: Enable ssl mod
+    - name: Link sites-available to sites-enabled
       ansible.builtin.file:
-        dest: /etc/apache2/mods-enabled/{{ item }}
-        src: /etc/apache2/mods-available/{{ item }}
+        dest: /etc/nginx/sites-enabled/packages.conf
+        src: /etc/nginx/sites-available/packages.conf
         state: link
-      with_items:
-        - ssl.conf
-        - ssl.load
-        # Dependencies that need to be enabled for ssl to work
-        - socache_shmcb.load
-        # These are probably enabled by default, but might as well list them here too?
-        - mime.conf
-        - mime.load
-        - setenvif.conf
-        - setenvif.load
+      notify: Reload nginx
 
-    - name: Enable packages site
+    - name: Remove default site
       ansible.builtin.file:
-        dest: /etc/apache2/sites-enabled/packages.conf
-        src: /etc/apache2/sites-available/packages.conf
-        state: link
-      notify: Apache2
-
-    - name: Enable packages conf
-      ansible.builtin.file:
-        dest: /etc/apache2/conf-enabled/packages.conf
-        src: /etc/apache2/conf-available/packages.conf
-        state: link
-      notify: Apache2
-
-    - name: Remove 000-default
-      ansible.builtin.file:
-        path: /etc/apache2/sites-enabled/000-default.conf
+        path: /etc/nginx/sites-enabled/default
         state: absent
-      notify: Apache2
+      notify: Reload nginx

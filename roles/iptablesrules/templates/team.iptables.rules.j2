@@ -55,9 +55,20 @@
 -A INPUT -p tcp --sport 80 -s 10.3.3.208/31 -j ACCEPT
 -A OUTPUT -p tcp --dport 80 -d 10.3.3.208/31 -j ACCEPT
 
+{% if enable_reverseproxy -%}
+#TODO: make the ip for reverseproxy a lookup/variable/something better than hardcoded
+# http(s) to/from reverseproxy
+-A INPUT -p tcp --sport 80 -s 10.3.3.205/32 -j ACCEPT
+-A OUTPUT -p tcp --dport 80 -d 10.3.3.205/32 -j ACCEPT
+-A INPUT -p tcp --sport 443 -s 10.3.3.205/32 -j ACCEPT
+-A OUTPUT -p tcp --dport 443 -d 10.3.3.205/32 -j ACCEPT
+
+{% else -%}
 # https to/from ccs primary
 -A INPUT -p tcp --sport 443 -s {{ ccs_ip }}/32 -j ACCEPT
 -A OUTPUT -p tcp --dport 443 -d {{ ccs_ip }}/32 -j ACCEPT
+
+{% endif -%}
 
 # https to/from packages
 -A INPUT -p tcp --sport 443 -s 10.3.3.209/32 -j ACCEPT

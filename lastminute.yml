@@ -11,7 +11,7 @@
     - role: icpc_host_packages
 
 - name: Configure scoreboard machine
-  hosts: scoreboard
+  hosts: packages,scoreboard
   roles:
     - role: scoreboard
       tags: scoreboard

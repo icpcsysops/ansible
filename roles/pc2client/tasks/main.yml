@@ -12,11 +12,19 @@
 - name: Copy ini if does not exists
   ansible.builtin.file:
     src: /usr/pc2/pc2v9.ini
-    dest: /home/icpc2023/pc2v9.ini
+    dest: /home/icpc/pc2v9.ini
   when: not pc2v9_ini.stat.isreg
 
 - name: Update server line
   ansible.builtin.lineinfile:
-    path: /home/icpc2023/pc2v9.ini
+    path: /home/icpc/pc2v9.ini
     regexp: '^server=.*'
     line: "server=${pc2server}:50002"
+
+- name: Run pc2installservice (once)
+  ansible.builtin.command:
+     cmd: /usr/pc2/bin/pc2installservice
+     argv:
+       - icpc
+       - icpc
+     creates: /etc/systemd/system/pc2_cgroup.service

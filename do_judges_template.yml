@@ -47,7 +47,7 @@
             owner: icpc
             group: icpc
 
-        - name: Deploy contest-samples.zip to /home/icpc2023/Desktop/samps
+        - name: Deploy contest-samples.zip to /home/icpc/Desktop/samps
           ansible.builtin.unarchive:
             src: "{{ contest }}-samples.zip"
             dest: /home/icpc/Desktop/samps

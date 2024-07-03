@@ -23,8 +23,8 @@
 
 - name: Run pc2installservice (once)
   ansible.builtin.command:
-     cmd: /usr/pc2/bin/pc2installservice
-     argv:
-       - icpc
-       - icpc
-     creates: /etc/systemd/system/pc2_cgroup.service
+    cmd: /usr/pc2/bin/pc2installservice
+    argv:
+      - icpc
+      - icpc
+    creates: /etc/systemd/system/pc2_cgroup.service

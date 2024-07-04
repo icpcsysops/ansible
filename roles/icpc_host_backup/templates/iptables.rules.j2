@@ -146,6 +146,8 @@
 -A INPUT -i {{ green_network_ifc }} -j DROP
 {% endif -%}
 
+{{ extra_iptables_rules | default([]) | join("\n") }}
+
 # drop rest
 -A OUTPUT -j drop-n-log
 -A INPUT -j drop-n-log

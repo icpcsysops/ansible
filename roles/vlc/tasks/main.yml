@@ -12,7 +12,7 @@
   ansible.builtin.copy:
     src: start-vlc-screen
     dest: /usr/local/bin/start-vlc-screen
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
 

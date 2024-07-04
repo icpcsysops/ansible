@@ -62,7 +62,7 @@
   ansible.builtin.copy:
     src: cups_exporter.py
     dest: /usr/local/bin/cups_exporter.py
-    mode: 0755
+    mode: "0755"
 
 - name: Setup cups_exporter as a systemd service
   ansible.builtin.copy:

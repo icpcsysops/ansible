@@ -1,7 +1,7 @@
 ---
 - name: Reload nginx
   ansible.builtin.service:
-    name: Reload nginx
+    name: nginx
     state: reloaded
 
 - name: Systemd-resolved

@@ -21,10 +21,7 @@
     regexp: '^server=.*'
     line: "server=${pc2server}:50002"
 
-- name: Run pc2installservice (once)
+- name: Run pc2installservice
   ansible.builtin.command:
-    cmd: /usr/pc2/bin/pc2installservice
-    argv:
-      - icpc
-      - icpc
+    cmd: /usr/pc2/bin/pc2installservice icpc icpc
     creates: /etc/systemd/system/pc2_cgroup.service

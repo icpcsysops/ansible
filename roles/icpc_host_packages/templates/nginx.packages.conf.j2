@@ -1,0 +1,29 @@
+server {
+  listen 443 ssl http2;
+  server_name packages;
+  ssl_certificate /etc/ssl/certs/packages.pem;
+  ssl_certificate_key /etc/ssl/private/packages.key;
+
+  root     /var/www/html/;
+
+  location / {
+    # Use local files if we have them, otherwise try to fetch from upstream
+    try_files $uri @mirror;
+  }
+
+  # Set the hostname as a variable, this forces nginx to do a dns lookup
+  # otherwise it only looks it up when it starts and never refreshes it
+  resolver 8.8.8.8 ipv6=off;
+  set $server_host "https://sysopspackages.icpc.global";
+  location @mirror {
+    # Pass the request upstream
+    proxy_pass $server_host$request_uri;
+    proxy_ssl_name "sysopspackages.icpc.global";
+    proxy_ssl_server_name on;
+    proxy_set_header Host "sysopspackages.icpc.global";
+
+    # Save the responses so we can serve them out later
+    proxy_store on;
+    proxy_store_access user:rw group:rw all:r;
+   }
+}

@@ -1,8 +1,9 @@
 ---
 # this needs to be first as ldap requires it
-- name: Pre-configure apt
+- name: Pre-configure ca-certs and apt
   hosts: all
   roles:
+    - role: ca
     - role: apt
 
 - name: Configure packages machines

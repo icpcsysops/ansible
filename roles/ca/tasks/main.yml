@@ -1,0 +1,10 @@
+---
+- name: Install CA certs
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /usr/local/share/ca-certificates/{{ item | basename | splitext | first }}.crt
+    mode: "0644"
+  notify: Update ca-certificates
+  with_items: "{{ ca_certs }}"
+
+- meta: flush_handlers

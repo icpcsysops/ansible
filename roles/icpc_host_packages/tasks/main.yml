@@ -52,7 +52,7 @@
 
     - name: Install sites-available/packages.conf
       ansible.builtin.copy:
-        src: files/nginx.packages.conf
+        src: templates/nginx.packages.conf.j2
         dest: /etc/nginx/sites-available/packages.conf
         mode: '0644'
       notify: Reload nginx

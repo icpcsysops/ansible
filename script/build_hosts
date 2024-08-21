@@ -20,7 +20,7 @@ pc2_ccsadmin = {}
 if args.wf:
     name = "wf2024"
     detail = "2024astana"
-    timezone = "Africa/Cairo"
+    timezone = "Asia/Almaty"
     max_team = 146
     max_human_judge = 14
     max_pc2_autojudge = 20
@@ -30,7 +30,7 @@ if args.wf:
     max_domjudge_autojudge = 24
     max_domjudge_ccsadmin = 8
     papersize = "A4"
-    enable_vlc = False
+    enable_vlc = True
     ccs = "domjudge"
     need_reverse_proxy = False
     local_kattis_server = False

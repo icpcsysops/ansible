@@ -4,11 +4,13 @@
   hosts: all
   roles:
     - role: apt
+      tags: apt
 
 - name: Configure packages machines
   hosts: packages
   roles:
     - role: icpc_host_packages
+      tags: icpc_host_packages
 
 - name: Configure scoreboard machine
   hosts: packages,scoreboard

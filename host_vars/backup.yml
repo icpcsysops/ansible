@@ -32,7 +32,7 @@ extra_nic_configs: []
 #     routes: []
 
 # script server config below here:
-script_server_url: files/script-server.zip
+script_server_url: roles/script_server/files/script-server.zip
 
 script_server_admin_users: &admin_users
   # hostnames or ips

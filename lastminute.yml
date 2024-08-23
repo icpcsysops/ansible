@@ -22,6 +22,7 @@
   hosts: backup*
   roles:
     - role: dnsmasq
+      tags: dnsmasq
     - role: icpc_host_backup
       tags: icpc_host_backup
     # script_server needs to come after the hosts file has been configured (because it needs to lookup some hostnames)
@@ -450,17 +451,19 @@
       reverseproxy_server: true
       tags: reverseproxy
 
-- name: Configure cds as the git server
-  hosts: cds
+- name: Configure packages as the gitserver
+  hosts: packages
   roles:
-    - role: cds_for_icpc
-      tags: cds_for_icpc
+    - role: gitserver
+      tags: gitserver
 
 - name: Configure the cds instances (new style)
   hosts: cds*
   roles:
     - role: cds
       tags: cds
+    - role: cds_for_icpc
+      tags: cds_for_icpc
 
 - name: Configure balloonmanager printers
   hosts: balloonmanager

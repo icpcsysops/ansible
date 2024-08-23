@@ -1,0 +1,68 @@
+---
+- name: Set the git home directory
+  ansible.builtin.set_fact:
+    git_home_dir: /srv/git
+
+- name: Ensure git is installed
+  ansible.builtin.package:
+    name: git
+    state: present
+
+- name: Ensure git group
+  ansible.builtin.group:
+    name: "git"
+    gid: 1005
+    state: present
+
+- name: Ensure git user
+  ansible.builtin.user:
+    name: "git"
+    password: "{{ git_user_password }}"
+    shell: /usr/bin/git-shell
+    group: git
+    home: "{{ git_home_dir }}"
+    create_home: true
+    state: present
+
+- name: Ensure ~git/git-shell-commands exists
+  ansible.builtin.file:
+    path: "{{ git_home_dir }}/git-shell-commands"
+    owner: git
+    group: git
+    state: directory
+    mode: "0755"
+
+- name: Ensure no-interactive-login is installed
+  ansible.builtin.copy:
+    src: files/no-interactive-login
+    dest: "{{ git_home_dir }}/git-shell-commands/no-interactive-login"
+    owner: git
+    group: git
+    mode: "0755"
+
+- name: Ensure the .ssh directory exists
+  ansible.builtin.file:
+    path: "{{ git_home_dir }}/.ssh"
+    mode: "0700"
+    state: directory
+    owner: git
+    group: git
+
+# TODO: there's probably an authorized keys ansible task
+- name: Ensure git user .ssh authorized_keys is installed
+  ansible.builtin.template:
+    src: authorized_keys.j2
+    dest: "{{ git_home_dir }}/.ssh/authorized_keys"
+    owner: git
+    group: git
+    mode: "0600"
+
+- name: Make git user hushlogin
+  ansible.builtin.file:
+    path: "{{ git_home_dir }}/.hushlogin"
+    owner: git
+    group: git
+    mode: "0600"
+    state: touch
+    modification_time: preserve
+    access_time: preserve

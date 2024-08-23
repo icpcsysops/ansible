@@ -22,6 +22,7 @@
   hosts: backup*
   roles:
     - role: dnsmasq
+      tags: dnsmasq
     - role: icpc_host_backup
       tags: icpc_host_backup
     # script_server needs to come after the hosts file has been configured (because it needs to lookup some hostnames)

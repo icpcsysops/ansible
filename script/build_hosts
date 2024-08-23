@@ -19,7 +19,7 @@ domjudge_ccsadmin = {}
 pc2_ccsadmin = {}
 if args.wf:
     name = "wf2024"
-    detail = "2024astana"
+    detail = "2024Astana"
     timezone = "Asia/Almaty"
     max_team = 146
     max_human_judge = 14

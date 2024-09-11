@@ -51,6 +51,25 @@ script_server_commands:
       - name: hostname
         env_var: PARAM_HOSTNAME
         type: text
+        # audit_name comes from here: https://github.com/bugy/script-server/blob/bbb558510ed0758794d1f6c37c3964c4befbc1b8/src/utils/audit_utils.py#L58
+        # tl;dr: it's the first found value in [AUTH_USERNAME, PROXIED_USERNAME, PROXIED_HOSTNAME, PROXIED_IP, HOSTNAME, IP]
+        # Proxy IP comes from X-forwarded-for or x-real-ip headers
+        # Proxied username is actually just basic auth (but ignoring the credentials part of it?)
+        default: ${auth.audit_name}
+        constant: true
+        required: true
+
+  - name: run-lastminute-windows
+    description: Runs windows_lastminute.yml
+    group: ansible # for organization in script-server
+    content: |
+      #!/usr/bin/bash -ex
+      cd /root/ansible
+      ansible-playbook --limit "$PARAM_HOSTNAME" windows_lastminute.yml
+    parameters:
+      - name: hostname
+        env_var: PARAM_HOSTNAME
+        type: text
         default: ${auth.audit_name}
         constant: true
         required: true

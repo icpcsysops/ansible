@@ -262,6 +262,37 @@ windows:
         presclient7:
           ansible_host: 10.3.3.7
           presclient_name: "preclient7"
+
+        green-presclient0:
+          ansible_host: 172.29.1.60
+          presclient_name: green-presclient0
+        green-presclient1:
+          ansible_host: 172.29.1.61
+          presclient_name: green-presclient1
+        green-presclient2:
+          ansible_host: 172.29.1.62
+          presclient_name: green-presclient2
+        green-presclient3:
+          ansible_host: 172.29.1.63
+          presclient_name: green-presclient3
+        green-presclient4:
+          ansible_host: 172.29.1.64
+          presclient_name: green-presclient4
+        green-presclient5:
+          ansible_host: 172.29.1.65
+          presclient_name: green-presclient5
+        green-presclient6:
+          ansible_host: 172.29.1.66
+          presclient_name: green-presclient6
+        green-presclient7:
+          ansible_host: 172.29.1.67
+          presclient_name: green-presclient7
+        green-presclient8:
+          ansible_host: 172.29.1.68
+          presclient_name: green-presclient8
+        green-presclient9:
+          ansible_host: 172.29.1.69
+          presclient_name: green-presclient9
     win_balloonprinters:
       hosts:
         balloonmanager:

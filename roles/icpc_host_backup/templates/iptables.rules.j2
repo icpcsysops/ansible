@@ -82,10 +82,15 @@
 -A INPUT -p tcp --sport 80 -s 10.3.3.208 -j ACCEPT
 
 # script-server
+# blue
 -A INPUT -p tcp --dport 5000 -s 10.3.3.0/24 -j ACCEPT
 -A OUTPUT -p tcp --sport 5000 -d 10.3.3.0/24 -j ACCEPT
+# judges
 -A INPUT -p tcp --dport 5000 -s 10.2.2.0/24 -j ACCEPT
 -A OUTPUT -p tcp --sport 5000 -d 10.2.2.0/24 -j ACCEPT
+# green network (where some presentation clients live)
+-A INPUT -p tcp --dport 5000 -s 172.29.1.0/24 -j ACCEPT
+-A OUTPUT -p tcp --sport 5000 -d 172.29.1.0/24 -j ACCEPT
 
 # ntp in
 -A OUTPUT -p tcp --sport 123 -j ACCEPT

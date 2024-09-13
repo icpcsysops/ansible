@@ -59,7 +59,7 @@ script_server_commands:
         constant: true
         required: true
 
-  - name: run-lastminute-windows
+  - name: run-windows_lastminute
     description: Runs windows_lastminute.yml
     group: ansible # for organization in script-server
     content: |

@@ -523,6 +523,17 @@
 172.29.1.20  clock
 172.29.1.50  Sysops Printer?
 
+172.29.1.60 green-presclient0
+172.29.1.61 green-presclient1
+172.29.1.62 green-presclient2
+172.29.1.63 green-presclient3
+172.29.1.64 green-presclient4
+172.29.1.65 green-presclient5
+172.29.1.66 green-presclient6
+172.29.1.67 green-presclient7
+172.29.1.68 green-presclient8
+172.29.1.69 green-presclient9
+
 172.29.1.101         Netmon
 172.29.1.191    builder
 172.29.1.192    myicpc2

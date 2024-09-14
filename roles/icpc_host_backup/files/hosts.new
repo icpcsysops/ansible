@@ -531,6 +531,10 @@
 172.29.1.20  clock
 172.29.1.50  Sysops Printer?
 
+# These only exist temporarily on the network to get provisioned/set up
+172.29.1.60 resolver-presenter
+172.29.1.61 resolver-client
+
 172.29.1.63 green-presadmin1
 172.29.1.64 green-presclient1
 172.29.1.65 green-presclient2

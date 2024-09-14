@@ -513,3 +513,18 @@
   hosts: analysts
   roles:
     - role: ccstools
+
+- name: wrap up
+  hosts: all,!contestants
+  tasks:
+    - name: grab some build content
+      ansible.builtin.shell: 'echo "Provisioned at $(date +"%Y-%m-%d %H:%M:%S")\nRevision: $(git rev-list --full-history --all --abbrev-commit | head -1)\n"'
+      become: false
+      register: git_revision
+      delegate_to: 127.0.0.1
+    - name: Create a file on the desktop indicating ansible has finished
+      ansible.builtin.copy:
+        content: "{{ git_revision.stdout }}\n"
+        dest: /home/icpc/Desktop/Ansible_Done.txt
+        owner: icpc
+        group: icpc

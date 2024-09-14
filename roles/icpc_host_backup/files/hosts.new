@@ -432,16 +432,22 @@
 
 # red network
 # coachview
-172.24.0.80	coachview1
-172.24.0.81	coachview2
-172.24.0.82	coachview3
-172.24.0.83	coachview4
-172.24.0.84	coachview5
-172.24.0.85	coachview6
-172.24.0.86	coachview7
-172.24.0.87	coachview8
-172.24.0.88	coachview9
-172.24.0.89	coachview10
+172.24.2.80	coachview1
+172.24.2.81	coachview2
+172.24.2.82	coachview3
+172.24.2.83	coachview4
+172.24.2.84	coachview5
+172.24.2.85	coachview6
+172.24.2.86	coachview7
+172.24.2.87	coachview8
+172.24.2.88	coachview9
+172.24.2.89	coachview10
+172.24.2.90	coachview11
+172.24.2.91	coachview12
+172.24.2.92	coachview13
+172.24.2.93	coachview14
+172.24.2.94	coachview15
+172.24.2.95	coachview16
 
 172.24.0.207    cds-red
 

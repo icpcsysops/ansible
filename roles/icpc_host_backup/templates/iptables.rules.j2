@@ -81,6 +81,14 @@
 -A OUTPUT -p tcp --dport 80 -d 10.3.3.208 -j ACCEPT
 -A INPUT -p tcp --sport 80 -s 10.3.3.208 -j ACCEPT
 
+# grafana to packages (keith's "admin" workstation)
+-A OUTPUT -p tcp --dport 8443 -d 10.3.3.209 -j ACCEPT
+-A INPUT -p tcp --sport 8443 -s 10.3.3.209 -j ACCEPT
+
+# prometheus admin to packages (keith's "admin" workstation)
+-A OUTPUT -p tcp --dport 9090 -d 10.3.3.209 -j ACCEPT
+-A INPUT -p tcp --sport 9090 -s 10.3.3.209 -j ACCEPT
+
 # script-server
 # blue
 -A INPUT -p tcp --dport 5000 -s 10.3.3.0/24 -j ACCEPT

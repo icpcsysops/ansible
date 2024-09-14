@@ -13,7 +13,7 @@ while [ 1 ]; do
   scp -q index.html scoreboard@$scorehost:
   echo -n . # dot 3 after upload scorboard
 
-  ssh scoreboard@$scorehost "mv ~/index.html /var/www/html/index.html"
+  ssh scoreboard@$scorehost "mv ~/index.html /var/www/html/{{ scoreboard_subdir }}index.html"
   echo done at `date`.
   sleep 30
 done

@@ -5,6 +5,14 @@
     home: /srv/cds
     shell: "/usr/bin/bash"
 
+- name: Make sure the .ssh directory exists
+  ansible.builtin.file:
+    path: /srv/cds/.ssh
+    state: directory
+    mode: "0700"
+    owner: cds
+    group: cds
+
 - name: Give cds user the root authorized_keys2
   ansible.builtin.copy:
     src: /root/.ssh/authorized_keys2
@@ -17,6 +25,15 @@
   community.crypto.openssh_keypair:
     path: /srv/cds/.ssh/id_ed25519
     type: ed25519
+    owner: cds
+    group: cds
+
+- name: Disable strict host key checking for the cds user
+  ansible.builtin.copy:
+    content: |
+      Host *
+        StrictHostKeyChecking no
+    dest: /srv/cds/.ssh/config
     owner: cds
     group: cds
 

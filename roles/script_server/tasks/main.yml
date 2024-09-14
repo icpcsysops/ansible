@@ -27,6 +27,7 @@
     src: conf.json.j2
     dest: /opt/script-server/conf/conf.json
     mode: "0644"
+  notify: Restart script-server
 
 - name: Create systemd service for script-server
   ansible.builtin.copy:
@@ -69,6 +70,7 @@
     dest: /opt/script-server/conf/scripts/{{ item.name }}
     mode: "0755"
   with_items: "{{ script_server_commands }}"
+  notify: Restart script-server
 
 - name: Create script config definitions
   ansible.builtin.template:
@@ -76,3 +78,4 @@
     dest: /opt/script-server/conf/runners/{{ item.name }}.yaml
     mode: "0644"
   with_items: "{{ script_server_commands }}"
+  notify: Restart script-server

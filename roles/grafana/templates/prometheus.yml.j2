@@ -36,16 +36,12 @@ scrape_configs:
         - {{ hostvars['printsrv'].ansible_host }}:9100
         labels:
           instance: printsrv
-{% if 'reverseproxy' in hostvars -%}
+{% if 'reverseproxy' in hostvars %}
       - targets:
         - {{ hostvars['reverseproxy'].ansible_host }}:9100
         labels:
           instance: reverseproxy
-{% endif -%}
-      - targets:
-        - {{ hostvars['scoreboard'].ansible_host }}:9100
-        labels:
-          instance: scoreboard
+{% endif %}
 
   - job_name: node_teams
     static_configs:

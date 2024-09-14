@@ -432,14 +432,16 @@
 
 # red network
 # coachview
-172.24.0.80	coachview01
-172.24.0.81	coachview02
-172.24.0.82	coachview03
-172.24.0.83	coachview04
-172.24.0.84	coachview05
-172.24.0.85	coachview06
-172.24.0.86	coachview07
-172.24.0.87	coachview08
+172.24.0.80	coachview1
+172.24.0.81	coachview2
+172.24.0.82	coachview3
+172.24.0.83	coachview4
+172.24.0.84	coachview5
+172.24.0.85	coachview6
+172.24.0.86	coachview7
+172.24.0.87	coachview8
+172.24.0.88	coachview9
+172.24.0.89	coachview10
 
 172.24.0.207    cds-red
 
@@ -523,16 +525,19 @@
 172.29.1.20  clock
 172.29.1.50  Sysops Printer?
 
-172.29.1.60 green-presclient0
-172.29.1.61 green-presclient1
-172.29.1.62 green-presclient2
-172.29.1.63 green-presclient3
-172.29.1.64 green-presclient4
-172.29.1.65 green-presclient5
-172.29.1.66 green-presclient6
-172.29.1.67 green-presclient7
-172.29.1.68 green-presclient8
-172.29.1.69 green-presclient9
+172.29.1.63 green-presadmin1
+172.29.1.64 green-presclient1
+172.29.1.65 green-presclient2
+172.29.1.66 green-presclient3
+172.29.1.67 green-presclient4
+172.29.1.68 green-presclient5
+172.29.1.69 green-presclient6
+172.29.1.70 green-presclient7
+172.29.1.71 green-presclient8
+172.29.1.72 green-presclient9
+172.29.1.73 green-presclient10
+172.29.1.74 green-presclient11
+172.29.1.75 green-presclient12
 
 172.29.1.101         Netmon
 172.29.1.191    builder

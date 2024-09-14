@@ -334,10 +334,10 @@ grafana:
       ansible_host: 10.3.3.210
 ntpservers:
   hosts:
+    printsrv:
+      ansible_host: 10.3.3.211
     backup:
       ansible_host: 10.3.3.210
-    scoreboard:
-      ansible_host: 10.3.3.208
     packages:
       ansible_host: 10.3.3.209"""
         print(document, file=fh)

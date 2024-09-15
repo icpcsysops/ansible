@@ -1,8 +1,9 @@
 ---
 # this needs to be first as ldap requires it
-- name: Pre-configure apt
+- name: Pre-configure ca-certs and apt
   hosts: all
   roles:
+    - role: ca
     - role: apt
       tags: apt
 
@@ -87,75 +88,6 @@
       when: disable_martkeys is not defined or not disable_martkeys
 
   tasks:
-    # more things to fix in icpc-pycharm
-    - name: Stat pycharm python_stubs
-      ansible.builtin.stat:
-        path: /etc/skel/.config/JetBrains/PyCharmCE2022.3/system/python_stubs
-      register: python_stubs
-
-    - name: Extract python_stubs if missing
-      ansible.builtin.unarchive:
-        src: files/pycharm/python_stubs.tar.gz
-        dest: /etc/skel/.config/JetBrains/PyCharmCE2022.3/system
-      when: not python_stubs.stat.exists
-
-    # fixed in package icpc-pycharm
-    - name: Fix pycharm .config/JetBrains/PyCharmCE2022.3 with pypy3
-      ansible.builtin.copy:
-        src: files/pycharm/{{ item }}
-        dest: /etc/skel/.config/JetBrains/PyCharmCE2022.3/config/options/{{ item }}
-        mode: '0644'
-        owner: root
-        group: root
-      loop:
-        - jdk.table.xml
-        - other.xml
-
-    # fixed in package icpc-pycharm
-    - name: Fix pycharm workspace with pypy3
-      ansible.builtin.copy:
-        src: files/pycharm/PycharmProject.iml
-        dest: /etc/skel/workspace/PycharmProject/.idea/PycharmProject.iml
-        mode: '0644'
-        owner: root
-        group: root
-
-    # TODO fixed in package icpc-pycharm
-    - name: Remove broken links from venv
-      ansible.builtin.file:
-        state: absent
-        path: /etc/skel/workspace/PycharmProject/venv/lib/{{ item }}
-      loop:
-        - libdchtvm.so.9
-        - libdchapi64.so
-        - libdchapi.so.5
-        - libdchapi.so.9
-        - libdchbas64.so
-        - libdchbas.so.5
-        - libdchbas.so.9
-        - libdchcfl64.so
-        - libdchcfl.so.5
-        - libdchcfl.so.9
-        - libdchesm64.so
-        - libdchesm.so.5
-        - libdchesm.so.9
-        - libdchipm64.so
-        - libdchipm.so.5
-        - libdchipm.so.9
-        - libdchtvm64.so
-        - libdchtvm.so.5
-        - libdchtvm.so.5
-        - modules-load.d
-    # TODO fixed in this to icpc2024
-    - name: Disable idle-dim
-      ansible.builtin.copy:
-        dest: /usr/share/glib-2.0/schemas/21_icpc_power_schema.gschema.override
-        content: |
-          [org.gnome.settings-daemon.plugins.power]
-          idle-dim=false
-        mode: '0644'
-      notify: Glib-compile-schemas
-
     - name: Cleanup domjudge.desktop,  renaming to ccs.desktop
       ansible.builtin.file:
         name: /usr/share/applications/domjudge.desktop
@@ -165,16 +97,6 @@
       ansible.builtin.apt:
         pkg: stress-ng
         state: present
-
-    # TODO fixed in icpc2024
-    - name: Remove ampersand from iptablesload
-      ansible.builtin.replace:
-        path: /etc/network/if-pre-up.d/iptablesload
-        regexp: " &"
-        replace: ""
-        owner: root
-        group: root
-        mode: '0755'
 
     - name: Switch from files to compat in nsswitch
       tags: nsswitch

@@ -38,6 +38,7 @@ script_server_admin_users: &admin_users
   # hostnames or ips
   - backup
   - 127.0.0.1
+  - packages
 
 script_server_commands:
   - name: run-lastminute

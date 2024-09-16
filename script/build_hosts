@@ -2,6 +2,8 @@
 
 import yaml
 import argparse
+import os
+import datetime
 
 parser = argparse.ArgumentParser(description="script to build hosts.yml")
 parser.add_argument(
@@ -29,6 +31,7 @@ if args.wf:
     max_kattis_autojudge = 0
     max_domjudge_autojudge = 24
     max_domjudge_ccsadmin = 8
+    max_coachview = 10
     papersize = "A4"
     enable_vlc = True
     ccs = "domjudge"
@@ -36,6 +39,7 @@ if args.wf:
     local_kattis_server = False
     local_pc2_server = True
     local_domjudge_server = True
+    backup_domjudge_server = True
 else:
     name = "nac2025"
     detail = "2025Florida"
@@ -48,6 +52,7 @@ else:
     max_domjudge_autojudge = 6
     max_domjudge_ccsadmin = 1
     max_kattis_ccsadmin = 0
+    max_coachview = 8
     papersize = "letter"
     enable_vlc = False
     ccs = "domjudge"
@@ -55,6 +60,7 @@ else:
     local_kattis_server = False
     local_pc2_server = False
     local_domjudge_server = False
+    backup_domjudge_server = False
 
 contestants = {}
 humanjudges = {}
@@ -95,6 +101,12 @@ all:
     papersize: {papersize}
     enable_vlc: {str(enable_vlc).lower()}"""
 
+    # make a backup of ../hosts.yaml with the it's modified date, if it exists
+    if os.isfile("../hosts.yml"):
+        FilePath = "../hosts.yml"
+        modifiedTime = os.path.getmtime(FilePath)
+        timeStamp = datetime.datetime.fromtimstamp(modifiedTime).strftime("%b-%d-%y-%H:%M:%S")
+        os.rename(FilePath,FilePath+"_"+timeStamp)
     with open("../hosts.yml", "wt") as fh:
         print(document, file=fh)
         document2 = ""
@@ -198,7 +210,8 @@ pc2_aj:
             print_server("pc2", "10.3.3.214", others)
         # print_server("domjudge-shadowccs", "10.3.3.215", others)
         if local_domjudge_server:
-            print_server("domserver", "10.3.3.216", others)
+            if backup_domjudge_server:
+                print_server("domserver", "10.3.3.216", others)
 
         document2 = f"""
 others:
@@ -299,34 +312,13 @@ windows:
           ansible_host: 10.4.4.149
     win_coachviews:
       hosts:
-        coachview1:
-          ansible_host: 10.4.4.11
-        coachview2:
-          ansible_host: 10.4.4.12
-        coachview3:
-          ansible_host: 10.4.4.13
-        coachview4:
-          ansible_host: 10.4.4.14
-        coachview5:
-          ansible_host: 10.4.4.15
-        coachview6:
-          ansible_host: 10.4.4.16
-        coachview7:
-          ansible_host: 10.4.4.17
-        coachview8:
-          ansible_host: 10.4.4.18
 """
+        if max_coachview > 0:
+          for i in range(1,max_coachview):
+            document += f"         coachview{i}:\n            ansible_host: 10.4.4.{10+i}"
 
         print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)
         print(document2, file=fh)
-        document_unused = f"""
-ldapserver:
-  hosts:
-    ldap-server1:
-      ansible_host: 10.3.3.211
-    ldap-server2:
-      ansible_host: 10.3.3.210
-"""
         document = f"""
 grafana:
   hosts:

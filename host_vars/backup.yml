@@ -263,6 +263,43 @@ script_server_commands:
         values:
           - cds
 
+  - name: pc2-lastminute
+    description: Runs the ansible playbook lastminute.yml (against pc2 resources)
+    group: ansible
+    allowed_users: &pc2_allowed_users
+      - pc2-ccsadmin1
+      - pc2-ccsadmin2
+      - pc2-ccsadmin3
+      - pc2-ccsadmin4
+    content: |
+      #!/usr/bin/bash -ex
+      cd /root/ansible
+      fast-ansible-playbook --limit "$HOST_PATTERN" lastminute.yml
+    parameters:
+      - name: host_pattern
+        env_var: HOST_PATTERN # default is same as name
+        separator: ','
+        type: multiselect
+        required: true
+        values:
+          - pc2
+          - pc2backup
+          - pc2-aj*
+          - pc2-ccsadmin*
+          - pc2-aj1
+          - pc2-aj2
+          - pc2-aj3
+          - pc2-aj4
+          - pc2-aj5
+          - pc2-aj6
+          - pc2-aj7
+          - pc2-aj8
+          - pc2-aj9
+          - pc2-aj10
+          - pc2-ccsadmin1
+          - pc2-ccsadmin2
+          - pc2-ccsadmin3
+          - pc2-ccsadmin4
 
   - name: domjudge-lastminute
     description: Runs the ansible playbook lastminute.yml (against domjudge resources)

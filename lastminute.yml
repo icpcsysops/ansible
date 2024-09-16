@@ -5,6 +5,30 @@
   roles:
     - role: apt
       tags: apt
+  tasks:
+    - name: Fix permissioning of intermediate cert
+      tags: fix_cert # TODO this should be fixed in icpc2025
+      ansible.builtin.file:
+        path: /usr/share/ca-certificates/ICPC_WF_Intermediate_CA.crt
+        mode: "0644"
+      notify: Run update-ca-certificates
+
+    - name: fix LC_TIME
+      ansible.builtin.lineinfile:
+        path: /etc/default/locale
+        regexp: ^LC_TIME
+        line: LC_TIME="en_US.UTF-8"
+      tags: fix_LC_TIME
+    - name: Fix Root cert
+      ansible.builtin.copy:
+        src: /usr/share/ca-certificates/ICPC_WF_Root_CA.crt
+        dest: /usr/share/ca-certificates/ICPC_WF_Root_CA.crt
+        mode: "0644"
+      tags: fix_root # TODO this should fixed in icpc2025
+      notify: Run update-ca-certificates
+  handlers:
+    - name: Run update-ca-certificates
+      ansible.builtin.command: /usr/sbin/update-ca-certificates
 
 - name: Configure packages machines
   hosts: packages

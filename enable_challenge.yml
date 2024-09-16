@@ -39,7 +39,14 @@
         state: absent
         path: /usr/share/applications/ccs.desktop
 
-    - name: Install "open-tests.zip"
+    - name: Check if open-tests.tar.gz is available
+      delegate_to: localhost
+      ansible.builtin.stat:
+        path: files/challenge/open-tests.tar.gz
+      register: open_test
+
+    - name: Install "open-tests.tar.gz"
+      when: open_test.stat.exists
       ansible.builtin.unarchive:
         src: files/challenge/open-tests.tar.gz
         dest: /home/{{ inventory_hostname }}/Desktop

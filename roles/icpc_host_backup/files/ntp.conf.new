@@ -26,8 +26,8 @@ pool 3.ubuntu.pool.ntp.org iburst
 # Use Ubuntu's ntp server as a fallback.
 pool ntp.ubuntu.com
 
-server 10.3.3.208
 server 10.3.3.209
+server 10.3.3.211
 server 172.29.1.20
 # Access control configuration; see /usr/share/doc/ntp-doc/html/accopt.html for
 # details.  The web page <http://support.ntp.org/bin/view/Support/AccessRestrictions>

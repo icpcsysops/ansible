@@ -80,6 +80,7 @@ script_server_commands:
     group: cds
     allowed_users: &cds_allowed_users
       - cds # cds host
+      - green-presadmin1
       - cdsadmin1
       - cdsadmin2
       - cdsadmin3

@@ -246,6 +246,34 @@ script_server_commands:
           - green-presclient7
           - green-presclient8
 
+  - name: cds-windows_clear-cache
+    description: Clear cache and reboots on windows presentation client
+    group: cds
+    allowed_users: *cds_allowed_users
+    content: |
+      #!/usr/bin/bash -ex
+      cd /root/ansible
+      fast-ansible -m ansible.windows.win_shell -a 'stop-process -name "java" -force' $HOST_PATTERN
+      fast-ansible -m ansible.windows.win_shell -a "rm -force -r c:/users/icpc/appdata/local/temp/org.icpc*" $HOST_PATTERN
+      fast-ansible -m ansible.windows.win_reboot $HOST_PATTERN
+    parameters:
+      - name: host_pattern
+        env_var: HOST_PATTERN # default is same as name
+        separator: ','
+        type: multiselect
+        required: true
+        values:
+          - presentation_admins
+          - presentation_clients
+          - green-presclient1
+          - green-presclient2
+          - green-presclient3
+          - green-presclient4
+          - green-presclient5
+          - green-presclient6
+          - green-presclient7
+          - green-presclient8
+
   - name: cds-lastminute
     description: Runs the ansible playbook lastminute.yml (against cds resources)
     group: ansible

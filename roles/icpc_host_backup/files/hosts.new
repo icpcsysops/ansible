@@ -449,7 +449,8 @@
 172.24.2.94	coachview15
 172.24.2.95	coachview16
 
-172.24.0.207    cds-red
+# not 207 because of conflict with live?
+172.24.0.7    cds-red
 
 #Start of the Green Network (172.29.0.0/22)
 172.29.0.1     router
@@ -575,9 +576,9 @@
 172.29.1.227   green-judgehost7
 172.29.1.228   green-judgehost8
 172.29.1.229   green-judgehost9
-172.29.1.240   analysts-green
 172.29.1.245   media1-green
 172.29.1.250   gview-green
+172.29.1.251   analysts-green
 
 172.29.2.5    CloudKeyManagement-hynan
 # 172.29.2.10 - 172.29.3.200 - DHCP Range

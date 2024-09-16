@@ -4,6 +4,8 @@
   hosts: contestants
   vars:
     contest: TODO
+    # add linux-accounts.yml here(remove non-team accounts)
+    # then add spare accounts
 
 
   tasks:

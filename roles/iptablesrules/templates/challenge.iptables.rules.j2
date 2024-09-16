@@ -8,19 +8,53 @@
 :drop-n-log - [0:0]
 -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 -A INPUT -i lo -j ACCEPT
+# something on login or usb plugin causes this traffic
+-A OUTPUT -p udp -m udp --dport 137 -j REJECT
+-A OUTPUT -p udp -m udp --dport 1124 -j REJECT
+-A OUTPUT -p udp -m udp --dport 3289 -j REJECT
+-A OUTPUT -p udp -m udp --dport 5353 -j REJECT
+-A OUTPUT -p udp -m udp --dport 8610 -j REJECT
+-A OUTPUT -p udp -m udp --dport 8612 -j REJECT
+# other cups snmp stuff to drop
+-A OUTPUT -p udp -m udp -d 10.3.3.149 --dport 161 -j DROP
+# some app is triggering these
+-A OUTPUT -p udp -m udp --dport 53 -d 1.0.0.1 -j REJECT
+-A OUTPUT -p udp -m udp --dport 53 -d 1.1.1.1 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 1.0.0.1 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 1.1.1.1 -j REJECT
+# something trying to reach multicast foo
+-A OUTPUT -d 224.0.0.22 -j REJECT
+-A OUTPUT -p udp -m udp --dport 3702 -d 239.255.255.250 -j REJECT
+# jetbrains crap
+-A OUTPUT -p udp -m udp --dport 53 -d 9.9.9.10 -j REJECT
+-A OUTPUT -p udp -m udp --dport 53 -d 149.112.112.10 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 9.9.9.10 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 149.112.112.10 -j REJECT
+# other dns crap
+-A OUTPUT -p udp -m udp --dport 53 -d 8.8.8.8 -j REJECT
+-A OUTPUT -p udp -m udp --dport 53 -d 8.8.4.4 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 8.8.8.8 -j REJECT
+-A FORWARD -p udp -m udp --dport 53 -d 8.8.4.4 -j REJECT
+# router os crap
+-A INPUT -p udp -m udp --dport 5678 -d 255.255.255.255 -j REJECT
+
+
+
 -A INPUT -s 10.3.3.215/32 -p tcp -m tcp --sport 443 -j ACCEPT
 -A INPUT -s 10.3.3.209/32 -p tcp -m tcp --sport 443 -j ACCEPT
--A INPUT -s 10.3.3.208/32 -p tcp -m tcp --sport 123 -j ACCEPT
--A INPUT -s 10.3.3.208/32 -p udp -m udp --sport 123 -j ACCEPT
--A INPUT -s 10.3.3.209/32 -p tcp -m tcp --sport 123 -j ACCEPT
--A INPUT -s 10.3.3.209/32 -p udp -m udp --sport 123 -j ACCEPT
--A INPUT -s 10.3.3.210/32 -p tcp -m tcp --sport 123 -j ACCEPT
--A INPUT -s 10.3.3.210/32 -p udp -m udp --sport 123 -j ACCEPT
--A INPUT -s 10.3.3.254/32 -p tcp -m tcp --sport 123 -j ACCEPT
--A INPUT -s 10.3.3.254/32 -p udp -m udp --sport 123 -j ACCEPT
+
+# ntp
+{% for host in groups['ntpservers'] -%}
+-A OUTPUT -p tcp --dport 123 -d {{ hostvars[host].ansible_host }} -j ACCEPT
+-A OUTPUT -p udp --dport 123 -d {{ hostvars[host].ansible_host }} -j ACCEPT
+-A INPUT -p tcp --sport 123 -s {{ hostvars[host].ansible_host }} -j ACCEPT
+-A INPUT -p udp --sport 123 -s {{ hostvars[host].ansible_host }} -j ACCEPT
+{% endfor %}
+
 -A INPUT -s 10.3.3.207/32 -p tcp -m tcp --sport 443 -j ACCEPT
 -A INPUT -s 10.3.3.207/32 -p tcp -m tcp --sport 9443 -j ACCEPT
--A INPUT -s 10.3.3.208/29 -p tcp -m tcp --dport 22 -j ACCEPT
+
+# cameras
 -A INPUT -s 10.3.3.205/32 -p tcp -m tcp --dport 8080 -j ACCEPT
 -A INPUT -s 10.3.3.207/32 -p tcp -m tcp --dport 8080 -j ACCEPT
 -A INPUT -s 10.3.3.208/28 -p tcp -m tcp --dport 8080 -j ACCEPT
@@ -28,12 +62,18 @@
 -A INPUT -s 10.3.3.207/32 -p tcp -m tcp --dport 9090 -j ACCEPT
 -A INPUT -s 10.3.3.208/28 -p tcp -m tcp --dport 9090 -j ACCEPT
 
+# reverseproxy
+{% if enable_reverseproxy -%}
 -A INPUT -s 10.3.3.205/32 -p tcp -m tcp --dport 80 -j ACCEPT
 -A INPUT -s 10.3.3.205/32 -p tcp -m tcp --dport 443 -j ACCEPT
+{% endif %}
 
--A INPUT -s 10.3.3.213/32 -p tcp -m tcp --sport 22 -j ACCEPT
+# ssh from backup
 -A INPUT -s 10.3.3.210/32 -p tcp -m tcp --sport 22 -j ACCEPT
+
+# syslog
 -A INPUT -s 10.3.3.208/29 -p udp -m udp --sport 514 -j ACCEPT
+
 -A INPUT -s 10.3.3.149/32 -p tcp -m tcp --sport 631 -j ACCEPT
 -A INPUT -s 10.3.3.149/32 -p udp -m udp --sport 631 -j ACCEPT
 -A INPUT -s 10.3.3.211/32 -p tcp -m tcp --sport 631 -j ACCEPT

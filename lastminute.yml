@@ -98,6 +98,7 @@
     - role: reverseproxy
       when: enable_reverseproxy is defined and enable_reverseproxy
     - role: p100
+      tags: p100
     - role: ccstools
       tags: ccstools
       when: ccs  == "domjudge"

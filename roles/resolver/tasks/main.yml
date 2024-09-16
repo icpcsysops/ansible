@@ -14,7 +14,7 @@
         status_code: 200
         body_format: json
       register: latest_resolver_release_array
-      when: internet and resolver_version is not defined
+      when: resolver_version is not defined
 
     - name: Set resolver client latest version
       ansible.builtin.set_fact:
@@ -22,34 +22,93 @@
       when: resolver_version is not defined
 
     - name: Download resolver client
-      delegate_to: localhost
-      ansible.builtin.get_url:
+      ansible.windows.win_get_url:
         url: https://github.com/icpctools/icpctools/releases/download/v{{ resolver_version }}/resolver-{{ resolver_version }}.zip
-        dest: /Users/{{ ansible_user }}/Desktop/resolver-{{ resolver_version }}.zip
-        mode: '0644'
-      when: internet
+        dest: /Users/{{ ansible_user }}/Downloads/resolver-{{ resolver_version }}.zip
+
+    - name: Delete existing folder
+      ansible.windows.win_file:
+        path: /Users/{{ ansible_user }}/Desktop/resolver
+        state: absent
 
     - name: Unpack the resolver
-      ansible.builtin.unarchive:
-        src: /tmp/resolver-{{ resolver_version }}.zip
+      community.windows.win_unzip:
+        src: /Users/{{ ansible_user }}/Downloads/resolver-{{ resolver_version }}.zip
         dest: /Users/{{ ansible_user }}/Desktop/resolver
+        creates: /Users/{{ ansible_user }}/Desktop/resolver
 
 - name: Add bat script to launch the resolver client
   ansible.windows.win_copy:
     content: >
       c:/Users/{{ ansible_user }}/Desktop/resolver/resolver.bat
       {{ resolver_cds_url }}
-      {{ resolver_user }} {{ resolver_pass }}
-      --client
+      {{ resolver_user }} {{ resolver_pass }} {{ resolver_args }}
     dest: /Users/{{ ansible_user }}/Desktop/launch_resolver.bat
 
-- name: Copy a shortcut to launch the resolver client
-  community.windows.win_shortcut:
-    src: "c:/Users/{{ ansible_user }}/Desktop/resolver/resolver.bat"
-    dest: "c:/Users/{{ ansible_user }}/Desktop/resolver.lnk"
-    arguments: "{{ resolver_cds_url }} {{ resolver_user }} {{ resolver_pass }} --client"
+- name: Update/download and install the cds
+  when: resolver_cds_server
+  block:
+    - name: Get prerelease version
+      delegate_to: 127.0.0.1
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=3
+        method: GET
+        return_content: true
+        status_code: 200
+        body_format: json
+      register: latest_cds_release_array
+      when: resolver_cds_version is not defined
 
-- name: Copy a shortcut to launch the resolver client on startup
-  community.windows.win_shortcut:
-    src: "c:/Users/{{ ansible_user }}/Desktop/resolver.lnk"
-    dest: "%ProgramData%/Microsoft/Windows/Start Menu/Programs/Startup/resolver.lnk"
+    - name: Set cds latest version
+      ansible.builtin.set_fact:
+        resolver_cds_version: "{{ latest_cds_release_array.json[0].name | replace('v', '') }}"
+      when: resolver_cds_version is not defined
+
+    - name: Download cds client
+      ansible.windows.win_get_url:
+        url: https://github.com/icpctools/icpctools/releases/download/v{{ resolver_cds_version }}/wlp.CDS-{{ resolver_cds_version }}.zip
+        dest: /Users/{{ ansible_user }}/Downloads/wlp-cds-{{ resolver_cds_version }}.zip
+
+    - name: stop the cds if possible (to prevent errors deleting the directory)
+      ansible.windows.win_shell: c:/Users/{{ ansible_user }}/Desktop/cds/wlp/bin/server.bat stop cds
+      failed_when: false # we don't care if this fails
+
+    - name: Delete existing folder
+      ansible.windows.win_file:
+        path: /Users/{{ ansible_user }}/Desktop/cds
+        state: absent
+
+    - name: Unpack the cds
+      community.windows.win_unzip:
+        src: /Users/{{ ansible_user }}/Downloads/wlp-cds-{{ resolver_cds_version }}.zip
+        dest: /Users/{{ ansible_user }}/Desktop/cds
+        creates: /Users/{{ ansible_user }}/Desktop/cds
+
+- name: Add bat script to launch the cds
+  when: resolver_cds_server
+  ansible.windows.win_copy:
+    content: >
+      c:/Users/{{ ansible_user }}/Desktop/cds/wlp/bin/server.bat start cds
+    dest: /Users/{{ ansible_user }}/Desktop/start_cds.bat
+- name: Add bat script to stop the cds
+  when: resolver_cds_server
+  ansible.windows.win_copy:
+    content: >
+      c:/Users/{{ ansible_user }}/Desktop/cds/wlp/bin/server.bat stop cds
+    dest: /Users/{{ ansible_user }}/Desktop/stop_cds.bat
+
+- name: create contest directory on desktop (for the cds to read)
+  when: resolver_cds_server
+  ansible.windows.win_file:
+    path: /Users/{{ ansible_user }}/Desktop/contest
+    state: directory
+- name: Create cds config file for the cds server to point at the contest folder above
+  when: resolver_cds_server
+  ansible.windows.win_copy:
+    dest: /Users/{{ ansible_user }}/Desktop/cds/wlp/usr/servers/cds/config/cdsConfig.xml
+    content: |
+      <cds>
+        <contest path="c:/Users/{{ ansible_user }}/Desktop/contest" id="contest" recordReactions="false">
+        </contest>
+      </cds>
+

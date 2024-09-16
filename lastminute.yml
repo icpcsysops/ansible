@@ -70,7 +70,7 @@
     - role: coachview
 
 - name: Configure everything but contestants and ntpservers to use backup for dns
-  hosts: judges,others,!ntpservers
+  hosts: all,!contestants,!ntpservers
   tasks:
     - name: Configure dns client
       ansible.builtin.import_role:

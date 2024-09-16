@@ -443,6 +443,7 @@
       when:
         - root_password is defined
         - '"$6$" in root_password'
+      tags: do_root_passwd
 
     - name: Update root password (if root_password is cleartext)
       ansible.builtin.user:

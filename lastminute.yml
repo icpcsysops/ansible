@@ -113,6 +113,14 @@
 
   tasks:
     # more things to fix in icpc-pycharm
+    - name: Fix location in printers.conf
+      ansible.builtin.lineinfile:
+        state: absent
+        path: /etc/cups/printers.conf
+        regexp: ^Location.*
+      tags: fix_location
+      notify: Restart cups
+
     - name: Stat pycharm python_stubs
       ansible.builtin.stat:
         path: /etc/skel/.config/JetBrains/PyCharmCE2022.3/system/python_stubs

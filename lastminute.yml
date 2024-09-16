@@ -19,6 +19,12 @@
         regexp: ^LC_TIME
         line: LC_TIME="en_US.UTF-8"
       tags: fix_LC_TIME
+    - name: fix LC_PAPER
+      ansible.builtin.lineinfile:
+        path: /etc/default/locale
+        regexp: ^LC_PAPER
+        line: LC_PAPER="en_US.UTF-8"
+      tags: fix_LC_PAPER
     - name: Fix Root cert
       ansible.builtin.copy:
         src: /usr/share/ca-certificates/ICPC_WF_Root_CA.crt
@@ -120,6 +126,14 @@
         regexp: ^Location.*
       tags: fix_location
       notify: Restart cups
+
+    # TODO fix this in icpc2025
+    - name: Fix idea binary when launching from cli by making it a symlink to the same executable the desktop icon uses
+      ansible.builtin.file:
+        src: /usr/lib/idea/bin/idea.sh
+        dest: /usr/bin/idea
+        state: link
+        force: true
 
     # TODO more things to fix in icpc-pycharm
     - name: Stat pycharm python_stubs

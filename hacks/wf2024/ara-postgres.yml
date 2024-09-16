@@ -1,0 +1,40 @@
+---
+- name: Install postgres for ansible ara
+  hosts: backup
+  gather_facts: false
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  handlers:
+    - name: Restart ara-server
+      ansible.builtin.service:
+        name: ara-server
+        state: restarted
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        name: postgresql
+        state: present
+
+    - name: configure postgres
+      when: false
+      ansible.builtin.command: >
+        sudo -u postgres psql -c "
+          CREATE DATABASE ara;
+          CREATE USER ara WITH ENCRYPTED PASSWORD 'arapass';
+          GRANT ALL PRIVILEGES ON DATABASE ara TO ara;
+        "
+
+    - name: edit /etc/ara-server/settings.yaml to use postgres
+      ansible.builtin.replace:
+        path: /etc/ara-server/settings.yaml
+        regexp: '(.+){{ item.key }}:'
+        replace: '\1{{ item.key }}: {{ item.value }}'
+      notify: Restart ara-server
+      with_items:
+        - { key: 'DATABASE_ENGINE', value: 'django.db.backends.postgresql' }
+        - { key: 'DATABASE_NAME', value: 'ara' }
+        - { key: 'DATABASE_USER', value: 'ara' }
+        - { key: 'DATABASE_PASSWORD', value: 'arapass' }
+        - { key: 'DATABASE_HOST', value: 'localhost' }
+        - { key: 'DATABASE_PORT', value: '5432' }

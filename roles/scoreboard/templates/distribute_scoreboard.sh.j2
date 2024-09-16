@@ -7,8 +7,12 @@ while [ 1 ]; do
   curl -s "https://domjudge/public?static=1" > index.html
   echo -n . # dot 1 after getting index.html from domjudge
 
-  sed -i 's/id="teampicture"/id="teampicture" loading="lazy"/g' index.html
-  echo -n . # dot 2 after making teampictures lazy load
+  # this was fixed in domjudge
+#  sed -i 's/id="teampicture"/id="teampicture" loading="lazy"/g' index.html
+#  echo -n . # dot 2 after making teampictures lazy load
+
+  sed -i 's#/images/banners/.*\.png#header.svg#' index.html
+  echo -n . # dot 2 after fixing banner
 
   scp -q index.html scoreboard@$scorehost:
   echo -n . # dot 3 after upload scorboard

@@ -14,6 +14,9 @@
 -A drop-n-log -j LOG -m limit --limit 5/m --limit-burst 7 --log-level 4 --log-prefix "DENIED:"
 -A drop-n-log -j DROP
 
+# router os crap
+-A INPUT -p udp -m udp --dport 5678 -j REJECT
+
 # internal interface
 -A INPUT -i lo -j ACCEPT
 -A OUTPUT -o lo -j ACCEPT
@@ -91,11 +94,8 @@
 
 # script-server
 # blue
--A INPUT -p tcp --dport 5000 -s 10.3.3.0/24 -j ACCEPT
--A OUTPUT -p tcp --sport 5000 -d 10.3.3.0/24 -j ACCEPT
-# balloonmanager
--A INPUT -p tcp --dport 5000 -s 10.4.4.149 -j ACCEPT
--A OUTPUT -p tcp --sport 5000 -d 10.4.4.149 -j ACCEPT
+-A INPUT -p tcp --dport 5000 -s 10.0.0.0/8 -j ACCEPT
+-A OUTPUT -p tcp --sport 5000 -d 10.0.0.0/8 -j ACCEPT
 # judges
 -A INPUT -p tcp --dport 5000 -s 10.2.2.0/24 -j ACCEPT
 -A OUTPUT -p tcp --sport 5000 -d 10.2.2.0/24 -j ACCEPT
@@ -105,6 +105,8 @@
 # red network (for coachviews)
 -A INPUT -p tcp --dport 5000 -s 172.24.2.0/24 -j ACCEPT
 -A OUTPUT -p tcp --sport 5000 -d 172.24.2.0/24 -j ACCEPT
+# ignore people we do not want to provision
+-A INPUT -p tcp --dport 5000 -j DROP
 
 # ntp in
 -A OUTPUT -p tcp --sport 123 -j ACCEPT

@@ -77,6 +77,12 @@
     state: directory
     mode: '0755'
 
+- name: Create backups directory if it does not exist
+  ansible.builtin.file:
+    path: /backups
+    state: directory
+    mode: '0755'
+
 - name: Install and start backup_watchdog
   block:
     - name: Install backup_watchdog

@@ -4,6 +4,7 @@
     pkg:
       - curl
     state: present
+
 - name: Install the distribute scoreboard script
   ansible.builtin.template:
     src: distribute_scoreboard.sh.j2
@@ -11,3 +12,14 @@
     mode: "0755"
     group: root
     owner: root
+
+- name: Ensure the necessary hosts are present in /etc/hosts on scoreboard
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ baseip }}.{{ item.ip }}   {{ item.hostname }}" # noqa: no-tabs
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - {ip: 207, hostname: cds}
+    - {ip: 215, hostname: domjudge}

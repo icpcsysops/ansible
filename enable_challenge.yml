@@ -99,6 +99,8 @@
           -A OUTPUT -d 10.3.3.217/32 -p tcp -m multiport --dports 80,443,53 -j drop-n-log
           -A OUTPUT -d 10.3.3.216/32 -p tcp -m multiport --dports 80,443,53 -j drop-n-log
           -A OUTPUT -d 10.3.3.215/32 -p tcp -m multiport --dports 80,443,53 -j drop-n-log
+          -A OUTPUT -d 10.1.1.254/32 -j ACCEPT
+          -A OUTPUT -d 10.1.1.0/24 -j drop-n-log
           -A OUTPUT -p tcp -m multiport --dports 80,443,53 -j ACCEPT
           COMMIT
           # Completed on Mon Apr 15 18:58:28 2024

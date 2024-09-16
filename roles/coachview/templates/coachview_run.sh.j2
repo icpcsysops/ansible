@@ -17,4 +17,4 @@ gsettings set org.gnome.desktop.screensaver idle-activation-enabled false
 gsettings set org.gnome.desktop.session idle-delay 0
 # end additions for run
 
-/cv/coachView.sh {{ coachview_cds_url }} {{ coachview_user }} {{ coachview_pass }}
+/cv/coachView.sh {{ coachview_cds_url }} {{ coachview_user }} {{ coachview_pass }} {{ coachview_args | default("") }}

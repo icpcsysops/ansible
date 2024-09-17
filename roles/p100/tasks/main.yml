@@ -52,6 +52,7 @@
       delegate_to: localhost
       ansible.builtin.get_url:
         url: https://github.com/icpctools/icpctools/releases/download/v{{ pres_version }}/presentations-{{ pres_version }}.zip
+        headers: "{{ github_headers }}"
         dest: /tmp/presentations-{{ pres_version }}.zip
         mode: '0640'
       when: internet

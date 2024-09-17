@@ -4,3 +4,4 @@ presclient_user: presentation
 presclient_pass: repave-change-refold-spoof
 presclient_cds_url: https://172.29.1.207/api/contests/
 skip_chocolatey: false
+github_headers: {}

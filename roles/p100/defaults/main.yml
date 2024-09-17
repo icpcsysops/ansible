@@ -5,3 +5,4 @@ cds_port: 9443
 # this is slug after /api/contests/
 cds_endpoint: ""
 # need to set cds_p100_password
+github_headers: {}

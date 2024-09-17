@@ -1,7 +1,7 @@
 #!/bin/bash
 # Run this from the contest directory where there is a teams.json and an organizations directory
 
-mkdir -p printsrv/UniversityNames printsrv/Logos
+mkdir -p printsrv/UniversityNames printsrv/Logos printsrv/Pictures
 tempscript=$(mktemp)
 
 # write out university names
@@ -12,7 +12,10 @@ bash -ex $tempscript
 cat teams.json | jq -r '.[] | ("cp organizations/" + .organization_id +  "/logo.png printsrv/Logos/team" + .id + ".png")' > $tempscript
 bash -ex $tempscript
 
+cat teams.json | jq -r '.[] | ("cp teams/" + .id +  "/photo.jpg printsrv/Pictures/" + .id + ".jpg")' > $tempscript
+bash -x $tempscript
+
 # cleanup
 rm $tempscript
 
-tar czvf printsrv.tar.gz -C printsrv UniversityNames Logos
+tar czvf printsrv.tar.gz -C printsrv UniversityNames Logos Pictures

@@ -4,3 +4,4 @@ coachview_cds_url: https://10.3.3.207/api/contests/
 coachview_user: coachview
 coachview_pass: cds_coachview_password
 skip_chocolatey: false
+github_headers: {}

@@ -9,6 +9,7 @@
       delegate_to: 127.0.0.1
       ansible.builtin.uri:
         url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=3
+        headers: "{{ github_headers }}"
         method: GET
         return_content: true
         status_code: 200
@@ -52,6 +53,7 @@
       delegate_to: 127.0.0.1
       ansible.builtin.uri:
         url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=3
+        headers: "{{ github_headers }}"
         method: GET
         return_content: true
         status_code: 200

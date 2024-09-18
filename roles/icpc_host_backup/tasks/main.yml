@@ -112,6 +112,8 @@
     owner: root
     group: root
   loop:
+    - {name: do_startbackup.new}
+    - {name: sh.backupclient.new}
     - {name: par}
     - {name: sh.do_startbackup}
     - {name: sh.backupclient}

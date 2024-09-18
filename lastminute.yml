@@ -227,6 +227,17 @@
         group: root
         mode: "0700"
 
+    - name: Use policykit to disable power management for teams
+      ansible.builtin.copy:
+        dest: /etc/polkit-1/localauthority/50-local.d/disable-power-mgmt.pkla
+        content: |
+          [Disable power mgmt access]
+          Identity=unix-user:*
+          Action=org.freedesktop.login1.power-off*;org.freedesktop.login1.reboot*;org.freedesktop.login1.set-reboot*;org.freedesktop.login1.halt*;org.freedesktop.login1.suspend*
+          ResultAny=no
+          ResultInactive=no
+          ResultActive=no
+        mode: '0644'
     - name: Use policykit to disable mounting for teams
       ansible.builtin.copy:
         dest: /etc/polkit-1/localauthority/50-local.d/disable-udisks.pkla

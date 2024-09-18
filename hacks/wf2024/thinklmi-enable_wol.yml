@@ -1,0 +1,8 @@
+---
+- name: HACK ENABLE WAKE ON LAN!
+  gather_facts: false
+  hosts: floor
+
+  tasks:
+    - name: enable wake on lan
+      ansible.builtin.shell: echo Enable > /sys/class/firmware-attributes/thinklmi/attributes/WakeOnLAN/current_value

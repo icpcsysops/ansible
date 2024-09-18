@@ -161,13 +161,13 @@
 # go ahead and send destination unreachable message
 -A INPUT -p icmp --icmp-type 3 -j ACCEPT
 
+{{ extra_iptables_rules | default([]) | join("\n") }}
+
 {% if green_network_ifc is defined -%}
 # drop green network crap that we do not care about
 -A INPUT -i {{ green_network_ifc }} -m state --state ESTABLISHED,RELATED -j ACCEPT
 -A INPUT -i {{ green_network_ifc }} -j DROP
 {% endif -%}
-
-{{ extra_iptables_rules | default([]) | join("\n") }}
 
 # drop rest
 -A OUTPUT -j drop-n-log

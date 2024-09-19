@@ -64,6 +64,15 @@
     dest: /usr/local/bin/cups_exporter.py
     mode: "0755"
 
+- name: Increase nofile ulimits
+  ansible.builtin.copy:
+    content: |
+      root        hard nofile 4096
+      root        soft nofile 2048
+    dest: /etc/security/limits.d/printsrv.conf
+    owner: root
+    mode: '0644'
+
 - name: Setup cups_exporter as a systemd service
   ansible.builtin.copy:
     content: |

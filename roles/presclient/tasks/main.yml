@@ -29,6 +29,15 @@
         url: https://github.com/icpctools/icpctools/releases/download/v{{ presclient_version }}/presentations-{{ presclient_version }}.zip
         dest: /Users/{{ ansible_user }}/Desktop/presentations-{{ presclient_version }}.zip
 
+    - name: Stop the existing presentation client
+      ansible.windows.win_shell: stop-process -name "java" -force
+      failed_when: false # we don't care if this fails
+
+    - name: Delete existing folder
+      ansible.windows.win_file:
+        path: /Users/{{ ansible_user }}/Desktop/presclient
+        state: absent
+
     - name: Unzip presentation client
       community.windows.win_unzip:
         src: /Users/{{ ansible_user }}/Desktop/presentations-{{ presclient_version }}.zip

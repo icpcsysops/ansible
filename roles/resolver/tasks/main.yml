@@ -71,7 +71,7 @@
         url: https://github.com/icpctools/icpctools/releases/download/v{{ resolver_cds_version }}/wlp.CDS-{{ resolver_cds_version }}.zip
         dest: /Users/{{ ansible_user }}/Downloads/wlp-cds-{{ resolver_cds_version }}.zip
 
-    - name: stop the cds if possible (to prevent errors deleting the directory)
+    - name: Stop the cds if possible (to prevent errors deleting the directory)
       ansible.windows.win_shell: c:/Users/{{ ansible_user }}/Desktop/cds/wlp/bin/server.bat stop cds
       failed_when: false # we don't care if this fails
 
@@ -99,7 +99,7 @@
       c:/Users/{{ ansible_user }}/Desktop/cds/wlp/bin/server.bat stop cds
     dest: /Users/{{ ansible_user }}/Desktop/stop_cds.bat
 
-- name: create contest directory on desktop (for the cds to read)
+- name: Create contest directory on desktop (for the cds to read)
   when: resolver_cds_server
   ansible.windows.win_file:
     path: /Users/{{ ansible_user }}/Desktop/contest
@@ -113,4 +113,3 @@
         <contest path="c:/Users/{{ ansible_user }}/Desktop/contest" id="contest" recordReactions="false">
         </contest>
       </cds>
-

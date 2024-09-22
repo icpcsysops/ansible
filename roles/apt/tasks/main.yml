@@ -7,7 +7,6 @@
     group: root
     mode: '0644'
   loop:
-    - {ip: 208, hostname: scoreboard}
     - {ip: 209, hostname: packages}
     - {ip: 210, hostname: backup}
     - {ip: 211, hostname: printsrv}

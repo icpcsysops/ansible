@@ -2,6 +2,7 @@
 - name: Playbook to enable autologin
   hosts: contestants
   gather_facts: false
+  serial: 30
   tasks:
     - name: Enable autologin to user p
       ansible.builtin.copy:

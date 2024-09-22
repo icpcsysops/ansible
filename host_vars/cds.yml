@@ -4,27 +4,27 @@ ccs_url: &ccs_url https://domjudge/api/contests/wf48_systest2
 ccs_user: &ccs_user cds
 ccs_pass: &ccs_pass physicist-five-miracles
 cds_presentation_domains: &cds_presentation_domains
-      - - matveyAdmin
-        - matvey
-      - - presAdmin
-        - presentation
-        - balloon
-        - coachview
-        - deboer
-        - david
-        - nicky
-        - mattias
+  - - matveyAdmin
+    - matvey
+  - - presAdmin
+    - presentation
+    - balloon
+    - coachview
+    - deboer
+    - david
+    - nicky
+    - mattias
 
-#ccs_url: &ccs_url https://domjudge/api/contests/contest_id
-#ccs_user: &ccs_user cds
-#ccs_pass: &ccs_pass cds-secret-password
-#example_cds_presentation_domains: &example_cds_presentation_domains
-#- - operationsAdmin
-#- operations
-#- - presAdmin
-#- presentation
-#- balloon
-#- coachview
+# ccs_url: &ccs_url https://domjudge/api/contests/contest_id
+# ccs_user: &ccs_user cds
+# ccs_pass: &ccs_pass cds-secret-password
+# example_cds_presentation_domains: &example_cds_presentation_domains
+# - - operationsAdmin
+# - operations
+# - - presAdmin
+# - presentation
+# - balloon
+# - coachview
 
 cds_config:
   cds:

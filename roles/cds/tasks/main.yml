@@ -36,6 +36,7 @@
     dest: /srv/cds/.ssh/config
     owner: cds
     group: cds
+    mode: "0644"
 
 - name: Create CDS directories
   ansible.builtin.file:
@@ -83,6 +84,7 @@
       ansible.builtin.get_url:
         url: https://github.com/icpctools/icpctools/releases/download/v{{ cds_version }}/wlp.CDS-{{ cds_version }}.zip
         dest: "{{ inventory_dir }}/files/wlp.CDS-{{ cds_version }}.zip"
+        mode: "0644"
       when: wlp_cds_zip_present.failed
 
     - name: Check if we have CDS.zip
@@ -96,6 +98,7 @@
       ansible.builtin.get_url:
         url: https://github.com/icpctools/icpctools/releases/download/v{{ cds_version }}/CDS-{{ cds_version }}.zip
         dest: "{{ inventory_dir }}/files/CDS-{{ cds_version }}.zip"
+        mode: "0644"
       when: cds_zip_present.failed
 
 
@@ -117,6 +120,7 @@
   ansible.builtin.file:
     state: directory
     path: /srv/cdspackages/{{ cds_version }}
+    mode: "0755"
 - name: Download and unpack CDS war to /srv/cdspackages
   ansible.builtin.unarchive:
     src: files/CDS-{{ cds_version }}.zip
@@ -124,6 +128,7 @@
     creates: /srv/cdspackages/{{ cds_version }}/CDS-{{ cds_version_minor }}/CDS.war
     owner: cds
     group: cds
+    mode: "0644"
 
 - name: Make sure /srv/cds/CDS.war is a symlink to the correct cds version
   ansible.builtin.file:

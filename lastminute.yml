@@ -13,13 +13,13 @@
         mode: "0644"
       notify: Run update-ca-certificates
 
-    - name: fix LC_TIME
+    - name: Fix LC_TIME
       ansible.builtin.lineinfile:
         path: /etc/default/locale
         regexp: ^LC_TIME
         line: LC_TIME="en_US.UTF-8"
       tags: fix_LC_TIME
-    - name: fix LC_PAPER
+    - name: Fix LC_PAPER
       ansible.builtin.lineinfile:
         path: /etc/default/locale
         regexp: ^LC_PAPER
@@ -35,6 +35,9 @@
   handlers:
     - name: Run update-ca-certificates
       ansible.builtin.command: /usr/sbin/update-ca-certificates
+      register: my_output # <- Registers the command output.
+      changed_when: my_output.rc != 0 # <- Uses the return code to define when the task has changed.
+
 
 - name: Configure packages machines
   hosts: packages
@@ -141,7 +144,7 @@
         path: /etc/skel/.config/JetBrains/PyCharmCE2022.3/system/python_stubs
       register: python_stubs
 
-    - name: remove pycharm bits that do not exist
+    - name: Remove pycharm bits that do not exist
       tags: venv_pycharm
       ansible.builtin.file:
         state: absent
@@ -309,8 +312,8 @@
       changed_when: false
     - name: Restart cups
       ansible.builtin.service:
-         name: cups
-         state: restarted
+        name: cups
+        state: restarted
 
 - name: Configure ldap server
   hosts: ldapserver
@@ -564,17 +567,20 @@
   roles:
     - role: ccstools
 
-- name: wrap up
+- name: Wrap up
   hosts: all,!contestants
   tasks:
-    - name: grab some build content
-      ansible.builtin.shell: 'echo "Provisioned at $(date +"%Y-%m-%d %H:%M:%S")\nRevision: $(git rev-list --full-history --all --abbrev-commit | head -1)\n"'
+    - name: Grab some build content
+      ansible.builtin.shell: 'set -o pipefail && echo "Provisioned at $(date +"%Y-%m-%d %H:%M:%S")\nRevision: $(git rev-list --full-history --all --abbrev-commit | head -1)\n"'
       become: false
       register: git_revision
       delegate_to: 127.0.0.1
+      changed_when: git_revision.rc != 0 # <- Uses the return code to define when the task has changed.
+
     - name: Create a file on the desktop indicating ansible has finished
       ansible.builtin.copy:
         content: "{{ git_revision.stdout }}\n"
         dest: /home/icpc/Desktop/Ansible_Done.txt
         owner: icpc
         group: icpc
+        mode: "0644"

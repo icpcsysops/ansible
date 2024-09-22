@@ -16,7 +16,7 @@
         name: postgresql
         state: present
 
-    - name: configure postgres
+    - name: Configure postgres
       when: false
       ansible.builtin.command: >
         sudo -u postgres psql -c "
@@ -24,8 +24,11 @@
           CREATE USER ara WITH ENCRYPTED PASSWORD 'arapass';
           GRANT ALL PRIVILEGES ON DATABASE ara TO ara;
         "
+      register: my_output # <- Registers the command output.
+      changed_when: my_output.rc != 0 # <- Uses the return code to define when the task has changed.
 
-    - name: edit /etc/ara-server/settings.yaml to use postgres
+
+    - name: Edit /etc/ara-server/settings.yaml to use postgres
       ansible.builtin.replace:
         path: /etc/ara-server/settings.yaml
         regexp: '(.+){{ item.key }}:'

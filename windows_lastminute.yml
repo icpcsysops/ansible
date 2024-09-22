@@ -38,7 +38,7 @@
         tasks_from: windows.yml
       when: false
 
-- name: windows resolver machines
+- name: Windows resolver machines
   hosts: resolvers
   gather_facts: false
   roles:

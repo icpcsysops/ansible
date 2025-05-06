@@ -87,6 +87,8 @@
 # -A INPUT -m state --state ESTABLISHED,RELATED -j accept-in-log
 # -A OUTPUT -m state --state NEW,ESTABLISHED,RELATED -j accept-out-log
 
+{{ extra_iptables_rules | default([]) | join("\n") }}
+
 # drop rest
 -A OUTPUT -j drop-n-log
 -A INPUT -j drop-n-log

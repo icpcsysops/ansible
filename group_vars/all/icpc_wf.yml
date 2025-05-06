@@ -1,10 +1,11 @@
 ---
 baseip: 10.3.3
 ntp_hosts:
-  - "{{ baseip }}.208"
   - "{{ baseip }}.209"
   - "{{ baseip }}.210"
+  - "{{ baseip }}.211"
 fallback_ntp_hosts:
-  - "{{ baseip }}.208"
   - "{{ baseip }}.209"
   - "{{ baseip }}.210"
+  - "{{ baseip }}.211"
+firefox_default: https://domjudge

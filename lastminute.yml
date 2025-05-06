@@ -5,6 +5,39 @@
   roles:
     - role: apt
       tags: apt
+  tasks:
+    - name: Fix permissioning of intermediate cert
+      tags: fix_cert # TODO this should be fixed in icpc2025
+      ansible.builtin.file:
+        path: /usr/share/ca-certificates/ICPC_WF_Intermediate_CA.crt
+        mode: "0644"
+      notify: Run update-ca-certificates
+
+    - name: Fix LC_TIME
+      ansible.builtin.lineinfile:
+        path: /etc/default/locale
+        regexp: ^LC_TIME
+        line: LC_TIME="en_US.UTF-8"
+      tags: fix_LC_TIME
+    - name: Fix LC_PAPER
+      ansible.builtin.lineinfile:
+        path: /etc/default/locale
+        regexp: ^LC_PAPER
+        line: LC_PAPER="en_US.UTF-8"
+      tags: fix_LC_PAPER
+    - name: Fix Root cert
+      ansible.builtin.copy:
+        src: /usr/share/ca-certificates/ICPC_WF_Root_CA.crt
+        dest: /usr/share/ca-certificates/ICPC_WF_Root_CA.crt
+        mode: "0644"
+      tags: fix_root # TODO this should fixed in icpc2025
+      notify: Run update-ca-certificates
+  handlers:
+    - name: Run update-ca-certificates
+      ansible.builtin.command: /usr/sbin/update-ca-certificates
+      register: my_output # <- Registers the command output.
+      changed_when: my_output.rc != 0 # <- Uses the return code to define when the task has changed.
+
 
 - name: Configure packages machines
   hosts: packages
@@ -46,7 +79,7 @@
     - role: coachview
 
 - name: Configure everything but contestants and ntpservers to use backup for dns
-  hosts: judges,others,!ntpservers
+  hosts: all,!contestants,!ntpservers
   tasks:
     - name: Configure dns client
       ansible.builtin.import_role:
@@ -74,6 +107,7 @@
     - role: reverseproxy
       when: enable_reverseproxy is defined and enable_reverseproxy
     - role: p100
+      tags: p100
     - role: ccstools
       tags: ccstools
       when: ccs  == "domjudge"
@@ -88,10 +122,35 @@
 
   tasks:
     # more things to fix in icpc-pycharm
+    - name: Fix location in printers.conf
+      ansible.builtin.lineinfile:
+        state: absent
+        path: /etc/cups/printers.conf
+        regexp: ^Location.*
+      tags: fix_location
+      notify: Restart cups
+
+    # TODO fix this in icpc2025
+    - name: Fix idea binary when launching from cli by making it a symlink to the same executable the desktop icon uses
+      ansible.builtin.file:
+        src: /usr/lib/idea/bin/idea.sh
+        dest: /usr/bin/idea
+        state: link
+        force: true
+
+    # TODO more things to fix in icpc-pycharm
     - name: Stat pycharm python_stubs
       ansible.builtin.stat:
         path: /etc/skel/.config/JetBrains/PyCharmCE2022.3/system/python_stubs
       register: python_stubs
+
+    - name: Remove pycharm bits that do not exist
+      tags: venv_pycharm
+      ansible.builtin.file:
+        state: absent
+        path: /etc/skel/workspace/PycharmProject/venv/lib/{{ item }}
+      with_items:
+        - crda
 
     - name: Extract python_stubs if missing
       ansible.builtin.unarchive:
@@ -99,62 +158,11 @@
         dest: /etc/skel/.config/JetBrains/PyCharmCE2022.3/system
       when: not python_stubs.stat.exists
 
-    # fixed in package icpc-pycharm
-    - name: Fix pycharm .config/JetBrains/PyCharmCE2022.3 with pypy3
-      ansible.builtin.copy:
-        src: files/pycharm/{{ item }}
-        dest: /etc/skel/.config/JetBrains/PyCharmCE2022.3/config/options/{{ item }}
-        mode: '0644'
-        owner: root
-        group: root
-      loop:
-        - jdk.table.xml
-        - other.xml
-
-    # fixed in package icpc-pycharm
-    - name: Fix pycharm workspace with pypy3
-      ansible.builtin.copy:
-        src: files/pycharm/PycharmProject.iml
-        dest: /etc/skel/workspace/PycharmProject/.idea/PycharmProject.iml
-        mode: '0644'
-        owner: root
-        group: root
-
-    # TODO fixed in package icpc-pycharm
-    - name: Remove broken links from venv
+    - name: Remove invalid runconfiguration from pycharm workspace
+      tags: pycharm_fix
       ansible.builtin.file:
         state: absent
-        path: /etc/skel/workspace/PycharmProject/venv/lib/{{ item }}
-      loop:
-        - libdchtvm.so.9
-        - libdchapi64.so
-        - libdchapi.so.5
-        - libdchapi.so.9
-        - libdchbas64.so
-        - libdchbas.so.5
-        - libdchbas.so.9
-        - libdchcfl64.so
-        - libdchcfl.so.5
-        - libdchcfl.so.9
-        - libdchesm64.so
-        - libdchesm.so.5
-        - libdchesm.so.9
-        - libdchipm64.so
-        - libdchipm.so.5
-        - libdchipm.so.9
-        - libdchtvm64.so
-        - libdchtvm.so.5
-        - libdchtvm.so.5
-        - modules-load.d
-    # TODO fixed in this to icpc2024
-    - name: Disable idle-dim
-      ansible.builtin.copy:
-        dest: /usr/share/glib-2.0/schemas/21_icpc_power_schema.gschema.override
-        content: |
-          [org.gnome.settings-daemon.plugins.power]
-          idle-dim=false
-        mode: '0644'
-      notify: Glib-compile-schemas
+        path: /etc/skel/workspace/PycharmProject/.idea/runConfigurations/pypy3.xml
 
     - name: Cleanup domjudge.desktop,  renaming to ccs.desktop
       ansible.builtin.file:
@@ -165,16 +173,6 @@
       ansible.builtin.apt:
         pkg: stress-ng
         state: present
-
-    # TODO fixed in icpc2024
-    - name: Remove ampersand from iptablesload
-      ansible.builtin.replace:
-        path: /etc/network/if-pre-up.d/iptablesload
-        regexp: " &"
-        replace: ""
-        owner: root
-        group: root
-        mode: '0755'
 
     - name: Switch from files to compat in nsswitch
       tags: nsswitch
@@ -217,14 +215,12 @@
             - "{{ contest }}.teams.tar.gz"
           skip: true
 
-    # TODO icpc2024 name it icpc
-    - name: Remove icpc* user
+    - name: Remove icpc user
       ansible.builtin.user:
         name: "{{ item }}"
         state: absent
       loop:
         - "icpc"
-        - "icpc2023"
       when: root_password is defined
 
     - name: Workaround nautilus auto-mounting
@@ -234,6 +230,17 @@
         group: root
         mode: "0700"
 
+    - name: Use policykit to disable power management for teams
+      ansible.builtin.copy:
+        dest: /etc/polkit-1/localauthority/50-local.d/disable-power-mgmt.pkla
+        content: |
+          [Disable power mgmt access]
+          Identity=unix-user:*
+          Action=org.freedesktop.login1.power-off*;org.freedesktop.login1.reboot*;org.freedesktop.login1.set-reboot*;org.freedesktop.login1.halt*;org.freedesktop.login1.suspend*
+          ResultAny=no
+          ResultInactive=no
+          ResultActive=no
+        mode: '0644'
     - name: Use policykit to disable mounting for teams
       ansible.builtin.copy:
         dest: /etc/polkit-1/localauthority/50-local.d/disable-udisks.pkla
@@ -255,6 +262,22 @@
         - "gvfsd-burn"
         - "gvfsd-computer"
         - "gvfsd-localtest"
+
+    - name: Pre-generate the kernel flags for ansible usage
+      ansible.builtin.set_fact:
+        procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1 i915.force_probe=4690"
+
+    - name: Ensure /etc/default/grub has proper GRUB_CMDLINE_LINUX_DEFAULT
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=.*$'
+        replace: "GRUB_CMDLINE_LINUX_DEFAULT=\"{{ procline }}\""
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - Update grub
+        - Reboot
 
     - name: Place 21_icpc-disable-automount-schema.gschema.override
       ansible.builtin.copy:
@@ -284,6 +307,13 @@
       changed_when: false
     - name: Reboot
       ansible.builtin.reboot:
+    - name: Update grub
+      ansible.builtin.command: /usr/sbin/update-grub
+      changed_when: false
+    - name: Restart cups
+      ansible.builtin.service:
+        name: cups
+        state: restarted
 
 - name: Configure ldap server
   hosts: ldapserver
@@ -369,21 +399,6 @@
         group: root
       when: technotes.stat.exists
 
-    - name: Pre-generate the kernel flags for ansible usage
-      ansible.builtin.set_fact:
-        procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1 i915.force_probe=4690"
-    - name: Ensure /etc/default/grub has proper GRUB_CMDLINE_LINUX_DEFAULT
-      ansible.builtin.replace:
-        path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=.*$'
-        replace: "GRUB_CMDLINE_LINUX_DEFAULT=\"{{ procline }}\""
-        owner: root
-        group: root
-        mode: '0644'
-      notify:
-        - Update grub
-        - Reboot
-
     - name: Ensure /etc/default/grub has proper GRUB_TIMEOUT
       ansible.builtin.replace:
         path: /etc/default/grub
@@ -403,6 +418,7 @@
       when:
         - root_password is defined
         - '"$6$" in root_password'
+      tags: do_root_passwd
 
     - name: Update root password (if root_password is cleartext)
       ansible.builtin.user:
@@ -508,8 +524,63 @@
     - role: printserver
       tags: printserver
 
+- name: Set isolcpus to 3 for pc2-ajs
+  hosts: pc2-aj*,pc2-ccsadmin*
+  gather_facts: false
+  tasks:
+    - name: Pre-generate the kernel flags for ansible usage
+      ansible.builtin.set_fact:
+        procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1 i915.force_probe=4690 isolcpus=3"
+    - name: Ensure /etc/default/grub has proper GRUB_CMDLINE_LINUX_DEFAULT
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=.*$'
+        replace: "GRUB_CMDLINE_LINUX_DEFAULT=\"{{ procline }}\""
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - Update grub
+        - Reboot
+
+    - name: Ensure /etc/default/grub has proper GRUB_TIMEOUT
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: "GRUB_TIMEOUT=.*"
+        replace: "GRUB_TIMEOUT=3"
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - Update grub
+        - Reboot
+
+  handlers:
+    - name: Update grub
+      ansible.builtin.command: /usr/sbin/update-grub
+      changed_when: false
+    - name: Reboot
+      ansible.builtin.reboot:
 
 - name: Configure analysts
   hosts: analysts
   roles:
     - role: ccstools
+
+- name: Wrap up
+  hosts: all,!contestants
+  tasks:
+    - name: Grab some build content
+      ansible.builtin.shell: 'set -o pipefail && echo "Provisioned at $(date +"%Y-%m-%d %H:%M:%S")\nRevision: $(git rev-list --full-history --all --abbrev-commit | head -1)\n"'
+      become: false
+      register: git_revision
+      delegate_to: 127.0.0.1
+      changed_when: git_revision.rc != 0 # <- Uses the return code to define when the task has changed.
+
+    - name: Create a file on the desktop indicating ansible has finished
+      ansible.builtin.copy:
+        content: "{{ git_revision.stdout }}\n"
+        dest: /home/icpc/Desktop/Ansible_Done.txt
+        owner: icpc
+        group: icpc
+        mode: "0644"

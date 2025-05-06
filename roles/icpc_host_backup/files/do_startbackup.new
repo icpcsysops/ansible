@@ -1,0 +1,104 @@
+#!/bin/python3
+
+import argparse
+from datetime import datetime
+import os
+import sys
+import subprocess
+import time
+import threading
+
+
+def run_backupclient(teamname, contest_id):
+    process = subprocess.Popen(
+        [
+            "/root/contest/backup/scripts/sh.backupclient.new",
+            teamname,
+            f"{bdir}/team_rsyncs/{contest_id}",
+        ]
+    )
+    process.wait()
+
+
+def do_team_contestid_loop(args):
+    threads = []
+    for contest_id in args.contest_ids:
+        for teamname in teams:
+            thread = threading.Thread(
+                target=run_backupclient, args=(teamname, contest_id)
+            )
+            threads.append(thread)
+            thread.start()
+
+    for t in threads:
+        t.join()
+
+    for contest_id in args.contest_ids:
+        os.chdir(f"{backup_dir}/{contest_id}")
+        process = subprocess.Popen(
+            [
+                "bash",
+                "-c",
+                f"borg create --exclude '*/backup.*.zip' --exclude 'backups.tar' {borg_repo}/{contest_id}"
+                + "::team-{now} *",
+            ]
+        )
+        process.wait()
+
+        process = subprocess.Popen(
+            [
+                "/usr/bin/rsync",
+                "-a",
+                "--exclude",
+                "*/backup",
+                ".",
+                f"cds@cds:/srv/cds/contests/{contest_id}/teams/",
+            ]
+        )
+        process.wait()
+
+
+bdir = "/backups"
+backup_dir = f"{bdir}/team_rsyncs"
+borg_repo = f"{bdir}/borg_repo"
+if not os.path.isdir(backup_dir):
+    print(f"Error: {backup_dir} does not exist")
+    sys.exit(1)
+if not os.path.isfile(f"{bdir}/list.team"):
+    print(f"Error: {bdir}/list.team does not exist")
+    sys.exit(1)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog="do_startbackup",
+        description="Runs sh.backupclient per team per contest_id",
+    )
+    parser.add_argument(
+        "contest_ids",
+        metavar="contest_id",
+        type=str,
+        nargs="+",
+        help="what contest_id to store the backups in",
+    )
+    args = parser.parse_args()
+    with open(f"{bdir}/list.team", "rt") as fh:
+        teams = [x for x in fh.read().splitlines() if x.startswith("team")]
+
+    for contest_id in args.contest_ids:
+        if not os.path.isdir(f"{backup_dir}/{contest_id}"):
+            os.mkdir(f"{backup_dir}/{contest_id}")
+        if not os.path.isdir(f"{borg_repo}/{contest_id}"):
+            process = subprocess.Popen(
+                ["borg", "init", "-e", "none", f"{borg_repo}/{contest_id}"]
+            )
+            process.wait()
+
+    while True:
+        start_time = time.time()
+        print(f"Staring backup loop {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        do_team_contestid_loop(args)
+        if os.path.isfile(f"{bdir}/stop"):
+            print(f"Found {bdir}/stop, exiting")
+            sys.exit(0)
+        elapsed_time = time.time() - start_time
+        time.sleep(max(min(60, 60 - elapsed_time), 0))

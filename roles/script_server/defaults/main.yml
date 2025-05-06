@@ -12,8 +12,7 @@ script_server_ignored_groups:
   - 'all'
   - 'ungrouped'
   - 'contestants'
-  - 'contestants_wf46'
-  - 'contestants_wf47'
+# - 'floor' # contestants are actually under floor, but we want to let access for imaging
 
 
 script_server_commands:

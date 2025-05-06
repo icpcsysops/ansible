@@ -38,6 +38,12 @@
         tasks_from: windows.yml
       when: false
 
+- name: Windows resolver machines
+  hosts: resolvers
+  gather_facts: false
+  roles:
+    - role: resolver
+
 - name: Balloon printer hosts
   hosts: win_balloonprinters
   gather_facts: true

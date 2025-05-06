@@ -1,0 +1,332 @@
+#!/usr/bin/python3
+
+import argparse
+import os
+import sys
+import platform
+import re
+
+if platform.system() != "Darwin":
+    import dbus
+
+
+def find_interfaces_dir(directory=""):
+    interfaces_dir = ""
+    if os.path.isfile(f"{directory}/etc/network/interfaces"):
+        with open(f"{directory}/etc/network/interfaces", "rt") as fh:
+            for line in fh.readlines():
+                if line[0:6] == "source":
+                    interfaces_dir = line[8:]
+                    break
+    return interfaces_dir
+
+
+def rewrite_timesyncd_conf(ntp_hosts=[], directory=""):
+    if os.path.isfile(f"{directory}/etc/systemd/timesyncd.conf"):
+        with open(f"{directory}/etc/systemd/timesyncd.conf", "rt") as timesyncd:
+            timesyncd_config = timesyncd.readlines()
+        with open(f"{directory}/etc/systemd/timesyncd.conf", "wt") as timesyncd:
+            for line in timesyncd_config:
+                timesyncd.write(
+                    re.sub(r"^#?NTP=.*", "NTP=" + " ".join(ntp_hosts), line)
+                )
+    return True
+
+
+def do_hosts_and_hostname(hostname="dhcp-host", directory=""):
+    with open(f"{directory}/etc/hostname", "wt") as fh:
+        print(hostname, file=fh)
+
+    with open(f"{directory}/etc/hosts", "rt") as sources:
+        lines = sources.readlines()
+    with open(f"{directory}/etc/hosts", "wt") as sources:
+        for line in lines:
+            sources.write(re.sub(r"127.0.1.1.*", f"127.0.1.1\t{hostname}", line))
+    return True
+
+
+def do_dhcp(directory=""):
+    do_hosts_and_hostname(directory=directory)
+    interfaces_dir = find_interfaces_dir(directory)
+    if args.d:
+        print(f"do_dhcp({directory}) found interfaces_dir={interfaces_dir}")
+    if interfaces_dir == "":
+        with open(f"{directory}/etc/network/interfaces", "wt") as fh:
+            print(
+                f"""#auto lo
+iface lo inet loopback
+
+auto {ifc}
+iface {ifc} inet dhcp
+""",
+                file=fh,
+            )
+    else:
+        with open(f"{directory}/etc/network/interfaces.d/{ifc}", "wt") as fh:
+            print(
+                f"""auto {ifc}
+iface {ifc} inet dhcp
+""",
+                file=fh,
+            )
+
+    rewrite_timesyncd_conf(ntp_hosts=["8.8.8.8", "8.8.4.4"], directory=directory)
+    print(f"Customized for dhcp")
+    sys.exit(0)
+
+
+def check_positive(value):
+    ivalue = int(value)
+    if ivalue <= 0:
+        raise argparse.ArgumentTypeError(f"Error: {value} is an invalid positive int value")
+        
+    return ivalue
+
+
+parser = argparse.ArgumentParser(
+    description="Configure this host as specific hostname/ip."
+)
+parser.add_argument("-d", action="store_true", help="prints useful debugging")
+parser.add_argument(
+    "--chroot", action="store_true", help="if used, will not do sytem bus things"
+)
+parser.add_argument("number", type=check_positive, help="What number of this host type are we")
+parser.add_argument(
+    "type",
+    help="The host type",
+    type=str,
+    default="team",
+    choices=[
+        "team",
+        "judge",
+        "aj",
+        "daj",
+        "pc2aj",
+        "ccs",
+        "dccs",
+        "pc2ccs",
+        "domjudge",
+        "pc2server",
+        "cdsadmin",
+        "gccs",
+        "gjudge",
+        "analyst",
+        "coachview",
+        "cds",
+        "printsrv",
+        "backup",
+        "packages",
+        "scoreboard",
+        "dhcp"
+    ],
+)
+
+args = parser.parse_args()
+if args.d:
+    print("args =", vars(args))
+
+ifc = ""
+if platform.system() != "Darwin":
+    ifcs = list(filter(lambda x: x.startswith("en"), os.listdir("/sys/class/net/")))
+else:
+    print("Warning: faking interfaces on Mac")
+    ifcs = ["enp0s31f6"]
+if ifcs and len(ifcs) > 0:
+    ifc = ifcs[0]
+if ifc == "":
+    print("Error: could not find first ethernet interface")
+    sys.exit(1)
+
+directory = ""
+if "test" in os.environ:
+    directory = f"{os.environ['test']}"
+
+if args.d:
+    print(f"Found directory of {directory}")
+
+startip = 1
+netmask = "255.255.255.0"
+usenumber = True
+gateway = "10.3.3.254"
+network = "10.3.3"
+baseip = "10.3.3"
+maxcount = 1
+prefix = "UNKNOWN"
+match args.type:
+    case "team":
+        network = f"10.1.1"
+        gateway = f"{network}.254"
+        prefix = f"team"
+        maxcount = 250
+    case "judge":
+        network = "10.2.2"
+        gateway = f"{network}.254"
+        prefix = "judge"
+        maxcount = 20
+    case "aj":
+        startip = 32
+        network = "10.2.2"
+        prefix = "autojudge"
+        maxcount = 32
+    case "pc2aj":
+        startip = 128
+        network = "10.2.2"
+        gateway = f"{network}.254"
+        prefix = "pc2-aj"
+        maxcount = 32
+    case "daj":
+        startip = 192
+        network = "10.2.2"
+        gateway = f"{network}.254"
+        prefix = "domjudge-judgehost"
+        maxcount = 32
+    case "dccs":
+        startip = 224
+        prefix = "domjudge-ccsadmin"
+        maxcount = 8
+    case "ccs":
+        startip = 232
+        prefix = "ccsadmin"
+        maxcount = 8
+    case "pc2ccs":
+        startip = 240
+        prefix = "pc2-ccsadmin"
+        maxcount = 8
+    case "cds":
+        startip = 207
+        prefix = f"cds"
+        maxcount = 1
+        usenumber = False
+    case "domjudge":
+        startip = 216
+        prefix = f"domjudge-"
+        maxcount = 2
+    case "pc2server":
+        if args.number == 1:
+            startip = 214
+            prefix = f"pc2"
+        if args.number == 2:
+            startip = 222
+            prefix = f"pc2backup"
+        maxcount = 2
+        usenumber = False
+    case "printsrv":
+        startip = 211
+        maxcount = 1
+        prefix = f"printsrv"
+        usenumber = False
+    case "packages":
+        startip = 209
+        maxcount = 1
+        prefix = f"packages"
+        usenumber = False
+    case "backup":
+        startip = 210
+        prefix = f"backup"
+        maxcount = 1
+        usenumber = False
+    case "scoreboard":
+        startip = 208
+        prefix = f"scoreboard"
+        maxcount = 1
+        usenumber = False
+    case "cdsadmin":
+        startip = 90
+        maxcount = 4
+        prefix = f"cdsadmin"
+    case "gccs":
+        startip = 216
+        maxcount = 3
+        prefix = f"green-ccsadmin"
+        network = "172.29.0"
+        gateway = "172.29.0.1"
+        netmask = "255.255.252.0"
+    case "gjudge":
+        startip = 221
+        maxcount = 3
+        prefix = f"green-judgehost"
+        network = "172.29.0"
+        gateway = "172.29.0.1"
+        netmask = "255.255.252.0"
+    case "analyst":
+        startip = 160
+        maxcount = 32
+        prefix = f"analyst"
+        network = "172.29.0"
+        gateway = "172.29.0.1"
+        netmask = "255.255.252.0"
+    case "coachview":
+        startip = 80
+        maxcount = 8
+        prefix = f"coachview"
+        network = "172.24.0"
+        netmask = "255.255.252.0"
+    case "dhcp":
+        do_dhcp(directory=directory)
+    case _:
+        print("System error in c, unhandled type")
+        sys.exit(1)
+
+
+if args.number > maxcount:
+    print(f"Error: expected at most {maxcount} of {args.type}")
+    sys.exit(1)
+ip = startip + args.number - 1
+if usenumber:
+    hostname = f"{prefix}{args.number}"
+else:
+    hostname = f"{prefix}"
+if ip > 253:
+    print(
+        f"Error: {ip} is too high(> 253) given number({args.number}) and startip({startip})\n"
+    )
+    sys.exit(1)
+
+
+if args.d:
+    print(
+        f"prefix={prefix}, nework={network}, startip={startip}, number={args.number}, gateway={gateway}, netmask={netmask}, ip={network}.{ip}, hostname={hostname}, ifc={ifc}"
+    )
+
+
+do_hosts_and_hostname(hostname=hostname, directory=directory)
+
+interfaces_dir = find_interfaces_dir(directory)
+if interfaces_dir == "":
+    with open(f"{directory}/etc/network/interfaces", "wt") as fh:
+        print(
+            f"""#auto lo
+iface lo inet loopback
+
+auto {ifc}
+iface {ifc} inet static
+ address {network}.{ip}
+ netmask {netmask}
+ gateway {gateway}
+EOM
+      """,
+            file=fh,
+        )
+else:
+    with open(f"{directory}/etc/network/interfaces.d/{ifc}", "wt") as fh:
+        print(
+            f"""auto {ifc}
+iface {ifc} inet static
+ address {network}.{ip}
+ netmask {netmask}
+ gateway {gateway}
+""",
+            file=fh,
+        )
+rewrite_timesyncd_conf(
+    ntp_hosts=[f"{baseip}.208", f"{baseip}.209", f"{baseip}.210"], directory=directory
+)
+if not args.chroot:
+    sysbus = dbus.SystemBus()
+    systemd1 = sysbus.get_object(
+        "org.freedesktop.systemd1", "/org/freedesktop/systemd1"
+    )
+    manager = dbus.Interface(systemd1, "org.freedesktop.systemd1.Manager")
+    job = manager.RestartUnit("systemd-timesyncd.service", "fail")
+print(f"Customized for hostname={hostname} ip={network}.{ip}")
+sys.exit(0)

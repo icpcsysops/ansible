@@ -37,14 +37,14 @@
   block:
     - name: Install packages.pem
       ansible.builtin.copy:
-        src: /root/ca/intermediate/certs/packages.cert.pem
+        src: /root/ca/intermediate/certs/packages{{ keyprefix || default("") }}.cert.pem
         dest: /etc/ssl/certs/packages.pem
         mode: '0644'
       notify: Reload nginx
 
     - name: Install packages.key
       ansible.builtin.copy:
-        src: /root/ca/intermediate/private/packages.key.pem
+        src: /root/ca/intermediate/private/packages{{ keyprefix || default("") }}.key.pem
         dest: /etc/ssl/private/packages.key
         group: ssl-cert
         mode: '0640'

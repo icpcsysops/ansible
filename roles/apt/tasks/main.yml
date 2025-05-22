@@ -11,11 +11,11 @@
     - {ip: 209, hostname: packages}
     - {ip: 210, hostname: backup}
 
-- name: Replace sysopspackages.icpc.global with packages in sources.list.d
+- name: Replace /sysopspackages.icpc.global with /packages in sources.list.d
   ansible.builtin.replace:
     path: /etc/apt/sources.list.d/{{ item }}
-    regexp: "sysopspackages.icpc.global"
-    replace: "packages"
+    regexp: "/sysopspackages.icpc.global"
+    replace: "/packages"
     owner: root
     group: root
     mode: '0644'

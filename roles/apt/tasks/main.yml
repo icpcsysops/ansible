@@ -10,21 +10,39 @@
     - {ip: 208, hostname: printsrv}
     - {ip: 209, hostname: packages}
     - {ip: 210, hostname: backup}
-- name: Replace sysopspackages.icpc.global with packages
+
+- name: Replace sysopspackages.icpc.global with packages in sources.list.d
   ansible.builtin.replace:
-    path: /etc/apt/{{ item }}
+    path: /etc/apt/sources.list.d/{{ item }}
     regexp: "sysopspackages.icpc.global"
     replace: "packages"
     owner: root
     group: root
     mode: '0644'
   loop:
-    - "sources.list"
-    - "sources.list.d/mono.list"
-    - "sources.list.d/vscode.list"
-    - "sources.list.d/pypy-ubuntu-ppa-jammy.list"
-    - "sources.list.d/mozillateam-ubuntu-ppa-jammy.list"
+    - "firefox.sources"
+    - "sysopspackagesicpcglobal.sources"
+    - "vscode.sources"
+    - "jetbrains.sources"
+    - "ubuntu.sources"
   when: not disable_sources_list_changes
+
+- name: Replace /packages with /sysopspackages.icpc.global in sources.list.d
+  ansible.builtin.replace:
+    path: /etc/apt/sources.list.d/{{ item }}
+    regexp: "/packages"
+    replace: "/sysopspackages.icpc.global"
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - "firefox.sources"
+    - "sysopspackagesicpcglobal.sources"
+    - "vscode.sources"
+    - "jetbrains.sources"
+    - "ubuntu.sources"
+  when: disable_sources_list_changes
+
 - name: Update all packages to their latest version
   ansible.builtin.apt:
     name: "*"

@@ -7,10 +7,9 @@
     group: root
     mode: '0644'
   loop:
-    - {ip: 208, hostname: scoreboard}
+    - {ip: 208, hostname: printsrv}
     - {ip: 209, hostname: packages}
     - {ip: 210, hostname: backup}
-    - {ip: 211, hostname: printsrv}
 - name: Replace sysopspackages.icpc.global with packages
   ansible.builtin.replace:
     path: /etc/apt/{{ item }}

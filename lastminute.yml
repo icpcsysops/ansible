@@ -1,4 +1,10 @@
 ---
+- name: Configure packages machines
+  hosts: packages
+  roles:
+    - role: icpc_host_packages
+      tags: icpc_host_packages
+
 # this needs to be first as ldap requires it
 - name: Pre-configure apt
   hosts: all

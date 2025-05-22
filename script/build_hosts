@@ -37,15 +37,15 @@ if args.wf:
     local_pc2_server = True
     local_domjudge_server = True
 else:
-    name = "nac2024"
-    detail = "2024Florida"
+    name = "nac2025"
+    detail = "2025Florida"
     timezone = "America/New_York"
-    max_team = 53
-    max_human_judge = 4
-    max_pc2_autojudge = 5
+    max_team = 55
+    max_human_judge = 6
+    max_pc2_autojudge = 6
     max_kattis_autojudge = 0
-    max_pc2_ccsadmin = 4
-    max_domjudge_autojudge = 5
+    max_pc2_ccsadmin = 6
+    max_domjudge_autojudge = 6
     max_domjudge_ccsadmin = 1
     max_kattis_ccsadmin = 0
     papersize = "letter"

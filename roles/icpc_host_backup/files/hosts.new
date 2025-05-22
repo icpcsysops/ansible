@@ -339,10 +339,10 @@
 10.3.3.206    media
 10.3.3.207    cds cds-blue
 # 10.3.3.208/28 for servers
-10.3.3.208    scoreboard
+10.3.3.208    scoreboard printsrv
 10.3.3.209    packages
 10.3.3.210    backup
-10.3.3.211    printsrv
+# 10.3.3.211    printsrv
 10.3.3.212    kattis kattismaster kattis-test kattis-dress kattis-final
 10.3.3.213    kattisbackup ccsbackup
 10.3.3.214    pc2

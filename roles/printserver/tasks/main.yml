@@ -26,6 +26,13 @@
       - imagemagick
       - pdftk
 
+- name: Listen on all ports for cupsd.conf
+  ansible.builtin.lineinfile:
+    path: /etc/cups/cupsd.conf
+    regexp: 'Listen localhost:631'
+    line: 'Listen *:631'
+  notify: Restart cups
+
 - name: Remove old policy from ImagicMagick
   ansible.builtin.lineinfile:
     path: /etc/ImageMagick-6/policy.xml

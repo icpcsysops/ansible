@@ -1,4 +1,7 @@
 ---
+- name: Install hwclock
+  apt:
+    name: util-linux-extra
 - name: Set timezone
   timezone:
     name: "{{ timesync_timezone }}"

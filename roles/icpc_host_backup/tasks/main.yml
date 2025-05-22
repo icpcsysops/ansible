@@ -12,8 +12,7 @@
       - fping
       - libproc-processtable-perl
       - exfat-fuse
-      - awscli
-      - python3.10-venv
+      - python3.12-venv
       - git-cola
       - python3-passlib
         # consider adding these to the iso

@@ -30,7 +30,6 @@
       - iptables
       - bash
       - ssl-cert
-      - awscli
     state: present
 
 - name: Configure nginx for packages

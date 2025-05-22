@@ -8,7 +8,7 @@ ExecStart=/srv/cds/wlp/bin/server run {{ cds_instance_name }}
 TimeoutStopSec=20s
 Environment=WLP_OUTPUT_DIR=/var/lib/cds
 Environment=WLP_USER_DIR=/srv/cds/wlp/usr
-Environment=JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+Environment=JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 {% if hide_country_info|default(false) -%}
 Environment=HIDE_COUNTRY_INFO=true
 {% endif -%}

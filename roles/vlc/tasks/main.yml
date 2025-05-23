@@ -32,8 +32,15 @@
 - name: Add camera to the render group (so it has access for HW accelerated encoding/decoding)
   ansible.builtin.user:
     name: camera
-    groups: render
+    groups:
+      - render
+      - video
+      - audio
+    home: /camera
     append: true
+    create_home: true
+    shell: /bin/sh
+
 - name: Deploy vlc-webcam.service
   ansible.builtin.template:
     src: vlc-webcam.service.j2

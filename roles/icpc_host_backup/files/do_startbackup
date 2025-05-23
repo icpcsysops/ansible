@@ -48,7 +48,8 @@ def do_team_contestid_loop(args):
         process = subprocess.Popen(
             [
                 "/usr/bin/rsync",
-                "-a",
+                "-aq",
+                "-e", 'ssh -q',
                 "--exclude",
                 "*/backup",
                 ".",

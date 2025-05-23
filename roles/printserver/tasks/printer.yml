@@ -6,7 +6,7 @@
   ignore_errors: true
 
 - name: Lpadmin add printer
-  ansible.builtin.command: lpadmin -p {{ printer }} -E -v ipp://{{ printer }} -m {{ model | default("everywhere") }} # noqa: yaml[line-length]
+  ansible.builtin.command: lpadmin -p {{ printer }} -E -v {{ printer_uri }} -m {{ model }}
   when: lpstat_printer.rc != 0
   changed_when: false
 

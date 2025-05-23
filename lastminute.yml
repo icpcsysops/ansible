@@ -244,14 +244,25 @@
         mode: '0644'
     - name: Use policykit to disable mounting for teams
       ansible.builtin.copy:
-        dest: /etc/polkit-1/localauthority/50-local.d/disable-udisks.pkla
+        dest: /etc/polkit-1/rules.d/99-disable-udisks.rules
         content: |
-          [Block access to udisks for teams]
-          Identity=unix-user:*
-          Action=org.freedesktop.udisks2.*
-          ResultAny=no
-          ResultInactive=no
-          ResultActive=no
+          polkit.addRule(function(action, subject) {
+            if (action.id.startsWith("org.freedesktop.udisks2."))
+            {
+              return polkit.Result.NO;
+            }
+          });
+        mode: '0644'
+    - name: Use policykit to disable access to networkmanager
+      ansible.builtin.copy:
+        dest: /etc/polkit-1/rules.d/99-disable-networkmanager.rules
+        content: |
+          polkit.addRule(function(action, subject) {
+            if (action.id.startsWith("org.freedesktop.NetworkManager."))
+            {
+              return polkit.Result.NO;
+            }
+          });
         mode: '0644'
     - name: Fix gvfsd permission tweaking to disable
       ansible.builtin.file:

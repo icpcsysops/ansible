@@ -37,7 +37,7 @@ def get_process_children(pid):
 # Use xprop to get the foreground window and some info about it
 result = subprocess.run([
     '/bin/bash', '-c',
-    'xprop -notype -id $(xprop -root -f _NET_ACTIVE_WINDOW 0x " \$0\\n" _NET_ACTIVE_WINDOW 2>/dev/null | awk "{print \$2}") WM_NAME WM_CLASS WM_WINDOW_ROLE _NET_WM_PID 2>/dev/null'
+    'xprop -notype -id $(xprop -root -f _NET_ACTIVE_WINDOW 0x " \\$0\\n" _NET_ACTIVE_WINDOW 2>/dev/null | awk "{print \\$2}") WM_NAME WM_CLASS WM_WINDOW_ROLE _NET_WM_PID 2>/dev/null'
     ], stdout=subprocess.PIPE)
 
 if result.returncode != 0:

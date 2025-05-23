@@ -4,19 +4,6 @@
   gather_facts: false
   tasks:
     - name: Disable autologin to user p
-      ansible.builtin.copy:
-        content: |
-          [daemon]
-          # AutomaticLoginEnable = true
-          # AutomaticLogin = p
-          [security]
-
-          [xdmcp]
-
-          [chooser]
-
-          [debug]
-        dest: /etc/gdm3/custom.conf
-        owner: root
-        group: root
-        mode: '0644'
+      ansible.builtin.file:
+        path: /etc/lightdm/lightdm.conf.d/p100.conf
+        state: absent

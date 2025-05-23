@@ -45,11 +45,6 @@
       changed_when: my_output.rc != 0  # <- Uses the return code to define when the task has changed.
 
 
-- name: Configure packages machines
-  hosts: packages
-  roles:
-    - role: icpc_host_packages
-      tags: icpc_host_packages
 
 - name: Configure scoreboard machine
   hosts: packages,scoreboard

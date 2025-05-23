@@ -218,14 +218,12 @@
             - "{{ contest }}.teams.tar.gz"
           skip: true
 
-    # TODO icpc2024 name it icpc
-    - name: Remove icpc* user
+    - name: Remove icpc user
       ansible.builtin.user:
         name: "{{ item }}"
         state: absent
       loop:
         - "icpc"
-        - "icpc2023"
       when: root_password is defined
 
     - name: Workaround nautilus auto-mounting

@@ -2,6 +2,11 @@
 :INPUT ACCEPT [0:0]
 :FORWARD DROP [0:0]
 :OUTPUT ACCEPT [0:0]
+:NETAVARK_FORWARD - [0:0]
+
+-A FORWARD -m comment --comment "netavark firewall plugin rules" -j NETAVARK_FORWARD
+-A NETAVARK_FORWARD -d 10.88.0.0/16 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A NETAVARK_FORWARD -s 10.88.0.0/16 -j ACCEPT
 
 # LOGGING / DEBUGGING
 -N accept-in-log
@@ -17,6 +22,10 @@
 # internal interface
 -A INPUT -i lo -j ACCEPT
 -A OUTPUT -o lo -j ACCEPT
+
+# allow talking to podman containers
+-A INPUT -s 10.88.0.0/16 -j ACCEPT
+-A OUTPUT -d 10.88.0.0/16 -j ACCEPT
 
 # something on login or usb plugin causes this traffic
 -A OUTPUT -p udp -m udp --dport 137 -j REJECT
@@ -58,15 +67,13 @@
 {% if enable_reverseproxy -%}
 #TODO: make the ip for reverseproxy a lookup/variable/something better than hardcoded
 # http(s) to/from reverseproxy
--A INPUT -p tcp --sport 80 -s 10.3.3.205/32 -j ACCEPT
--A OUTPUT -p tcp --dport 80 -d 10.3.3.205/32 -j ACCEPT
--A INPUT -p tcp --sport 443 -s 10.3.3.205/32 -j ACCEPT
--A OUTPUT -p tcp --dport 443 -d 10.3.3.205/32 -j ACCEPT
+-A INPUT -p tcp --sport {{ ccs_port }} -s {{ ccs_ip }}/32 -j ACCEPT
+-A OUTPUT -p tcp --dport {{ ccs_port }} -d {{ ccs_ip }}/32 -j ACCEPT
 
 {% else -%}
 # https to/from ccs primary
--A INPUT -p tcp --sport 443 -s {{ ccs_ip }}/32 -j ACCEPT
--A OUTPUT -p tcp --dport 443 -d {{ ccs_ip }}/32 -j ACCEPT
+-A INPUT -p tcp --sport {{ ccs_port }} -s {{ ccs_ip }}/32 -j ACCEPT
+-A OUTPUT -p tcp --dport {{ ccs_port }} -d {{ ccs_ip }}/32 -j ACCEPT
 
 {% endif -%}
 
@@ -126,10 +133,10 @@
 -A OUTPUT -p tcp --dport 631 -d 10.3.3.149 -j ACCEPT
 -A OUTPUT -p udp --dport 631 -d 10.3.3.149 -j ACCEPT
 # to authprint
--A INPUT -p tcp --sport 631 -s 10.3.3.211 -j ACCEPT
--A INPUT -p udp --sport 631 -s 10.3.3.211 -j ACCEPT
--A OUTPUT -p tcp --dport 631 -d 10.3.3.211 -j ACCEPT
--A OUTPUT -p udp --dport 631 -d 10.3.3.211 -j ACCEPT
+-A INPUT -p tcp --sport 631 -s 10.3.3.208 -j ACCEPT
+-A INPUT -p udp --sport 631 -s 10.3.3.208 -j ACCEPT
+-A OUTPUT -p tcp --dport 631 -d 10.3.3.208 -j ACCEPT
+-A OUTPUT -p udp --dport 631 -d 10.3.3.208 -j ACCEPT
 
 # printing (ldp)
 -A INPUT -p udp --sport 515 -s 10.3.3.216 -j ACCEPT
@@ -166,5 +173,32 @@
 # drop rest
 -A OUTPUT -j drop-n-log
 -A INPUT -j drop-n-log
+COMMIT
+
+*nat
+:PREROUTING ACCEPT [33:5740]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [444:70154]
+:POSTROUTING ACCEPT [444:70154]
+:NETAVARK-1D8721804F16F - [0:0]
+:NETAVARK-DN-1D8721804F16F - [0:0]
+:NETAVARK-HOSTPORT-DNAT - [0:0]
+:NETAVARK-HOSTPORT-MASQ - [0:0]
+:NETAVARK-HOSTPORT-SETMARK - [0:0]
+
+-A PREROUTING -m addrtype --dst-type LOCAL -j NETAVARK-HOSTPORT-DNAT
+-A OUTPUT -m addrtype --dst-type LOCAL -j NETAVARK-HOSTPORT-DNAT
+
+-A POSTROUTING -j NETAVARK-HOSTPORT-MASQ
+-A POSTROUTING -s 10.88.0.0/16 -j NETAVARK-1D8721804F16F
+
+-A NETAVARK-1D8721804F16F -d 10.88.0.0/16 -j ACCEPT
+-A NETAVARK-1D8721804F16F ! -d 224.0.0.0/4 -j MASQUERADE
+-A NETAVARK-DN-1D8721804F16F -s 10.88.0.0/16 -d 127.0.0.1/32 -p tcp -m tcp --dport 9292 -j NETAVARK-HOSTPORT-SETMARK
+-A NETAVARK-DN-1D8721804F16F -s 127.0.0.1/32 -d 127.0.0.1/32 -p tcp -m tcp --dport 9292 -j NETAVARK-HOSTPORT-SETMARK
+-A NETAVARK-DN-1D8721804F16F -d 127.0.0.1/32 -p tcp -m tcp --dport 9292 -j DNAT --to-destination 10.88.0.2:9292
+-A NETAVARK-HOSTPORT-DNAT -p tcp -m tcp --dport 9292 -m comment --comment "dnat name: podman id: 5f19cf322ad1228978c945d8564fb524ea2812b55968ff837e241b58fc18ca40" -j NETAVARK-DN-1D8721804F16F
+-A NETAVARK-HOSTPORT-MASQ -m comment --comment "netavark portfw masq mark" -m mark --mark 0x2000/0x2000 -j MASQUERADE
+-A NETAVARK-HOSTPORT-SETMARK -j MARK --set-xmark 0x2000/0x2000
 
 COMMIT

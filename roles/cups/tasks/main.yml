@@ -7,7 +7,7 @@
 
 - name: Lpadmin add a printer
   # use keith's icpc-banner instead (on the server side)
-  ansible.builtin.command: lpadmin -p {{ printer_name }} -E -v ipp://printsrv:631/{{ device_uri }} -m everywhere -L "{{ inventory_hostname }}"
+  ansible.builtin.command: lpadmin -p {{ printer_name }} -E -v ipp://printsrv:631/{{ device_uri }} -L "{{ inventory_hostname }}"
   when: lpstat.rc != 0
   changed_when: false
 

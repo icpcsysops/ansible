@@ -46,3 +46,24 @@
         shell: /bin/bash
         group: teams
         create_home: true
+
+    - name: Configure lightdm ccs greeter
+      ansible.builtin.copy:
+        content: |
+          [General]
+          ;greeter-icon-theme=oxygen
+          greeter-background-image=/usr/share/backgrounds/ICPCLogo-greeter.png
+          ;loginform-offset-x=50%
+          ;loginform-offset-y=50%
+          ccs-contest-api-url={{ ccs_contest_url }}
+          ccs-autologin-username={{ inventory_hostname }}
+          ccs-autologin-password={{ users[inventory_hostname] }}
+          ;ccs-start-minimum-msec=500
+          ;ccs-team-name={{ inventory_hostname }}
+          ;ccs-team-label-color=white
+          ;ccs-team-label-shadow-color= ;unset
+        dest: /etc/lightdm/lightdm-qt5-greeter.conf
+        owner: root
+        group: root
+        mode: '0600'
+

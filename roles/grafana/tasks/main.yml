@@ -10,6 +10,13 @@
       - prometheus
       - prometheus-blackbox-exporter
 
+- name: Make sure blackbox exporter is allowed to ping things
+  ansible.posix.sysctl:
+    name: net.ipv4.ping_group_range
+    value: '0 65536'
+    state: present
+    sysctl_file: /etc/sysctl.d/99-blackbox-exporter-ping.conf
+
 # Setup Prometheus, which scrapes all metrics from the monitored machines
 # The client exposes the metrics (on different ports/URIs) and we collect those
 - name: Set up prometheus scrapes

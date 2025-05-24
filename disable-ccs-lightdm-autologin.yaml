@@ -1,0 +1,15 @@
+---
+- name: Playbook to enable ccs autologin on the lightdm greeter
+  hosts: contestants
+  gather_facts: false
+  tasks:
+    - name: Enable ccs autologin
+      ansible.builtin.file:
+        dest: /etc/lightdm/lightdm.conf.d/99-ccs-autologin-greeter.conf
+        state: absent
+      notify: Restart lightdm
+  handlers:
+    - name: Restart lightdm
+      ansible.builtin.systemd:
+        name: lightdm
+        state: restarted

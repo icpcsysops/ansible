@@ -1,0 +1,10 @@
+---
+# wget https://github.com/GEHACK/lightdm-qt5-greeter-ccs-api/releases/download/latest/lightdm-qt5-greeter-0.1.1-Linux.deb files/lightdm-qt5-greeter-ccs.deb
+- name: Download the lightdm ccs deb
+  ansible.builtin.copy:
+    src: files/lightdm-qt5-greeter-ccs.deb
+    dest: /root/lightdm-qt5-greeter-ccs.deb
+- name: Install ccs enabled lightdm greeter
+  ansible.builtin.apt:
+    deb: /root/lightdm-qt5-greeter-ccs.deb
+    state: present

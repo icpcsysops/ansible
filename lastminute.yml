@@ -87,6 +87,7 @@
       tags: iptablesrules
     - role: martkeys
       when: disable_martkeys is not defined or not disable_martkeys
+    - role: lightdm-ccs-greeter
 
   tasks:
         state: absent

@@ -90,6 +90,11 @@
     - role: lightdm-ccs-greeter
 
   tasks:
+    - name: remove network-manager so teams can't wifi things or whatnot
+      ansible.builtin.apt:
+        name: network-manager
+        purge: yes
+        autoremove: yes
         state: absent
     # TODO fixed in this to icpc2024
     - name: Disable idle-dim

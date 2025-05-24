@@ -55,8 +55,8 @@
           [General]
           ;greeter-icon-theme=oxygen
           greeter-background-image=/usr/share/backgrounds/ICPCLogo-greeter.png
-          ;loginform-offset-x=50%
-          ;loginform-offset-y=50%
+          loginform-offset-x=50%
+          loginform-offset-y=40%
           ccs-contest-api-url={{ ccs_contest_url }}
           ccs-autologin-username={{ inventory_hostname }}
           ccs-autologin-password={{ users[inventory_hostname] }}
@@ -68,4 +68,4 @@
         owner: root
         group: root
         mode: '0600'
-
+      diff: false

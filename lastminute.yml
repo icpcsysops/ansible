@@ -112,6 +112,7 @@
     - role: ccstools
       tags: ccstools
       when: ccs  == "domjudge"
+      tags: p100
     - role: taskset_run_scripts
     - role: vlc
       when: enable_vlc is defined and enable_vlc

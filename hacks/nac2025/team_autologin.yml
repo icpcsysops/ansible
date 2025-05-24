@@ -1,0 +1,27 @@
+---
+- name: Playbook to log in all teams
+  hosts: floor
+  gather_facts: false
+  tasks:
+    - name: Enable autologin to team user
+      ansible.builtin.copy:
+        content: |
+          [daemon]
+          AutomaticLoginEnable = true
+          AutomaticLogin = {{ inventory_hostname }}
+          [security]
+
+          [xdmcp]
+
+          [chooser]
+
+          [debug]
+        dest: /etc/gdm3/custom.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Restart gdm3
+      ansible.builtin.systemd:
+        name: gdm3
+        state: restarted

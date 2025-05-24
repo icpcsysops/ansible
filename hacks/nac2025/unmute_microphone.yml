@@ -1,0 +1,14 @@
+---
+- name: Playbook to log in all teams
+  hosts: floor
+  gather_facts: false
+  tasks:
+    - name: Install alsa-utils to change the volume and things
+      ansible.builtin.apt:
+        pkg: alsa-utils
+    - name: Enable autologin to team user
+      ansible.builtin.shell: "{{item}}"
+      loop:
+        - amixer set 'Internal Mic Boost' 10dB
+        - amixer set 'Capture' 15.75dB
+        - amixer set 'Capture' cap

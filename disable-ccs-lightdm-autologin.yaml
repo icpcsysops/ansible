@@ -4,9 +4,13 @@
   gather_facts: false
   tasks:
     - name: Enable ccs autologin
-      ansible.builtin.file:
-        dest: /etc/lightdm/lightdm.conf.d/99-ccs-autologin-greeter.conf
-        state: absent
+      ansible.builtin.lineinfile:
+        line: greeter-session=lightdm-gtk-greeter
+        regexp: ^greeter-session
+        dest: /etc/lightdm/lightdm.conf
+        owner: root
+        group: root
+        mode: '0644'
       notify: Restart lightdm
   handlers:
     - name: Restart lightdm

@@ -16,6 +16,12 @@
   roles:
     - role: windows
 
+- name: Resolver hosts
+  hosts: win_resolvers
+  gather_facts: false
+  roles:
+    - role: resolver
+
 - name: Presentation hosts
   hosts: presentation_clients
   gather_facts: false

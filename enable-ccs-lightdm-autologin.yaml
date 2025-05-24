@@ -4,11 +4,10 @@
   gather_facts: false
   tasks:
     - name: Enable ccs autologin
-      ansible.builtin.copy:
-        content: |
-          [SeatDefaults]
-          greeter-session=lightdm-qt5-greeter
-        dest: /etc/lightdm/lightdm.conf.d/99-ccs-autologin-greeter.conf
+      ansible.builtin.lineinfile:
+        line: greeter-session=lightdm-qt5-greeter
+        regexp: ^greeter-session
+        dest: /etc/lightdm/lightdm.conf
         owner: root
         group: root
         mode: '0644'

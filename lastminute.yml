@@ -140,31 +140,21 @@
         state: link
         force: true
 
-    # TODO more things to fix in icpc-pycharm
-    - name: Stat pycharm python_stubs
-      ansible.builtin.stat:
-        path: /etc/skel/.config/JetBrains/PyCharmCE2022.3/system/python_stubs
-      register: python_stubs
-
-    - name: Remove pycharm bits that do not exist
-      tags: venv_pycharm
-      ansible.builtin.file:
-        state: absent
-        path: /etc/skel/workspace/PycharmProject/venv/lib/{{ item }}
-      with_items:
-        - crda
-
-    - name: Extract python_stubs if missing
-      ansible.builtin.unarchive:
-        src: files/pycharm/python_stubs.tar.gz
-        dest: /etc/skel/.config/JetBrains/PyCharmCE2022.3/system
-      when: not python_stubs.stat.exists
-
     - name: Remove invalid runconfiguration from pycharm workspace
       tags: pycharm_fix
       ansible.builtin.file:
         state: absent
         path: /etc/skel/workspace/PycharmProject/.idea/runConfigurations/pypy3.xml
+
+    # TODO fixed in this to icpc2024
+    - name: Disable idle-dim
+      ansible.builtin.copy:
+        dest: /usr/share/glib-2.0/schemas/21_icpc_power_schema.gschema.override
+        content: |
+          [org.gnome.settings-daemon.plugins.power]
+          idle-dim=false
+        mode: '0644'
+      notify: Glib-compile-schemas
 
     - name: Cleanup domjudge.desktop,  renaming to ccs.desktop
       ansible.builtin.file:

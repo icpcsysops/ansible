@@ -68,4 +68,3 @@
         - files:
             - /tmp/presentations-{{ pres_version }}.zip
             - files/presentations-{{ pres_version }}.zip
-          skip: true

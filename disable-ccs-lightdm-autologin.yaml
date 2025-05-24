@@ -11,9 +11,3 @@
         owner: root
         group: root
         mode: '0644'
-      notify: Restart lightdm
-  handlers:
-    - name: Restart lightdm
-      ansible.builtin.systemd:
-        name: lightdm
-        state: restarted

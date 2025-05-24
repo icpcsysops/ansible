@@ -75,9 +75,6 @@
     - role: reverseproxy
       when: enable_reverseproxy is defined and enable_reverseproxy
     - role: p100
-    - role: ccstools
-      tags: ccstools
-      when: ccs  == "domjudge"
       tags: p100
     - role: taskset_run_scripts
     - role: vlc
@@ -96,6 +93,11 @@
         purge: yes
         autoremove: yes
         state: absent
+
+    - include_role: name=ccstools
+      tags: ccstools
+      when: ccs == "domjudge"
+
     # TODO fixed in this to icpc2024
     - name: Disable idle-dim
       ansible.builtin.copy:

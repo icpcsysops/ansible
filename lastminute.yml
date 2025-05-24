@@ -124,6 +124,12 @@
     - role: lightdm-ccs-greeter
 
   tasks:
+    - name: remove network-manager so teams can't wifi things or whatnot
+      ansible.builtin.apt:
+        name: network-manager
+        purge: yes
+        autoremove: yes
+
     # more things to fix in icpc-pycharm
     - name: Fix location in printers.conf
       ansible.builtin.lineinfile:

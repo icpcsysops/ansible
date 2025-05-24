@@ -29,10 +29,19 @@
         mode: '0644'
       when: internet
 
+    - name: Copy the resolver
+      win_copy:
+        src: "{{ item }}"
+        dest: "%TEMP%/resolver.zip"
+      with_first_found:
+        - files:
+            - /tmp/resolver-{{ resolver_version }}.zip
+            - files/resolver-{{ resolver_version }}.zip
     - name: Unpack the resolver
-      ansible.builtin.unarchive:
-        src: /tmp/resolver-{{ resolver_version }}.zip
+      community.windows.win_unzip:
+        src: "%TEMP%/resolver.zip"
         dest: /Users/{{ ansible_user }}/Desktop/resolver
+        creates: /Users/{{ ansible_user }}/Desktop/resolver
 
 - name: Add bat script to launch the resolver client
   ansible.windows.win_copy:

@@ -159,12 +159,13 @@
             - "{{ contest }}.teams.tar.gz"
           skip: true
 
-    - name: Remove icpc user
+    - name: Remove icpc and team user from img
       ansible.builtin.user:
         name: "{{ item }}"
         state: absent
       loop:
         - "icpc"
+        - "team"
       when: root_password is defined
 
     - name: Workaround nautilus auto-mounting

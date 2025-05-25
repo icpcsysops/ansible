@@ -68,6 +68,12 @@
 -A INPUT -p tcp --sport {{ ccs_port }} -s {{ ccs_ip }}/32 -j ACCEPT
 -A OUTPUT -p tcp --dport {{ ccs_port }} -d {{ ccs_ip }}/32 -j ACCEPT
 
+{% if ccs == "pc2" -%}
+# pc2 needs this port for the pc2 command line submit client (because reasons)
+-A INPUT -p tcp --sport 50444 -s {{ ccs_ip }}/32 -j ACCEPT
+-A OUTPUT -p tcp --dport 50444 -d {{ ccs_ip }}/32 -j ACCEPT
+{% endif -%}
+
 {% endif -%}
 
 # https to/from packages

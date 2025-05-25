@@ -19,8 +19,12 @@ gsettings set org.gnome.desktop.screensaver idle-activation-enabled false
 gsettings set org.gnome.desktop.session idle-delay 0
 # end additions for run
 
+# Basic WM so vlc can go fullscreen
+xfwm4 --replace &
+
 sleep 2
 while true; do
-  /usr/bin/vlc --fullscreen v4l2://{{ v100_video_device }}
+  # no-qt-privacy-ask gets rid of some vlc nag/popup
+  /usr/bin/vlc --no-qt-privacy-ask --fullscreen v4l2://{{ v100_video_device }}
   sleep 2
 done

@@ -38,7 +38,7 @@
             src: "{{ contest }}-samples.zip"
             dest: /etc/skel/Desktop/samps
 
-    - name: Ceate the user on named host
+    - name: Create the user on named host
       ansible.builtin.user:
         name: "{{ inventory_hostname }}"
         password: "{{ users[inventory_hostname] | password_hash('sha512') }}"

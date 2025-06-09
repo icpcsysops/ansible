@@ -22,7 +22,7 @@
   ansible.builtin.apt:
     pkg: nginx
     state: present
-    policy_rc_d: 101 # prevent nginx from starting after installation
+    policy_rc_d: 101  # prevent nginx from starting after installation
 
 - name: Ensure required packages are installed
   ansible.builtin.apt:

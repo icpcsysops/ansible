@@ -3,6 +3,7 @@
 - name: Ensure packages that are needed for backup hosts are installed
   ansible.builtin.apt:
     pkg:
+      - borgbackup  # from apt/noble
       - iptables
       - cups
       - rsyslog
@@ -15,7 +16,7 @@
       - python3.12-venv
       - git-cola
       - python3-passlib
-        # consider adding these to the iso
+      # consider adding these to the iso
       - iotop
       - jq
       - htop
@@ -112,11 +113,9 @@
     owner: root
     group: root
   loop:
-    - {name: do_startbackup.new}
-    - {name: sh.backupclient.new}
-    - {name: par}
-    - {name: sh.do_startbackup}
+    - {name: do_startbackup}
     - {name: sh.backupclient}
+    - {name: par}
     - {name: exclude.lst, mode: "0644"}
 
 - name: Install ssh config

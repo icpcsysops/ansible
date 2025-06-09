@@ -9,6 +9,8 @@ jobs:
       options: "--entrypoint /bin/bash"
     steps:
       - uses: actions/checkout@v2
+      - name: Update ansible/ansible-lint
+        run: pip3 install --upgrade ansible ansible-lint
       - name: Install python3-passlib
         run: microdnf install -y python3-passlib
       - name: Install the requirements

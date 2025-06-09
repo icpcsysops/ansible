@@ -16,7 +16,7 @@
     group: root
     mode: '0755'
   with_first_found:
-    - /tmp/turboboost_ht
+    - files/turboboost_ht
     - /root/git/domjudge-scripts/provision-contest/disable-turboboost_ht
 
 - name: Set hyperthreading service

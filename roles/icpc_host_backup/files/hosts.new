@@ -432,16 +432,25 @@
 
 # red network
 # coachview
-172.24.0.80	coachview01
-172.24.0.81	coachview02
-172.24.0.82	coachview03
-172.24.0.83	coachview04
-172.24.0.84	coachview05
-172.24.0.85	coachview06
-172.24.0.86	coachview07
-172.24.0.87	coachview08
+172.24.2.80	coachview1
+172.24.2.81	coachview2
+172.24.2.82	coachview3
+172.24.2.83	coachview4
+172.24.2.84	coachview5
+172.24.2.85	coachview6
+172.24.2.86	coachview7
+172.24.2.87	coachview8
+172.24.2.88	coachview9
+172.24.2.89	coachview10
+172.24.2.90	coachview11
+172.24.2.91	coachview12
+172.24.2.92	coachview13
+172.24.2.93	coachview14
+172.24.2.94	coachview15
+172.24.2.95	coachview16
 
-172.24.0.207    cds-red
+# not 207 because of conflict with live?
+172.24.0.7    cds-red
 
 #Start of the Green Network (172.29.0.0/22)
 172.29.0.1     router
@@ -523,16 +532,23 @@
 172.29.1.20  clock
 172.29.1.50  Sysops Printer?
 
-172.29.1.60 green-presclient0
-172.29.1.61 green-presclient1
-172.29.1.62 green-presclient2
-172.29.1.63 green-presclient3
-172.29.1.64 green-presclient4
-172.29.1.65 green-presclient5
-172.29.1.66 green-presclient6
-172.29.1.67 green-presclient7
-172.29.1.68 green-presclient8
-172.29.1.69 green-presclient9
+# These only exist temporarily on the network to get provisioned/set up
+172.29.1.60 resolver-presenter
+172.29.1.61 resolver-client
+
+172.29.1.63 green-presadmin1
+172.29.1.64 green-presclient1
+172.29.1.65 green-presclient2
+172.29.1.66 green-presclient3
+172.29.1.67 green-presclient4
+172.29.1.68 green-presclient5
+172.29.1.69 green-presclient6
+172.29.1.70 green-presclient7
+172.29.1.71 green-presclient8
+172.29.1.72 green-presclient9
+172.29.1.73 green-presclient10
+172.29.1.74 green-presclient11
+172.29.1.75 green-presclient12
 
 172.29.1.101         Netmon
 172.29.1.191    builder
@@ -560,9 +576,9 @@
 172.29.1.227   green-judgehost7
 172.29.1.228   green-judgehost8
 172.29.1.229   green-judgehost9
-172.29.1.240   analysts-green
 172.29.1.245   media1-green
 172.29.1.250   gview-green
+172.29.1.251   analysts-green
 
 172.29.2.5    CloudKeyManagement-hynan
 # 172.29.2.10 - 172.29.3.200 - DHCP Range

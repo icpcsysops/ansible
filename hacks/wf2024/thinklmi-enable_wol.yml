@@ -1,0 +1,10 @@
+---
+- name: HACK ENABLE WAKE ON LAN!
+  gather_facts: false
+  hosts: floor
+
+  tasks:
+    - name: Enable wake on lan
+      ansible.builtin.shell: echo Enable > /sys/class/firmware-attributes/thinklmi/attributes/WakeOnLAN/current_value
+      register: my_output # <- Registers the command output.
+      changed_when: my_output.rc != 0 # <- Uses the return code to define when the task has changed.

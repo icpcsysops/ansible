@@ -1,0 +1,103 @@
+---
+# extra_nic_configs: []
+ccs_url: &ccs_url https://domjudge/api/contests/wf48_systest2
+ccs_user: &ccs_user cds
+ccs_pass: &ccs_pass physicist-five-miracles
+cds_presentation_domains: &cds_presentation_domains
+  - - matveyAdmin
+    - matvey
+  - - presAdmin
+    - presentation
+    - balloon
+    - coachview
+    - deboer
+    - david
+    - nicky
+    - mattias
+
+# ccs_url: &ccs_url https://domjudge/api/contests/contest_id
+# ccs_user: &ccs_user cds
+# ccs_pass: &ccs_pass cds-secret-password
+# example_cds_presentation_domains: &example_cds_presentation_domains
+# - - operationsAdmin
+# - operations
+# - - presAdmin
+# - presentation
+# - balloon
+# - coachview
+
+cds_config:
+  cds:
+    http_port: 80
+    https_port: 443
+    contests:
+#     - name: example
+#       path: example
+#       ccs:
+#         url: *ccs_url
+#         username: *ccs_user
+#         password: *ccs_pass
+#       video:
+#         desktop: http://team{0}:9090
+#         webcam: http://team{0}:8080
+      - name: finals
+        path: finals
+        video:
+          desktop: http://team{0}:9090
+          webcam: http://team{0}:8080
+        ccs:
+          url: https://domjudge/api/contests/wf48_finals
+          username: *ccs_user
+          password: *ccs_pass
+#     - name: finals
+#       path: finals
+#       video:
+#         desktop: http://team{0}:9090
+#         webcam: http://team{0}:8080
+#       ccs:
+#         url: https://domjudge/api/contests/wf48_finals
+#         username: *ccs_user
+#         password: *ccs_pass
+    # Path to a yaml file inside vars/ containing an accounts array
+    accounts: cds/cds-accounts.yaml
+    domains: *cds_presentation_domains
+  p100:
+    http_port: 9080
+    https_port: 9443
+    accounts: cds/p100-accounts.yaml
+    contests:
+      - name: finals
+        path: finals
+        ccs:
+          url: https://cds/api/contests/wf48_finals
+          username: deboer # should be a p100 user on the cds, but this account doesn't exist yet
+          password: cheerleading-laughter-harvestman
+  live:
+    http_port: 7080
+    https_port: 7443
+    accounts: cds/live-accounts.yaml
+    contests:
+      - name: finals
+        path: finals
+        record_reactions: true
+        ccs:
+          url: https://domjudge/api/contests/wf48_finals
+          username: cds
+          password: physicist-five-miracles
+        video:
+          desktop: http://team{0}:9090
+          webcam: http://team{0}:8080
+#       ccs:
+#         url: https://domjudge/api/contests/wf48_dress
+#         username: cds
+#         password: riot-unsnap-coffee-racing
+#     - name: finals
+#       path: finals
+#       record_reactions: true
+#       video:
+#         desktop: http://team{0}:9090
+#         webcam: http://team{0}:8080
+#       ccs:
+#         url: https://domjudge/api/contests/wf48_finals
+#         username: cds
+#         password: riot-unsnap-coffee-racing

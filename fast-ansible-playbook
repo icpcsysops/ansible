@@ -1,0 +1,7 @@
+#!/bin/bash
+
+unset ANSIBLE_ACTION_PLUGINS
+unset ANSIBLE_CALLBACK_PLUGINS
+unset ANSIBLE_LOOKUP_PLUGINS
+unset ANSIBLE_LOAD_CALLBACK_PLUGINS
+exec /usr/bin/ansible-playbook "$@"

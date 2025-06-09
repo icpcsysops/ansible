@@ -1,2 +1,3 @@
 ---
 scoreboard_scorehost: scoreboard.icpc.global
+# scoreboard_subdir: "something/" # match sure the string ends with a /

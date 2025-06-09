@@ -1,1 +1,1 @@
-ansible -m shell -a "pkill -u p" contestants
+fast-ansible -m shell -a "pkill -u p" contestants

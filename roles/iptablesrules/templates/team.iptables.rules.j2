@@ -45,6 +45,8 @@
 -A OUTPUT -p udp -m udp --dport 53 -d 8.8.4.4 -j REJECT
 -A FORWARD -p udp -m udp --dport 53 -d 8.8.8.8 -j REJECT
 -A FORWARD -p udp -m udp --dport 53 -d 8.8.4.4 -j REJECT
+# router os crap
+-A INPUT -p udp -m udp --dport 5678 -j REJECT
 
 
 # prom from the backup

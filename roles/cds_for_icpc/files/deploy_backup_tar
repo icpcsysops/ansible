@@ -20,7 +20,7 @@ if isfile(BACKUP_FILE):
     for contest in args.contests:
         path = f"/srv/cds/contests/{contest}/"
         destdir = join(realpath(path), "teams")
-        if not isdir(destdir):
+        if not (isdir(destdir) or islink(destdir)):
             mkdir(destdir)
         with tarfile.open(BACKUP_FILE, "r") as tar:
             tar.extractall(destdir)

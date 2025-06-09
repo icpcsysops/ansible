@@ -4,8 +4,8 @@ contest_ids:
   - systest1
 ntp_servers:
   - 172.29.1.20
-  - 10.3.3.208
   - 10.3.3.209
+  - 10.3.3.211
 ntp_pool:
   - 0.ubuntu.pool.ntp.org
   - 1.ubuntu.pool.ntp.org
@@ -38,6 +38,7 @@ script_server_admin_users: &admin_users
   # hostnames or ips
   - backup
   - 127.0.0.1
+  - packages
 
 script_server_commands:
   - name: run-lastminute
@@ -46,7 +47,7 @@ script_server_commands:
     content: |
       #!/usr/bin/bash -ex
       cd /root/ansible
-      ansible-playbook --limit "$PARAM_HOSTNAME" lastminute.yml
+      fast-ansible-playbook --limit "$PARAM_HOSTNAME" lastminute.yml
     parameters:
       - name: hostname
         env_var: PARAM_HOSTNAME
@@ -65,7 +66,7 @@ script_server_commands:
     content: |
       #!/usr/bin/bash -ex
       cd /root/ansible
-      ansible-playbook --limit "$PARAM_HOSTNAME" windows_lastminute.yml
+      fast-ansible-playbook --limit "$PARAM_HOSTNAME" windows_lastminute.yml
     parameters:
       - name: hostname
         env_var: PARAM_HOSTNAME
@@ -79,6 +80,7 @@ script_server_commands:
     group: cds
     allowed_users: &cds_allowed_users
       - cds # cds host
+      - green-presadmin1
       - cdsadmin1
       - cdsadmin2
       - cdsadmin3
@@ -93,6 +95,9 @@ script_server_commands:
     allowed_users: *cds_allowed_users
     content: |
       #!/usr/bin/bash -ex
+      if [[ $CDS_INSTANCE == "all" ]]; then
+        CDS_INSTANCE="cds p100 live"
+      fi
       for x in $CDS_INSTANCE; do
         ssh root@cds systemctl status $CDS_INSTANCE
       done
@@ -103,18 +108,31 @@ script_server_commands:
         required: true
         separator: ' '
         values: &cds_instances
+          - all
           - cds
           - p100
           - live
 
   - name: restart-cds
-    description: Restarts cds and p100 instances
+    description: Restarts cds instances
     group: cds
     allowed_users: *cds_allowed_users
     content: |
       #!/usr/bin/bash -ex
+      if [[ $CDS_INSTANCE == "all" ]]; then
+        CDS_INSTANCE="cds p100 live"
+      fi
+      # Stop all the CDS instances
       for x in $CDS_INSTANCE; do
-        ssh root@cds systemctl restart $x
+        ssh root@cds systemctl stop $x
+      done
+      # Clear the cache if necessary
+      if [[ $CLEAR_CACHE == "true" ]]; then
+        ssh root@cds 'bash -c "rm --verbose -rf /tmp/org.icpc.tools.cache.*"'
+      fi
+      # Start the CDS instances
+      for x in $CDS_INSTANCE; do
+        ssh root@cds systemctl start $x
       done
     parameters:
       - name: instance
@@ -123,6 +141,193 @@ script_server_commands:
         required: true
         separator: ' '
         values: *cds_instances
+      - name: Clear cache?
+        env_var: CLEAR_CACHE
+        no_value: true
+        description: "Clear cache directories (/tmp/org.icpc.tools.cache.*)?"
+
+  - name: show-config
+    description: Shows the currently applied config for the selected cds instance
+    group: cds
+    allowed_users: *cds_allowed_users
+    content: |
+      #!/usr/bin/bash -e
+      if [[ $CDS_INSTANCE == "all" ]]; then
+        CDS_INSTANCE="cds p100 live"
+      fi
+      for x in $CDS_INSTANCE; do
+        echo "cdsConfig.xml for $x"
+        echo "======================================================="
+        ssh root@cds cat /srv/cds/wlp/usr/servers/$x/config/cdsConfig.xml
+        echo ""
+        echo ""
+      done
+    parameters:
+      - name: instance
+        env_var: CDS_INSTANCE
+        type: multiselect
+        required: true
+        separator: ' '
+        values: *cds_instances
+  - name: cds-logs
+    description: Tails the cds log file for 5 minutes
+    group: cds
+    allowed_users: *cds_allowed_users
+    content: |
+      #!/usr/bin/bash -e
+      extra_args=""
+      if [[ $FOLLOW_LOG == "true" ]]; then
+        extra_args="-f"
+      fi
+      ssh root@cds timeout 5m tail -n $NUM_LINES $extra_args /var/lib/cds/$CDS_INSTANCE/logs/messages.log
+    parameters:
+      - name: How many lines?
+        env_var: NUM_LINES
+        type: int
+        required: true
+        default: 100
+      - name: instance
+        env_var: CDS_INSTANCE
+        type: list
+        required: true
+        default: cds
+        values:
+          - cds
+          - live
+          - p100
+      - name: Follow log?
+        env_var: FOLLOW_LOG
+        no_value: true
+        description: "Follow the log file until stopped (or 5 minutes)"
+
+  - name: p100-logs
+    description: Fetch the p100 log file for a given team
+    group: cds
+    allowed_users: *cds_allowed_users
+    content: |
+      #!/usr/bin/bash -e
+      cmd="bash -c 'tail -n$NUM_LINES \$(ls -t /p/logs/*.log | head -n1)'"
+      ssh root@team$TEAM_NUM "$cmd"
+    parameters:
+      - name: Team number?
+        env_var: TEAM_NUM
+        type: int
+        required: true
+        default: 36
+      - name: How many lines?
+        env_var: NUM_LINES
+        type: int
+        required: true
+        default: 250
+
+  - name: cds-windows_lastminute
+    description: Runs the ansible playbook windows_lastminute.yml (against cds resources)
+    group: ansible
+    allowed_users: *cds_allowed_users
+    content: |
+      #!/usr/bin/bash -ex
+      cd /root/ansible
+      fast-ansible-playbook --limit "$HOST_PATTERN" windows_lastminute.yml
+    parameters:
+      - name: host_pattern
+        env_var: HOST_PATTERN # default is same as name
+        separator: ','
+        type: multiselect
+        required: true
+        values:
+          - presentation_clients
+          - presentation_admins
+          - green-presclient1
+          - green-presclient2
+          - green-presclient3
+          - green-presclient4
+          - green-presclient5
+          - green-presclient6
+          - green-presclient7
+          - green-presclient8
+
+  - name: cds-windows_clear-cache
+    description: Clear cache and reboots on windows presentation client
+    group: cds
+    allowed_users: *cds_allowed_users
+    content: |
+      #!/usr/bin/bash -ex
+      cd /root/ansible
+      fast-ansible -m ansible.windows.win_shell -a 'stop-process -name "java" -force' $HOST_PATTERN
+      fast-ansible -m ansible.windows.win_shell -a "rm -force -r c:/users/icpc/appdata/local/temp/org.icpc*" $HOST_PATTERN
+      fast-ansible -m ansible.windows.win_reboot $HOST_PATTERN
+    parameters:
+      - name: host_pattern
+        env_var: HOST_PATTERN # default is same as name
+        separator: ','
+        type: multiselect
+        required: true
+        values:
+          - presentation_admins
+          - presentation_clients
+          - green-presclient1
+          - green-presclient2
+          - green-presclient3
+          - green-presclient4
+          - green-presclient5
+          - green-presclient6
+          - green-presclient7
+          - green-presclient8
+
+  - name: cds-lastminute
+    description: Runs the ansible playbook lastminute.yml (against cds resources)
+    group: ansible
+    allowed_users: *cds_allowed_users
+    content: |
+      #!/usr/bin/bash -ex
+      cd /root/ansible
+      fast-ansible-playbook --limit "$HOST_PATTERN" lastminute.yml
+    parameters:
+      - name: host_pattern
+        env_var: HOST_PATTERN # default is same as name
+        separator: ','
+        type: multiselect
+        required: true
+        values:
+          - cds
+
+  - name: pc2-lastminute
+    description: Runs the ansible playbook lastminute.yml (against pc2 resources)
+    group: ansible
+    allowed_users: &pc2_allowed_users
+      - pc2-ccsadmin1
+      - pc2-ccsadmin2
+      - pc2-ccsadmin3
+      - pc2-ccsadmin4
+    content: |
+      #!/usr/bin/bash -ex
+      cd /root/ansible
+      fast-ansible-playbook --limit "$HOST_PATTERN" lastminute.yml
+    parameters:
+      - name: host_pattern
+        env_var: HOST_PATTERN # default is same as name
+        separator: ','
+        type: multiselect
+        required: true
+        values:
+          - pc2
+          - pc2backup
+          - pc2-aj*
+          - pc2-ccsadmin*
+          - pc2-aj1
+          - pc2-aj2
+          - pc2-aj3
+          - pc2-aj4
+          - pc2-aj5
+          - pc2-aj6
+          - pc2-aj7
+          - pc2-aj8
+          - pc2-aj9
+          - pc2-aj10
+          - pc2-ccsadmin1
+          - pc2-ccsadmin2
+          - pc2-ccsadmin3
+          - pc2-ccsadmin4
 
   - name: domjudge-lastminute
     description: Runs the ansible playbook lastminute.yml (against domjudge resources)
@@ -139,7 +344,7 @@ script_server_commands:
     content: |
       #!/usr/bin/bash -ex
       cd /root/ansible
-      ansible-playbook --limit "$HOST_PATTERN" lastminute.yml
+      fast-ansible-playbook --limit "$HOST_PATTERN" lastminute.yml
     parameters:
       - name: host_pattern
         env_var: HOST_PATTERN # default is same as name

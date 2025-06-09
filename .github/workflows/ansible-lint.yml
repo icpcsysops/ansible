@@ -9,6 +9,10 @@ jobs:
       options: "--entrypoint /bin/bash"
     steps:
       - uses: actions/checkout@v2
+      - name: Install python3-passlib
+        run: /usr/bin/apt install -y python3-passlib
+      - name: Install the requirements
+        run: /usr/local/bin/ansible-galaxy install -r requirements.yml
       - name: run ansible lint
         run: /usr/local/bin/ansible-lint -c .config/ansible-lint.yml
         env:

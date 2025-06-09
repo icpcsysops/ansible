@@ -12,7 +12,7 @@ import threading
 def run_backupclient(teamname, contest_id):
     process = subprocess.Popen(
         [
-            "/root/contest/backup/scripts/sh.backupclient.new",
+            "/root/contest/backup/scripts/sh.backupclient",
             teamname,
             f"{bdir}/team_rsyncs/{contest_id}",
         ]

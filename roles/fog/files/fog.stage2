@@ -1,0 +1,174 @@
+#!/bin/bash
+
+#Stage 2 script for ICPC deployment.  Needed since the C script
+#  was re-written in Python3 and we don't have Python3 in PXE enviroment
+#
+# This script requires the hostname to be sent from the fog.postdownload
+#  script since variables are not passed when chroot is used.
+#
+# 9.30.2023 PH
+
+isdell=0
+############################################
+# Setting up local variables for this stage
+############################################
+
+export postdownpath=/root/icpcimage/
+export fogHostName=$1
+
+#Now get ICPC Specific functions
+. ${postdownpath}icpcfuncs.sh
+
+
+
+###############################################
+# Starting processing
+###############################################
+dots "Unsetting osid (needed for script to run)"
+unset osid
+echo -e "${Green}Done${RST}"
+
+dots "Starting fog.stage2"
+echo 
+debugPause
+
+echo -e "     ${Green}Fog reports hostname as ${Blue}-${Yellow}$fogHostName${Blue}-${RST}"
+
+###############################################
+# Attempt to breakout host details from fog
+###############################################
+
+#Figure out what system this is based on fog entry...
+#re="^([a-z]*)([0-9]*[a-d])$" # Moscow 3 comp per team
+re="^([a-z]*)([0-9]*)$" # ICPC Standard
+#[[ $hostname =~ $re ]] && systype="${BASH_REMATCH[1]}" && compnum="${BASH_REMATCH[2]}"
+[[ $fogHostName =~ $re ]] && systype="${BASH_REMATCH[1]}" && compnum="${BASH_REMATCH[2]}"
+
+
+debugPrint
+debugPrint "     ${Green}SysType is ${BYellow}--${Green}$systype${BYellow}--${RST}"
+debugPrint "     ${Green}CompNum is ${BYellow}--${Green}$compnum${BYellow}--${RST}"
+debugPrint
+
+#Determine if we are dealing with Sharm numbers
+if [ ! -z $compnum ] 
+then
+	if [ "$compnum" -gt 1000 ]
+	then
+		wf=${compnum:0:2}
+		compnum=${compnum:2:3}
+	fi
+fi
+echo
+echo -e "     ${Green}Trying to setup host based on:${RST}"
+echo -e "      ${Green}SysType${Blue}--------${Yellow}$systype${RST}"
+echo -e "      ${Green}CompNum${Blue}--------${Yellow}$compnum${RST}"
+# echo -e "      ${Green}World Finals${Blue}---${Yellow}$wf${RST}"
+echo 
+debugPause
+
+
+###############################################
+# Call the ICPC Custom script 
+###############################################
+dots "Calling ICPC Custom Script"
+echo 
+
+# Call the script the first time and check result
+# result=$( ${postdownpath}fog.icpcC $compnum $systype $wf 2>&1 )
+result=$( ${postdownpath}fog.icpcC --chroot $compnum $systype 2>&1 )
+debugPrint "     ${Green}result${RST}${Blue}--${Green}$result${Blue}--${RST}"
+debugPause
+
+count=0
+# If the script scucceded the results include the word Customized
+while [[ ! $result =~ "Customized"* ]]
+do
+	debugPrint "     ${Green}Pass # ${Yellow}$count${RST}"
+	if [ $count == 0 ] 
+	then
+		dots "Into Manual mode"
+		echo
+		echo -e "${Green}     ====================================================${RST}"
+#		echo -e "       Please enter ${UGreen}<number> <system type> <world finals>${RST}"
+		echo -e "       Please enter ${UGreen}<number> <system type>${RST}"
+	else
+		echo -e "     ${Yellow}$result${RST}"
+		echo 
+		echo -e "       ${Red}Sorry, ${URed}Troy${Red} did not like what you entered..... TRY AGAIN${RST}"
+		echo
+#		echo -e "       ${Red}Please reenter ${Green}<number> <system type> <world finals>${RST}"
+		echo -e "       ${Red}Please reenter ${Green}<number> <system type>${RST}"
+	fi
+	count=$((count+1))
+#	read -p "       " compnum systype wf 
+	read -p "       " compnum systype
+	echo 
+        echo -e "       ${Green}You Entered:${RST}"
+ 	echo -e "        ${Green}SysType${Blue}--------${Yellow}$systype${RST}"
+        echo -e "        ${Green}CompNum${Blue}--------${Yellow}$compnum${RST}"
+#        echo -e "        ${Green}World Finals${Blue}---${Yellow}$wf${RST}"
+#	result=$( ${postdownpath}fog.icpcC $compnum $systype $wf 2>&1)
+	result=$( ${postdownpath}fog.icpcC --chroot $compnum $systype 2>&1)
+done
+	echo
+	echo -e "${Green}     ====================================================${RST}"
+	echo -e "     ${Green}Success.........${RST}"
+	echo -e "     ${Green}$result${RST}"
+	if [ $count -gt 2 ]
+	then
+		echo -e "     ${Yellow}About time.  It only took ${Red}$count${Yellow} attempts............${RST}"
+	fi
+	echo -e "${Green}     ====================================================${RST}"
+	echo 
+
+
+dots "Customization script completed"
+
+
+if [ $isdell == 1 ]
+then
+   debugPause
+   # Try install Dell Bios tools
+   if [ -f ${postdownpath}/icpcDellBios.sh ]
+   then 
+      echo -e "${Blue}Applying ICPC BIOS standards${RST}"
+      ${postdownpath}/icpcDellBios.sh 
+      echo -e "${Blue}Complete -  ICPC BIOS standards ${RST}"
+   else
+      handleError "Unable to find the icpcDellBios.sh script"
+   fi
+
+   # Setting Dell bios script to run at reboot using cron
+   echo
+   if [ -f ${postdownpath}/biosCronJob.txt ]
+   then
+      echo -e "${Blue}Setting Dell Bios script to run at boot via cron job${RST}"
+      crontab ${postdownpath}/biosCronJob.txt
+      debugPause
+   else
+      handleError "unable to find the biosCronJob.txt file"
+   fi
+
+   # Removing /root/.icpc.bios.updated file so it runs the first time
+   rm -rf /root/.icpc.bios.updated 
+fi
+
+##########################################
+# Output image results to text file in root
+##########################################
+echo 
+echo -e "${Green}Dropping image results to file${RST}"
+imagedetails=/root/imagedetails.txt
+echo $result > $imagedetails
+#echo Systype: $systype >> $imagedetails
+#echo CompNum: $compnum >> $imagedetails
+#echo WF: $wf >> $imagedetails
+echo "Imaged on `date`" >> $imagedetails
+if [ $isdell == 1 ]
+then
+   /opt/dell/dcc/cctk --BiosVer >> $imagedetails
+fi
+
+
+echo -e "${Green}Stage 2 script completed${RST}"

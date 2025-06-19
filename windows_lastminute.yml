@@ -55,3 +55,12 @@
   gather_facts: true
   roles:
     - role: balloonprinter
+
+- name: Disable root ca updates, because windows will delete our trusted ca certs when it does this update
+  tasks:
+  - name: Disable root auto update
+    ansible.windows.win_regedit:
+      path: HKLM:\Software\Policies\Microsoft\SystemCertificates\AuthRoot
+      name: DisableRootAutoUpdate
+      data: 0
+      type: dword

@@ -65,13 +65,6 @@
     type: dword
     data: 1
 
-- name: Disable root ca updates, because windows will delete our trusted ca certs when it does this update
-  ansible.windows.win_regedit:
-    path: HKLM:\Software\Policies\Microsoft\SystemCertificates\AuthRoot
-    name: DisableRootAutoUpdate
-    data: 0
-    type: dword
-
 - name: Copy the certificates
   ansible.windows.win_copy:
     src: /usr/share/ca-certificates/ICPC_WF_Root_CA.crt

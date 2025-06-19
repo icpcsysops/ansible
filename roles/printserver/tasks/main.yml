@@ -33,7 +33,7 @@
     line: 'Listen *:631'
   notify: Restart cups
 
-- name: add ServerAlias to cupsd.conf
+- name: Add ServerAlias to cupsd.conf
   ansible.builtin.lineinfile:
     path: /etc/cups/cupsd.conf
     line: 'ServerAlias *'

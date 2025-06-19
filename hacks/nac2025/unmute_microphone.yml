@@ -7,8 +7,9 @@
       ansible.builtin.apt:
         pkg: alsa-utils
     - name: Enable autologin to team user
-      ansible.builtin.shell: "{{item}}"
+      ansible.builtin.command: "{{ item }}"
       loop:
         - amixer set 'Internal Mic Boost' 10dB
         - amixer set 'Capture' 15.75dB
         - amixer set 'Capture' cap
+      changed_when: true

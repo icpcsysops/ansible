@@ -33,7 +33,7 @@
         state: absent
 
     - name: Copy the resolver
-      win_copy:
+      ansible.windows.win_copy:
         src: "{{ item }}"
         dest: "%TEMP%/resolver.zip"
       with_first_found:

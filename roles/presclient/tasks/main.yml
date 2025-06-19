@@ -45,12 +45,14 @@
         remote_src: true
         creates: /Users/{{ ansible_user }}/Desktop/presclient
 
+# yamllint disable rule:line-length
 - name: Add bat script to launch the presentation client
-  ansible.windows.win_copy: # noqa: yaml[line-length]
+  ansible.windows.win_copy:
     content: |
       REM set ICPC_BRANDING_PRES=org.icpc.tools.presentation.contest.internal.presentations.BrandingPresentation
       c:/users/{{ ansible_user }}/desktop/presclient/client.bat {{ presclient_cds_url }} {{ presclient_user }} {{ presclient_pass }} --name {{ presclient_name | default(inventory_hostname) }}
     dest: /users/{{ ansible_user }}/desktop/launch_pres_client.bat
+# yammlint enable rule:line-length
 
 - name: Copy a shortcut to launch the presentation client
   community.windows.win_shortcut:

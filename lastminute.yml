@@ -45,7 +45,6 @@
       changed_when: my_output.rc != 0  # <- Uses the return code to define when the task has changed.
 
 
-
 - name: Configure scoreboard machine
   hosts: packages,scoreboard
   roles:
@@ -120,11 +119,11 @@
     - role: lightdm_ccs_greeter
 
   tasks:
-    - name: remove network-manager so teams can't wifi things or whatnot
+    - name: Remove network-manager so teams can't wifi things or whatnot
       ansible.builtin.apt:
         name: network-manager
-        purge: yes
-        autoremove: yes
+        purge: true
+        autoremove: true
 
     # more things to fix in icpc-pycharm
     - name: Fix location in printers.conf
@@ -149,7 +148,9 @@
         state: absent
         path: /etc/skel/workspace/PycharmProject/.idea/runConfigurations/pypy3.xml
 
-    - include_role: name=ccstools
+    - name: Include ccstools role only for domjudge
+      ansible.builtin.include_role:
+        name: ccstools
       tags: ccstools
       when: ccs == "domjudge"
 
@@ -582,7 +583,9 @@
   hosts: all,!contestants
   tasks:
     - name: Grab some build content
-      ansible.builtin.shell: 'set -o pipefail && echo "Provisioned at $(date +"%Y-%m-%d %H:%M:%S")\nRevision: $(git rev-list --full-history --all --abbrev-commit | head -1)\n"'
+      ansible.builtin.shell: >
+        set -o pipefail &&
+        echo "Provisioned at $(date +"%Y-%m-%d %H:%M:%S")\nRevision: $(git rev-list --full-history --all --abbrev-commit | head -1)\n"
       become: false
       register: git_revision
       delegate_to: 127.0.0.1

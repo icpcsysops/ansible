@@ -33,4 +33,3 @@
       ansible.builtin.systemd:
         name: lightdm
         state: restarted
-     #when: v_running.rc != 0

@@ -1,67 +1,37 @@
 #!/bin/bash
+
 set -e
-if [ "$2." == "." ]; then
-  exit
+teamname=$1
+backup_dir=$2
+teamid=$(echo "${teamname}" | cut -b5-)
+if [ "$teamid" = "" ]; then
+  echo "Usage: $0 teamid backup_dir"
+  exit 1
 fi
-dir=$2
-host=$1
-id0=`echo $host | cut -c 5-`
-id=`echo $id0 | tr -d '[a-c]'`
-BACKUPDIR="${dir}"
-echo
-echo -n Backing up $1 to $BACKUPDIR...
-
-exit_timeout() {
-    echo "backup took too long" > backup_timedout
-    logger -is -p auth.notice -t lastminute "$1 backup to $BACKUPDIR took too long"
-}
-
-if [ ! -d $BACKUPDIR/$id ]; then
-  mkdir -p $BACKUPDIR/$id
+if [ "$backup_dir" = "" ]; then
+  echo "Usage: $0 teamid backup_dir"
+  exit 1
 fi
-
-cd $BACKUPDIR
-trap exit_timeout SIGALRM RETURN;
-(
-ulimit -t 30
-# old
-# ssh ${host} "(cd /home/${host}; tar cf -  --exclude .metadata --exclude core.* *)" | tar xf -
-# old new
-#ssh ${host} "(cd /home/${host}; tar czf -  --exclude .metadata --exclude core.* --exclude core *)" > ${host}.tar.gz
-# 2018 new
-# ssh -q ${host} "(cd /home/${host}; zip -q -x "workspace/.metadata/*" "*/core.*" "*/core" "*venv*" "core" "core.*" "Desktop/samps/*" -r -  *)" > $id/backup.${id0}.zip
-# wf2023 new -- this did not work
-# ssh -q ${host} "(cd /home/${host}; zip -q -x@exclude.lst -r -  *)" > $id/backup.${id0}.zip
-# wf2023 new
-ssh -q ${host} "(cd /home/${host}; zip -q -x "workspace/.metadata/*" "Desktop/samps/*" "*/core.*" "*/core" "*venv*" "core" "core.*" -r -  *)" > $id/backup.${id0}.zip
-)
-# new for 2019 for jetbrains
+host="team${teamid}"
+cd "$backup_dir" || exit
+if [ ! -d "${teamid}" ]; then
+  mkdir -p "${teamid}"
+fi
+rsync -a --delete --exclude={"workspace/.metadata/*","*/core.*","*/core","*venv*",'core',"core.*"} "root@team${teamid}:/home/team${teamid}/*" "${backup_dir}/${teamid}/backup"
 (
 ulimit -t 10
-# new for 2021A (one of these years I will get it right)
-# overall ps is stored at the yearday level,  back up past $hour/$min$sec
-ssh -q ${host} "(date +%s ; ps -auxw)" >> ../../ps.${host}.txt
-# new for 2020
-cp ../../ps.${host}.txt $id/tool_data.${id0}.txt
+ssh -q "${host}" "(date +s ; ps -auxw)" >> "${backup_dir}/${teamid}/tool_data.${teamid}.txt"
 )
-# new for wf2020, martkeys
-(
-scp -q @${host}:/root/keys.log $id/key_log.${id0}.txt
-)
-
-# shinier way to get active processes
-(
-  ulimit -t 10
-  # new for 2023
-  ssh -q ${host} "(sudo -u ${host} /bin/env DISPLAY=:1 /usr/local/bin/s.py)" >> ../../spy.${host}.json
-  cp ../../spy.${host}.json $id/tool_data_spy.${id0}.json
-)
-
-# new for wf2021, memory analysis
 (
 ulimit -t 10
-ssh -q ${host} "(date +%s ; free -m)" >> ../../memory.${host}.txt
-cp ../../memory.${host}.txt $id/memory.${id0}.txt
+scp -q "@${host}:/root/keys.log" "${backup_dir}/${teamid}/key_log.${teamid}.txt"
+)
+(
+ulimit -t 10
+ssh -q "${host}" "(sudo -u ${host} /bin/env DISPLAY=:1 /usr/local/bin/s.py)" >> "${backup_dir}/${teamid}/tool_data_spy.${teamid}.json" || true
+)
+(
+cd "${backup_dir}/${teamid}/backup"
+zip -q -r "../backup.${teamid}.zip" .
 )
 
-echo done.

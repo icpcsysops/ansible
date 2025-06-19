@@ -7,7 +7,7 @@
       tags: apt
   tasks:
     - name: Fix permissioning of intermediate cert
-      tags: fix_cert # TODO this should be fixed in icpc2025
+      tags: fix_cert  # TODO this should be fixed in icpc2025
       ansible.builtin.file:
         path: /usr/share/ca-certificates/ICPC_WF_Intermediate_CA.crt
         mode: "0644"
@@ -30,13 +30,13 @@
         src: /usr/share/ca-certificates/ICPC_WF_Root_CA.crt
         dest: /usr/share/ca-certificates/ICPC_WF_Root_CA.crt
         mode: "0644"
-      tags: fix_root # TODO this should fixed in icpc2025
+      tags: fix_root  # TODO this should fixed in icpc2025
       notify: Run update-ca-certificates
   handlers:
     - name: Run update-ca-certificates
       ansible.builtin.command: /usr/sbin/update-ca-certificates
-      register: my_output # <- Registers the command output.
-      changed_when: my_output.rc != 0 # <- Uses the return code to define when the task has changed.
+      register: my_output  # <- Registers the command output.
+      changed_when: my_output.rc != 0  # <- Uses the return code to define when the task has changed.
 
 
 - name: Configure packages machines
@@ -575,7 +575,7 @@
       become: false
       register: git_revision
       delegate_to: 127.0.0.1
-      changed_when: git_revision.rc != 0 # <- Uses the return code to define when the task has changed.
+      changed_when: git_revision.rc != 0  # <- Uses the return code to define when the task has changed.
 
     - name: Create a file on the desktop indicating ansible has finished
       ansible.builtin.copy:

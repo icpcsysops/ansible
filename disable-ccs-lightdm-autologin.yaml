@@ -1,0 +1,13 @@
+---
+- name: Playbook to enable ccs autologin on the lightdm greeter
+  hosts: contestants
+  gather_facts: false
+  tasks:
+    - name: Enable ccs autologin
+      ansible.builtin.lineinfile:
+        line: greeter-session=lightdm-gtk-greeter
+        regexp: ^greeter-session
+        dest: /etc/lightdm/lightdm.conf
+        owner: root
+        group: root
+        mode: '0644'

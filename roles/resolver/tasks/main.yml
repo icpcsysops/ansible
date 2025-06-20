@@ -32,9 +32,17 @@
         path: /Users/{{ ansible_user }}/Desktop/resolver
         state: absent
 
+    - name: Copy the resolver
+      ansible.windows.win_copy:
+        src: "{{ item }}"
+        dest: "%TEMP%/resolver.zip"
+      with_first_found:
+        - files:
+            - /tmp/resolver-{{ resolver_version }}.zip
+            - files/resolver-{{ resolver_version }}.zip
     - name: Unpack the resolver
       community.windows.win_unzip:
-        src: /Users/{{ ansible_user }}/Downloads/resolver-{{ resolver_version }}.zip
+        src: "%TEMP%/resolver.zip"
         dest: /Users/{{ ansible_user }}/Desktop/resolver
         creates: /Users/{{ ansible_user }}/Desktop/resolver
 

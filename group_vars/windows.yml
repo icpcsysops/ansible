@@ -1,5 +1,6 @@
 ---
 # ansible_user: icpc
 # ansible_password: icpc2022a
+ansible_winrm_transport: credssp
 ansible_connection: winrm
 ansible_port: 5985

@@ -17,14 +17,27 @@
     - {ip: 10.4.4.201, name: teamprint1}
     - {ip: 10.4.4.202, name: teamprint2}
     - {ip: 10.4.4.203, name: teamprint3}
-    - {ip: 10.4.4.204, name: judgeprint}
-    - {ip: 10.4.4.205, name: systemsprint}
+    - {ip: 10.4.4.204, name: judgeprinter}
+    - {ip: 10.4.4.205, name: systemsprinter}
 
 - name: Install packages needed to munging pdfs
   ansible.builtin.package:
     name:
       - imagemagick
       - pdftk
+
+- name: Listen on all ports for cupsd.conf
+  ansible.builtin.lineinfile:
+    path: /etc/cups/cupsd.conf
+    regexp: 'Listen localhost:631'
+    line: 'Listen *:631'
+  notify: Restart cups
+
+- name: Add ServerAlias to cupsd.conf
+  ansible.builtin.lineinfile:
+    path: /etc/cups/cupsd.conf
+    line: 'ServerAlias *'
+  notify: Restart cups
 
 - name: Remove old policy from ImagicMagick
   ansible.builtin.lineinfile:
@@ -112,6 +125,8 @@
   ansible.builtin.include_tasks: printer.yml
   vars:
     printer: "{{ item.name }}"
+    printer_uri: "{{ item.uri | default('ipp://' + item.name) }}"
+    model: "{{ item.model | default('everywhere') }}"
     is_default: "{{ item.is_default | default(false) }}"
     contestprinter: "{{ item.contestprinter | default(false) }}"
   loop: "{{ printserver_print_config }}"
@@ -120,7 +135,7 @@
 # TODO: add the university names+logos, and team photos
 # They go in files like this, with names based on
 # /usr/share/cups/data/UniversityNames/$user.txt
-# /usr/share/cups/data/Pictures/$user.png
+# /usr/share/cups/data/Pictures/$user.jpg
 # /usr/share/cups/data/Logos/$user.png
 #
 #

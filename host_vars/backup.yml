@@ -112,6 +112,7 @@ script_server_commands:
           - cds
           - p100
           - live
+          - collusion
 
   - name: restart-cds
     description: Restarts cds instances

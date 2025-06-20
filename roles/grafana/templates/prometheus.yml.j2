@@ -42,6 +42,12 @@ scrape_configs:
         labels:
           instance: reverseproxy
 {% endif %}
+{% if 'scoreboard' in hostvars %}
+      - targets:
+        - {{ hostvars['scoreboard'].ansible_host }}:9100
+        labels:
+          instance: scoreboard
+{% endif %}
 
   - job_name: node_teams
     static_configs:

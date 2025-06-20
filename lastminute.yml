@@ -1,4 +1,10 @@
 ---
+- name: Configure packages machines
+  hosts: packages
+  roles:
+    - role: icpc_host_packages
+      tags: icpc_host_packages
+
 # this needs to be first as ldap requires it
 - name: Pre-configure apt
   hosts: all
@@ -38,12 +44,6 @@
       register: my_output  # <- Registers the command output.
       changed_when: my_output.rc != 0  # <- Uses the return code to define when the task has changed.
 
-
-- name: Configure packages machines
-  hosts: packages
-  roles:
-    - role: icpc_host_packages
-      tags: icpc_host_packages
 
 - name: Configure scoreboard machine
   hosts: packages,scoreboard
@@ -108,9 +108,6 @@
       when: enable_reverseproxy is defined and enable_reverseproxy
     - role: p100
       tags: p100
-    - role: ccstools
-      tags: ccstools
-      when: ccs  == "domjudge"
     - role: taskset_run_scripts
     - role: vlc
       when: enable_vlc is defined and enable_vlc
@@ -119,8 +116,15 @@
       tags: iptablesrules
     - role: martkeys
       when: disable_martkeys is not defined or not disable_martkeys
+    - role: lightdm_ccs_greeter
 
   tasks:
+    - name: Remove network-manager so teams can't wifi things or whatnot
+      ansible.builtin.apt:
+        name: network-manager
+        purge: true
+        autoremove: true
+
     # more things to fix in icpc-pycharm
     - name: Fix location in printers.conf
       ansible.builtin.lineinfile:
@@ -138,31 +142,27 @@
         state: link
         force: true
 
-    # TODO more things to fix in icpc-pycharm
-    - name: Stat pycharm python_stubs
-      ansible.builtin.stat:
-        path: /etc/skel/.config/JetBrains/PyCharmCE2022.3/system/python_stubs
-      register: python_stubs
-
-    - name: Remove pycharm bits that do not exist
-      tags: venv_pycharm
-      ansible.builtin.file:
-        state: absent
-        path: /etc/skel/workspace/PycharmProject/venv/lib/{{ item }}
-      with_items:
-        - crda
-
-    - name: Extract python_stubs if missing
-      ansible.builtin.unarchive:
-        src: files/pycharm/python_stubs.tar.gz
-        dest: /etc/skel/.config/JetBrains/PyCharmCE2022.3/system
-      when: not python_stubs.stat.exists
-
     - name: Remove invalid runconfiguration from pycharm workspace
       tags: pycharm_fix
       ansible.builtin.file:
         state: absent
         path: /etc/skel/workspace/PycharmProject/.idea/runConfigurations/pypy3.xml
+
+    - name: Include ccstools role only for domjudge
+      ansible.builtin.include_role:
+        name: ccstools
+      tags: ccstools
+      when: ccs == "domjudge"
+
+    # TODO fixed in this to icpc2024
+    - name: Disable idle-dim
+      ansible.builtin.copy:
+        dest: /usr/share/glib-2.0/schemas/21_icpc_power_schema.gschema.override
+        content: |
+          [org.gnome.settings-daemon.plugins.power]
+          idle-dim=false
+        mode: '0644'
+      notify: Glib-compile-schemas
 
     - name: Cleanup domjudge.desktop,  renaming to ccs.desktop
       ansible.builtin.file:
@@ -215,12 +215,13 @@
             - "{{ contest }}.teams.tar.gz"
           skip: true
 
-    - name: Remove icpc user
+    - name: Remove icpc and team user from img
       ansible.builtin.user:
         name: "{{ item }}"
         state: absent
       loop:
         - "icpc"
+        - "team"
       when: root_password is defined
 
     - name: Workaround nautilus auto-mounting
@@ -243,14 +244,25 @@
         mode: '0644'
     - name: Use policykit to disable mounting for teams
       ansible.builtin.copy:
-        dest: /etc/polkit-1/localauthority/50-local.d/disable-udisks.pkla
+        dest: /etc/polkit-1/rules.d/99-disable-udisks.rules
         content: |
-          [Block access to udisks for teams]
-          Identity=unix-user:*
-          Action=org.freedesktop.udisks2.*
-          ResultAny=no
-          ResultInactive=no
-          ResultActive=no
+          polkit.addRule(function(action, subject) {
+            if (action.id.startsWith("org.freedesktop.udisks2."))
+            {
+              return polkit.Result.NO;
+            }
+          });
+        mode: '0644'
+    - name: Use policykit to disable access to networkmanager
+      ansible.builtin.copy:
+        dest: /etc/polkit-1/rules.d/99-disable-networkmanager.rules
+        content: |
+          polkit.addRule(function(action, subject) {
+            if (action.id.startsWith("org.freedesktop.NetworkManager."))
+            {
+              return polkit.Result.NO;
+            }
+          });
         mode: '0644'
     - name: Fix gvfsd permission tweaking to disable
       ansible.builtin.file:
@@ -571,7 +583,9 @@
   hosts: all,!contestants
   tasks:
     - name: Grab some build content
-      ansible.builtin.shell: 'set -o pipefail && echo "Provisioned at $(date +"%Y-%m-%d %H:%M:%S")\nRevision: $(git rev-list --full-history --all --abbrev-commit | head -1)\n"'
+      ansible.builtin.shell: >
+        set -o pipefail &&
+        echo "Provisioned at $(date +"%Y-%m-%d %H:%M:%S")\nRevision: $(git rev-list --full-history --all --abbrev-commit | head -1)\n"
       become: false
       register: git_revision
       delegate_to: 127.0.0.1

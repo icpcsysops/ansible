@@ -60,15 +60,19 @@
 {% if enable_reverseproxy -%}
 #TODO: make the ip for reverseproxy a lookup/variable/something better than hardcoded
 # http(s) to/from reverseproxy
--A INPUT -p tcp --sport 80 -s 10.3.3.205/32 -j ACCEPT
--A OUTPUT -p tcp --dport 80 -d 10.3.3.205/32 -j ACCEPT
--A INPUT -p tcp --sport 443 -s 10.3.3.205/32 -j ACCEPT
--A OUTPUT -p tcp --dport 443 -d 10.3.3.205/32 -j ACCEPT
+-A INPUT -p tcp --sport {{ ccs_port }} -s 10.3.3.205/32 -j ACCEPT
+-A OUTPUT -p tcp --dport {{ ccs_port }} -d 10.3.3.205/32 -j ACCEPT
 
 {% else -%}
 # https to/from ccs primary
--A INPUT -p tcp --sport 443 -s {{ ccs_ip }}/32 -j ACCEPT
--A OUTPUT -p tcp --dport 443 -d {{ ccs_ip }}/32 -j ACCEPT
+-A INPUT -p tcp --sport {{ ccs_port }} -s {{ ccs_ip }}/32 -j ACCEPT
+-A OUTPUT -p tcp --dport {{ ccs_port }} -d {{ ccs_ip }}/32 -j ACCEPT
+
+{% if ccs == "pc2" -%}
+# pc2 needs this port for the pc2 command line submit client (because reasons)
+-A INPUT -p tcp --sport 50444 -s {{ ccs_ip }}/32 -j ACCEPT
+-A OUTPUT -p tcp --dport 50444 -d {{ ccs_ip }}/32 -j ACCEPT
+{% endif -%}
 
 {% endif -%}
 
@@ -128,10 +132,10 @@
 -A OUTPUT -p tcp --dport 631 -d 10.3.3.149 -j ACCEPT
 -A OUTPUT -p udp --dport 631 -d 10.3.3.149 -j ACCEPT
 # to authprint
--A INPUT -p tcp --sport 631 -s 10.3.3.211 -j ACCEPT
--A INPUT -p udp --sport 631 -s 10.3.3.211 -j ACCEPT
--A OUTPUT -p tcp --dport 631 -d 10.3.3.211 -j ACCEPT
--A OUTPUT -p udp --dport 631 -d 10.3.3.211 -j ACCEPT
+-A INPUT -p tcp --sport 631 -s 10.3.3.208 -j ACCEPT
+-A INPUT -p udp --sport 631 -s 10.3.3.208 -j ACCEPT
+-A OUTPUT -p tcp --dport 631 -d 10.3.3.208 -j ACCEPT
+-A OUTPUT -p udp --dport 631 -d 10.3.3.208 -j ACCEPT
 
 # printing (ldp)
 -A INPUT -p udp --sport 515 -s 10.3.3.216 -j ACCEPT

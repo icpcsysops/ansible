@@ -7,17 +7,11 @@
     - name: Enable autologin to user p
       ansible.builtin.copy:
         content: |
-          [daemon]
-          AutomaticLoginEnable = true
-          AutomaticLogin = p
-          [security]
-
-          [xdmcp]
-
-          [chooser]
-
-          [debug]
-        dest: /etc/gdm3/custom.conf
+          [SeatDefaults]
+          # Autologin
+          autologin-user=p
+          autologin-timeout=0
+        dest: /etc/lightdm/lightdm.conf.d/p100.conf
         owner: root
         group: root
         mode: '0644'
@@ -31,8 +25,8 @@
         path: /tmp/org.icpc.tools.cache*
         state: absent
       when: p_running.rc != 0
-    - name: Restart gdm3
+    - name: Restart lightdm
       ansible.builtin.systemd:
-        name: gdm3
+        name: lightdm
         state: restarted
       when: p_running.rc != 0

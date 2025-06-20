@@ -16,6 +16,12 @@
   roles:
     - role: windows
 
+- name: Resolver hosts
+  hosts: win_resolvers
+  gather_facts: false
+  roles:
+    - role: resolver
+
 - name: Presentation hosts
   hosts: presentation_clients
   gather_facts: false
@@ -49,3 +55,14 @@
   gather_facts: true
   roles:
     - role: balloonprinter
+
+- name: Disable root ca updates, because windows will delete our trusted ca certs when it does this update
+  hosts: windows
+  gather_facts: false
+  tasks:
+    - name: Disable root auto update
+      ansible.windows.win_regedit:
+        path: HKLM:\Software\Policies\Microsoft\SystemCertificates\AuthRoot
+        name: DisableRootAutoUpdate
+        data: 0
+        type: dword

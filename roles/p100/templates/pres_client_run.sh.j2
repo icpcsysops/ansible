@@ -20,6 +20,10 @@ gsettings set org.gnome.desktop.session idle-delay 0
 {% if p100_default_presentation|default(false) -%}
 export ICPC_DEFAULT_PRESENTATION={{ p100_default_presentation }}
 {% endif -%}
+{% if p100_icpc_tools_ip|default(false) -%}
+export ICPC_TOOLS_IP={{ ansible_host }}
+{% endif -%}
+
 
 sleep 5
 while true; do

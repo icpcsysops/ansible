@@ -19,3 +19,6 @@ bash -x $tempscript
 rm $tempscript
 
 tar czvf printsrv.tar.gz -C printsrv UniversityNames Logos Pictures
+
+scp printsrv.tar.gz printsrv:/tmp
+ssh printsrv 'tar -C /usr/share/cups/data -xf /tmp/printsrv.tar.gz'

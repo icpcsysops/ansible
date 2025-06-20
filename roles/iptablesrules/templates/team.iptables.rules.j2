@@ -60,8 +60,8 @@
 {% if enable_reverseproxy -%}
 #TODO: make the ip for reverseproxy a lookup/variable/something better than hardcoded
 # http(s) to/from reverseproxy
--A INPUT -p tcp --sport {{ ccs_port }} -s {{ ccs_ip }}/32 -j ACCEPT
--A OUTPUT -p tcp --dport {{ ccs_port }} -d {{ ccs_ip }}/32 -j ACCEPT
+-A INPUT -p tcp --sport {{ ccs_port }} -s 10.3.3.205/32 -j ACCEPT
+-A OUTPUT -p tcp --dport {{ ccs_port }} -d 10.3.3.205/32 -j ACCEPT
 
 {% else -%}
 # https to/from ccs primary

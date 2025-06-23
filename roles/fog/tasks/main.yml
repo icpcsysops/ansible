@@ -1,0 +1,98 @@
+---
+- name: Ensure isc-dhcp-server package is installed
+  ansible.builtin.apt:
+    pkg:
+      - isc-dhcp-server
+
+- name: Ensure isc-dhcp-server6 is disabled
+  ansible.builtin.service:
+    name: isc-dhcp-server6
+    enabled: false
+    state: stopped
+
+- name: Ensure isc-dhcp-server is the expected state
+  ansible.builtin.service:
+    name: isc-dhcp-server
+    enabled: '{{ fog_dhcp_server_enabled | default("true") }}'
+    state: '{{ fog_dhcp_server_state | default("started") }}'
+
+- name: Configure isc-dhcp-server
+  ansible.builtin.template:
+    src: dhcpd.conf.j2
+    dest: /etc/dhcp/dhcpd.conf
+    notify: Restart isc-dhcp-server
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Download and install the fogproject once
+  block:
+    - name: Set fogproject to latest version
+      ansible.builtin.set_fact:
+        fog_version: master
+      when: fog_version is not defined
+
+    - name: Download fogproject once
+      delegate_to: localhost
+      ansible.builtin.get_url:
+        url: https://github.com/FOGProject/fogproject/archive/{{ fog_version }}.tar.gz
+        dest: /tmp/fog-{{ fog_version }}.tar.gz
+        mode: "0644"
+        owner: root
+        group: root
+
+    - name: Unpack fog
+      ansible.builtin.unarchive:
+        src: /tmp/fog-{{ fog_version }}.tar.gz
+        dest: /opt
+        owner: root
+        group: root
+
+    - name: Link to /opt/forproject
+      ansible.builtin.file:
+        state: link
+        src: /opt/fog-{{ fog_version }}
+        dest: /opt/fog
+
+- name: Place .fogsettings
+  ansible.builtin.template:
+    src: fogsettings.j2
+    dest: /opt/fog/.fogsettings
+    mode: "0644"
+    owner: fog
+    group: fog
+
+- name: Place background photo
+  ansible.builtin.copy:
+    src: files/bg.png
+    dest: /var/www/html/fog/service/ipxe/bg.png
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Create folders for images structure
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - /images
+    - /images/postdownloadscripts
+    - /images/postdownloadscripts/icpc
+
+- name: Deploy fog.postdownload
+  ansible.builtin.template:
+    src: fog.postdownload.j2
+    dest: /images/postdownloadscripts/fog.postdownload
+    mode: "0755"
+
+- name: Deploy files to /images/postdownloadscripts/icpc
+  ansible.builtin.file:
+    src: files/{{ item }}
+    dest: /images/postdownloadscripts/icpc/{{ item }}
+    mode: "0755"
+  loop:
+    - fog.icpcC
+    - fog.stage2

@@ -1,0 +1,23 @@
+---
+# required to be set:
+# fog_ifc: UNKNOWN
+# whether to run the dhcpd server (true or false) on startup, default is true
+fog_dhcp_server_enabled: false
+# state of dhcpd server valid choices are ["stopped", "started"], default is "started"
+fog_dhcp_server_state: "stopped"
+# these are defaults
+# dhcpd.conf next-server
+# fog_server_ip: "10.1.0.250"
+# dhcpd.conf subnet settings
+# fog_subnet: "10.0.1.0"
+# fog_subnet_mask: "255.255.254.0"
+# dhcpd.conf range dynamic-bootp
+# fog_dynamic_bootp_start: "10.1.0.11"
+# fog_dynamic_bootp_end: "10.1.0.250"
+# dhcpd.conf option routers
+# fog_router_ip: "10.1.1.254"
+# fog_broadcast_ip: "10.1.1.255"
+# fog_password: REDACTED (see templates/fogsettings.j2 for the default)
+# fog.postdownload.j2 used with efibootmgr to reset to hard drive vs network
+# fog_hd: 2
+# fog_net: 1

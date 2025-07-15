@@ -233,14 +233,21 @@
 
     - name: Use policykit to disable power management for teams
       ansible.builtin.copy:
-        dest: /etc/polkit-1/localauthority/50-local.d/disable-power-mgmt.pkla
+        dest: /etc/polkit-1/rules.d/48-prevent-shutdown.rules
         content: |
-          [Disable power mgmt access]
-          Identity=unix-user:*
-          Action=org.freedesktop.login1.power-off*;org.freedesktop.login1.reboot*;org.freedesktop.login1.set-reboot*;org.freedesktop.login1.halt*;org.freedesktop.login1.suspend*
-          ResultAny=no
-          ResultInactive=no
-          ResultActive=no
+          polkit.addRule(function(action, subject) {
+              if (action.id == "org.freedesktop.login1.reboot" ||
+                   action.id == "org.freedesktop.login1.reboot-multiple-sessions" ||
+                   action.id == "org.freedesktop.login1.power-off" ||
+                   action.id == "org.freedesktop.login1.power-off-multiple-sessions" ||
+                   action.id == "org.freedesktop.login1.suspend" ||
+                   action.id == "org.freedesktop.login1.suspend-multiple-sessions" ||
+                   action.id == "org.freedesktop.login1.hibernate" ||
+                   action.id == "org.freedesktop.login1.hibernate-multiple-sessions")
+              {
+                   return polkit.Result.NO;
+              }
+          });
         mode: '0644'
     - name: Use policykit to disable mounting for teams
       ansible.builtin.copy:

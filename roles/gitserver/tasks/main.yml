@@ -66,3 +66,38 @@
     state: touch
     modification_time: preserve
     access_time: preserve
+
+
+# Clone a set of repositories and make them available
+- name: Create key files
+  ansible.builtin.copy:
+    dest: "{{ git_home_dir }}/.ssh/git-privatekey-{{ item.name }}"
+    owner: git
+    group: git
+    mode: "0600"
+    content: "{{ lookup('file', item.deploy_key) }}\n"
+  no_log: true
+  diff: false
+  loop: "{{ gitserver_repos }}"
+
+- name: Clone/update repositories
+  ansible.builtin.git:
+    repo: "{{ item.remote }}"
+    dest: "{{ git_home_dir }}/{{ item.name }}.git"
+    version: master
+    bare: true
+    key_file: "{{ git_home_dir }}/.ssh/git-privatekey-{{ item.name }}"
+    accept_newhostkey: true # does trust-on-first-use
+  become: true
+  become_user: git
+  loop: "{{ gitserver_repos }}"
+
+- name: Configure the key properly in the repo for manual commands
+  community.general.git_config:
+    name: core.sshCommand
+    value: "ssh -i ~/.ssh/git-privatekey-{{ item.name }}"
+    scope: "local"
+    repo: "{{ git_home_dir }}/{{ item.name }}.git"
+  become: true
+  become_user: git
+  loop: "{{ gitserver_repos }}"

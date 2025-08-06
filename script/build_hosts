@@ -12,32 +12,37 @@ parser.add_argument(
 args = parser.parse_args()
 
 judges = {}
-autojudges = {}  # kattis autojudges
+humanjudges = {}
+kattis_autojudges = {}
 pc2aj = {}
 domjudge_judges = {}
-others = {}
+servers = {}
 kattis_ccsadmin = {}
 domjudge_ccsadmin = {}
 pc2_ccsadmin = {}
+contestants = {}
+admins = "    troy-mgmt:\n    keith-mgmt:\n"
 if args.wf:
-    name = "wf2024"
-    detail = "2024Astana"
-    timezone = "Asia/Almaty"
+    name = "wf2025"
+    detail = "2025Baku"
+    timezone = "Asia/Baku"
     max_team = 146
-    max_human_judge = 14
-    max_pc2_autojudge = 20
-    max_pc2_ccsadmin = 8
+    max_human_judge = 15
+    max_pc2_autojudge = 12
+    max_pc2_ccsadmin = 4
     max_kattis_ccsadmin = 0
     max_kattis_autojudge = 0
-    max_domjudge_autojudge = 24
-    max_domjudge_ccsadmin = 8
-    max_coachview = 10
+    max_domjudge_autojudge = 10
+    max_domjudge_ccsadmin = 4
+    max_coachview = 8
     papersize = "A4"
     enable_vlc = True
-    ccs = "domjudge"
+    ccs = "pc2"
     need_reverse_proxy = False
     local_kattis_server = False
+    backup_kattis_server = False
     local_pc2_server = True
+    backup_pc2_server = True
     local_domjudge_server = True
     backup_domjudge_server = True
 else:
@@ -55,15 +60,14 @@ else:
     max_coachview = 8
     papersize = "letter"
     enable_vlc = False
-    ccs = "domjudge"
+    ccs = "pc2"
     need_reverse_proxy = True
     local_kattis_server = False
+    backup_kattis_server = False
     local_pc2_server = False
+    backup_pc2_server = False
     local_domjudge_server = False
     backup_domjudge_server = False
-
-contestants = {}
-humanjudges = {}
 
 
 def print_host(num, hostname, ip, list_fh, group, base_ip=0):
@@ -77,7 +81,7 @@ def print_host_wf(base, num, hostname, ip, list_fh, group, base_ip=0):
 
 
 def print_server(hostname, ip, group=[]):
-    group[f"{hostname}"] = {"ansible_host": f"{ip}"}
+    group[f"{hostname}:\n"] = ""
 
 
 def print_children(max_label, item, document):
@@ -102,11 +106,13 @@ all:
     enable_vlc: {str(enable_vlc).lower()}"""
 
     # make a backup of ../hosts.yaml with the it's modified date, if it exists
-    if os.isfile("../hosts.yml"):
+    if os.path.isfile("../hosts.yml"):
         FilePath = "../hosts.yml"
         modifiedTime = os.path.getmtime(FilePath)
-        timeStamp = datetime.datetime.fromtimstamp(modifiedTime).strftime("%b-%d-%y-%H:%M:%S")
-        os.rename(FilePath,FilePath+"_"+timeStamp)
+        timeStamp = datetime.datetime.fromtimestamp(modifiedTime).strftime(
+            "%b-%d-%y-%H:%M:%S"
+        )
+        os.rename(FilePath, FilePath + "_" + timeStamp)
     with open("../hosts.yml", "wt") as fh:
         print(document, file=fh)
         document2 = ""
@@ -116,7 +122,7 @@ all:
                 print_host(i + 1, "judge", "10.2.2", list_fh, humanjudges)
         with open("../list.autojudges", "wt") as list_fh:
             for i in range(max_kattis_autojudge):
-                print_host(i + 1, "autojudge", "10.2.2", list_fh, autojudges, 31)
+                print_host(i + 1, "autojudge", "10.2.2", list_fh, kattis_autojudges, 31)
         with open("../list.pc2judges", "wt") as list_fh:
             for i in range(max_pc2_autojudge):
                 print_host(i + 1, "pc2-aj", "10.2.2", list_fh, pc2aj, 127)
@@ -129,52 +135,63 @@ all:
         document2 += f"""
 autojudges:
   children:"""
-        document2 += print_children(
-            max_label=max_domjudge_autojudge,
-            item="domjudge_judgehost",
-            document=document3,
-        )
-        document2 += print_children(
-            max_label=max_kattis_autojudge, item="kattis_autojudge", document=document3
-        )
-        document2 += print_children(
-            max_label=max_pc2_autojudge, item="pc2_aj", document=document3
-        )
+        if max_domjudge_autojudge > 0:
+            document2 += print_children(
+                max_label=max_domjudge_autojudge,
+                item="domjudge_judgehost",
+                document=document3,
+            )
+        if max_kattis_autojudge > 0:
+            document2 += print_children(
+                max_label=max_kattis_autojudge,
+                item="kattis_autojudge",
+                document=document3,
+            )
+        if max_pc2_autojudge > 0:
+            document2 += print_children(
+                max_label=max_pc2_autojudge, item="pc2_aj", document=document3
+            )
         document2 += """
+
 judges:
   children:"""
         document2 += print_children(
             max_label=max_human_judge, item="human_judge", document=document3
         )
-        document2 += print_children(
-            max_label=1,
-            item="autojudges",
-            document=document3,
-        )
+        if max_kattis_autojudge > 0:
+            document2 += print_children(
+                max_label=1,
+                item="kattis-autojudges",
+                document=document3,
+            )
 
         document = ""
         if max_human_judge:
+            humanjudges = f'\n    "judge[1:{max_human_judge}]":'
             document += f"""
-human_judge:
-  hosts: {humanjudges}
+human_judges:
+  hosts:{humanjudges}
 """
         if max_domjudge_autojudge:
+            domjudge_judges = f'\n    "domjudge-judgehost[1:{max_domjudge_autojudge}]":'
             document += f"""
 domjudge_judgehost:
-  hosts: {domjudge_judges}
+  hosts:{domjudge_judges}
 """
         if max_kattis_autojudge:
+            kattis_judges = f'\n    "kattis-autojudge[1:{max_kattis_autojudge}]":'
             document += f"""
 kattis_autojudge:
-  hosts: {kattis_judges}
+  hosts:{kattis_judges}
 """
         if max_pc2_autojudge:
+            pc2aj = f'\n    "pc2-autojudge[1:{max_pc2_autojudge}]":'
             document += f"""
 pc2_aj:
-    hosts: {pc2aj}
+  hosts:{pc2aj}
 """
 
-        print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)
+        print(document, file=fh, end="")
         document = ""
         print(document2, file=fh)
         with open("../list.domjudges_ccsadmin", "wt") as list_fh:
@@ -194,56 +211,78 @@ pc2_aj:
             for i in range(max_pc2_ccsadmin):
                 print_host(i + 1, "pc2-ccsadmin", "10.3.3", list_fh, pc2_ccsadmin, 239)
         if need_reverse_proxy:
-            print_server("reverseproxy", "10.3.3.205", others)
-        # print_server("media", "10.3.3.206", others);
-        print_server("cds", "10.3.3.207", others)
-        print_server("scoreboard", "10.3.3.208", others)
-        print_server("packages", "10.3.3.209", others)
-        print_server("backup", "10.3.3.210", others)
-        print_server("printsrv", "10.3.3.211", others)
+            print_server("reverseproxy", "10.3.3.205", servers)
+        # print_server("media", "10.3.3.206", servers);
+        print_server("cds", "10.3.3.207", servers)
+        print_server("scoreboard", "10.3.3.208", servers)
+        print_server("packages", "10.3.3.209", servers)
+        print_server("backup", "10.3.3.210", servers)
+        print_server("printsrv", "10.3.3.211", servers)
         # this is windows box
-        # print_server("balloonmanager", "10.4.4.149", others)
+        # print_server("balloonmanager", "10.4.4.149", servers)
         if local_kattis_server:
-            print_server("kattis", "10.3.3.212", others)
-            print_server("kattisbackup", "10.3.3.213", others)
+            print_server("kattis", "10.3.3.212", servers)
+            print_server("kattisbackup", "10.3.3.213", servers)
         if local_pc2_server:
-            print_server("pc2", "10.3.3.214", others)
-        # print_server("domjudge-shadowccs", "10.3.3.215", others)
+            print_server("pc2", "10.3.3.214", servers)
+            if backup_pc2_server:
+                print_server("pc2backup", "10.3.3.222", servers)
         if local_domjudge_server:
+            print_server("domserver-1", "10.3.3.216", servers)
             if backup_domjudge_server:
-                print_server("domserver", "10.3.3.216", others)
+                print_server("domserver-2", "10.3.3.217", servers)
 
-        document2 = f"""
-others:
+        document2 = ""
+        if max_domjudge_ccsadmin > 0:
+            document2 += f"""
+domjudge_ccsadmin:
+  hosts:
+    "domjudge-ccsadmin[1:{max_domjudge_ccsadmin}]":"""
+        if max_kattis_ccsadmin > 0:
+            document2 += f"""
+kattis_ccsadmin:
+  hosts:
+    "kattis-ccsadmin[1:{max_kattis_ccsadmin}]":"""
+        if max_pc2_ccsadmin > 0:
+            document2 += f"""
+pc2_ccsadmin:
+  hosts:
+    "pc2-ccsadmin[1:{max_pc2_ccsadmin}]":"""
+        document2 += f"""
+ccsadmin:
   children:"""
-
+        if max_domjudge_ccsadmin > 0:
+            document2 += f"\n    domjudge_ccsadmin:"
+        if max_kattis_ccsadmin > 0:
+            document2 += f"\n    kattis_ccsadmin:"
+        if max_pc2_ccsadmin > 0:
+            document2 += f"\n    pc2_ccsadmin:"
         document3 = ""
-        document2 += print_children(
-            max_label=max_kattis_ccsadmin, item="kattis_ccsadmin", document=document3
-        )
-        document2 += print_children(
-            max_label=domjudge_ccsadmin, item="domjudge_ccsadmin", document=document3
-        )
-        document2 += print_children(
-            max_label=pc2_ccsadmin, item="pc2_ccsadmin", document=document3
-        )
-        document2 += print_children(max_label=1, item="servers", document=document3)
+        #        document2 += print_children(max_label=1, item="servers", document=document3)
+        servers = f"""    cds:
+    packages:
+    backup:
+    printsrv:"""
+        if local_domjudge_server:
+            servers += "\n    domserver-1:"
+            if backup_domjudge_server:
+                servers += "\n    domserver-2:"
+        if local_kattis_server:
+            servers += "\n    kattis:"
+            if backup_kattis_server:
+                servers += "\n    kattisbackup:"
+        if local_pc2_server:
+            servers += "\n    pc2:"
+            if backup_pc2_server:
+                servers += "\n    pc2backup:"
         document = f"""
+admin:
+  hosts:
+{admins}
+
 servers:
   hosts:
-    {others}
-"""
-        if domjudge_ccsadmin:
-            document += f"""
-domjudge_ccsadmin:
-    hosts:
-       {domjudge_ccsadmin}
-"""
-        if pc2_ccsadmin:
-            document += f"""
-pc2_ccsadmin:
-    hosts:
-       {pc2_ccsadmin}
+{servers}
 """
         document += f"""
 windows:
@@ -314,34 +353,33 @@ windows:
       hosts:
 """
         if max_coachview > 0:
-          for i in range(1,max_coachview):
-            document += f"         coachview{i}:\n            ansible_host: 10.4.4.{10+i}"
-
-        print(yaml.dump(yaml.safe_load(document), explicit_start=False), file=fh)
+            document += f'        "coachview[1:{max_coachview}]":'
+        print(document, file=fh)
         print(document2, file=fh)
         document = f"""
 grafana:
   hosts:
     backup:
-      ansible_host: 10.3.3.210
 ntpservers:
   hosts:
     printsrv:
-      ansible_host: 10.3.3.211
     backup:
-      ansible_host: 10.3.3.210
     packages:
-      ansible_host: 10.3.3.209"""
+"""
         print(document, file=fh)
         with open("../list.team", "wt") as list_fh:
             for i in range(max_team):
                 print_host(i + 1, "team", "10.1.1", list_fh, contestants)
+            contestants = f'"team[1:{max_team}]":'
             document = f"""
 contestants:
   children:
-    floor:"""
+    floor:
+"""
             document2 = f"""
 floor:
-  hosts: {contestants}"""
-            print(yaml.dump(yaml.safe_load(document2), explicit_start=False), file=fh)
-            print(document, file=fh)
+  hosts:
+    {contestants}
+"""
+            print(document2, file=fh, end="")
+            print(document, file=fh, end="")

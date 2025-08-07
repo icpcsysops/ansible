@@ -185,7 +185,7 @@ kattis_autojudge:
   hosts:{kattis_judges}
 """
         if max_pc2_autojudge:
-            pc2aj = f'\n    "pc2-autojudge[1:{max_pc2_autojudge}]":'
+            pc2aj = f'\n    "pc2-aj[1:{max_pc2_autojudge}]":'
             document += f"""
 pc2_aj:
   hosts:{pc2aj}

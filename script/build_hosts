@@ -228,9 +228,9 @@ pc2_aj:
             if backup_pc2_server:
                 print_server("pc2backup", "10.3.3.222", servers)
         if local_domjudge_server:
-            print_server("domserver-1", "10.3.3.216", servers)
+            print_server("domjudge-1", "10.3.3.216", servers)
             if backup_domjudge_server:
-                print_server("domserver-2", "10.3.3.217", servers)
+                print_server("domjudge-2", "10.3.3.217", servers)
 
         document2 = ""
         if max_domjudge_ccsadmin > 0:

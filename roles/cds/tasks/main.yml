@@ -29,6 +29,13 @@
     group: cds
 
 
+- name: Disable nginx because the cds runs on those ports
+  ansible.builtin.systemd:
+    name: nginx
+    state: stopped
+    enabled: false
+    masked: true
+
 - name: Create CDS directories
   ansible.builtin.file:
     path: "{{ item }}"

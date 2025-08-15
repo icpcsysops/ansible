@@ -1,0 +1,62 @@
+---
+- name: Fetch the SSH Host Key for {{ inventory_hostname }}
+  ansible.builtin.fetch:
+    src: /etc/ssh/ssh_host_ed25519_key.pub
+    dest: "{{ ssh_ca_dir }}/hosts/{{inventory_hostname}}.key.pub"
+    flat: true
+  register: fetch_ssh_host_key
+
+- name: Check if the host key cert already exists
+  ansible.builtin.stat:
+    path: "{{ ssh_ca_dir }}/hosts/{{ inventory_hostname }}.key-cert.pub"
+  register: stat_host_key
+
+- name: Sign the SSH Host Key for {{ inventory_hostname }}
+  ansible.builtin.command: >-
+    ssh-keygen
+      -s {{ ssh_ca_dir }}/host_ca
+      -I "icpc-wf CA"
+      -h
+      -n "{{ inventory_hostname }}"
+      "{{ ssh_ca_dir }}/hosts/{{ inventory_hostname }}.key.pub"
+  delegate_to: localhost
+  when: fetch_ssh_host_key is changed or not stat_host_key.stat.exists
+
+- name: Copy SSH Host Cert for {{ inventory_hostname }}
+  ansible.builtin.copy:
+    src: "{{ ssh_ca_dir }}/hosts/{{ inventory_hostname }}.key-cert.pub"
+    dest: /etc/ssh/{{ inventory_hostname }}.key-cert.pub
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart sshd
+
+
+- name: Trust the ssh ca in known_hosts
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/ssh_known_hosts
+    line: "@cert-authority * {{ lookup('file', '{{ ssh_ca_dir }}/host_ca.pub') }}"
+    create: yes
+    mode: "0644"
+- name: Add the CA to the TrustedCAKeys file
+  ansible.builtin.copy:
+    src: "{{ ssh_ca_dir }}/user_ca.pub"
+    dest: /etc/ssh/TrustedCAKeys
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Update sshd_config to use the host cert
+  ansible.builtin.copy:
+    content: |
+      HostCertificate /etc/ssh/{{ inventory_hostname }}.key-cert.pub
+    dest: /etc/ssh/sshd_config.d/99-host-cert.conf
+  notify: Restart sshd
+
+- name: Update sshd_config to trust the user CA and support .ssh/authorized_principals
+  ansible.builtin.copy:
+    content: |
+      TrustedUserCAKeys /etc/ssh/TrustedCAKeys
+      AuthorizedPrincipalsFile .ssh/authorized_principals
+    dest: /etc/ssh/sshd_config.d/99-user-ca.conf
+  notify: Restart sshd

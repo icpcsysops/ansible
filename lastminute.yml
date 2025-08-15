@@ -1,9 +1,61 @@
 ---
+- name: Configure backup server
+  hosts: backup
+  strategy: linear # we want this complete before we do any other hosts
+  roles:
+    - role: dnsmasq
+      tags: dnsmasq
+    - role: icpc_host_backup
+      tags: icpc_host_backup
+    # script_server needs to come after the hosts file has been configured (because it needs to lookup some hostnames)
+    - role: script_server
+      tags: script_server
+  tasks:
+    - name: Configure backup as ssh ca server
+      ansible.builtin.include_role:
+        name: ssh_ca
+        tasks_from: ca
+      tags: ssh_ca
+
 - name: Configure packages machines
   hosts: packages
   roles:
     - role: icpc_host_packages
       tags: icpc_host_packages
+
+- name: SSH CA Certs
+  hosts: all,!contestants
+  gather_facts: true # We need facts so we can limit the user certs to the ip of the host they're tied to
+  tags: ssh_ca
+  tasks:
+    - name: Configure host ssh keys and trust user CA
+      ansible.builtin.include_role:
+        name: ssh_ca
+
+    # Every host gets an icpc@hostname ssh certificate, and hosts allow those keys to log in by adding the names to
+    # ~/.ssh/authorized_principals. E.g. if you add icpc@cds to the file, then the icpc user on the cds has a key that will allow it to log in.
+    # A more practical example might be for the ccsadmins to all be allowed to log into the ccs server, or judgehosts, etc. So they don't have
+    # to distribute their own keys to every machine manually.
+    - name: Make sure the .ssh directory exists
+      ansible.builtin.file:
+        path: /home/icpc/.ssh
+        state: directory
+        mode: "0700"
+        owner: icpc
+        group: icpc
+    - name: Ensure id_ed25519 key for icpc@icpc
+      community.crypto.openssh_keypair:
+        path: /home/icpc/.ssh/id_ed25519
+        type: ed25519
+        owner: icpc
+        group: icpc
+    - name: Generate ssh cert for the key we just made
+      ansible.builtin.include_role:
+        name: ssh_ca
+        tasks_from: user
+      vars:
+        ssh_key_to_sign: /home/icpc/.ssh/id_ed25519.pub
+        ssh_principal: "icpc@{{ inventory_hostname }}"
 
 # this needs to be first as ldap requires it
 - name: Pre-configure apt
@@ -30,17 +82,6 @@
   roles:
     - role: scoreboard
       tags: scoreboard
-
-- name: Configure backups
-  hosts: backup*
-  roles:
-    - role: dnsmasq
-      tags: dnsmasq
-    - role: icpc_host_backup
-      tags: icpc_host_backup
-    # script_server needs to come after the hosts file has been configured (because it needs to lookup some hostnames)
-    - role: script_server
-      tags: script_server
 
 - name: Configure extra_nic machines
   hosts: backup, scoreboard, printsrv, cds, packages

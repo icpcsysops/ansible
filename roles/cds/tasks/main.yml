@@ -28,6 +28,13 @@
     owner: cds
     group: cds
 
+- name: Generate ssh cert for the key we just made
+  ansible.builtin.include_role:
+    name: ssh_ca
+    tasks_from: user
+  vars:
+    ssh_key_to_sign: /srv/cds/.ssh/id_ed25519.pub
+    ssh_principal: "cds@{{ inventory_hostname }}"
 
 - name: Disable nginx because the cds runs on those ports
   ansible.builtin.systemd:

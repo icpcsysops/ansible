@@ -1,5 +1,8 @@
 ---
-# extra_nic_configs: []
+extra_nic_configs: []
+cds_version: latest-unreleased
+cds_contest_git_repo: git@packages:wf49baku.git
+
 ccs_url: &ccs_url https://domjudge/api/contests/wf48_systest2
 ccs_user: &ccs_user cds
 ccs_pass: &ccs_pass physicist-five-miracles

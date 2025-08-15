@@ -28,15 +28,6 @@
     owner: cds
     group: cds
 
-- name: Disable strict host key checking for the cds user
-  ansible.builtin.copy:
-    content: |
-      Host *
-        StrictHostKeyChecking no
-    dest: /srv/cds/.ssh/config
-    owner: cds
-    group: cds
-    mode: "0644"
 
 - name: Create CDS directories
   ansible.builtin.file:

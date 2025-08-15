@@ -57,6 +57,14 @@
     group: git
     mode: "0600"
 
+- name: Set up some authorized_principals for git user
+  ansible.builtin.template:
+    src: authorized_principals.j2
+    dest: "{{ git_home_dir }}/.ssh/authorized_principals"
+    owner: git
+    group: git
+    mode: "0600"
+
 - name: Make git user hushlogin
   ansible.builtin.file:
     path: "{{ git_home_dir }}/.hushlogin"

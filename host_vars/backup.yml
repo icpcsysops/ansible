@@ -47,7 +47,7 @@ script_server_commands:
     content: |
       #!/usr/bin/bash -ex
       cd /root/ansible
-      fast-ansible-playbook --limit "$PARAM_HOSTNAME" lastminute.yml
+      ansible-playbook --limit "$PARAM_HOSTNAME" lastminute.yml
     parameters:
       - name: hostname
         env_var: PARAM_HOSTNAME
@@ -66,7 +66,7 @@ script_server_commands:
     content: |
       #!/usr/bin/bash -ex
       cd /root/ansible
-      fast-ansible-playbook --limit "$PARAM_HOSTNAME" windows_lastminute.yml
+      ansible-playbook --limit "$PARAM_HOSTNAME" windows_lastminute.yml
     parameters:
       - name: hostname
         env_var: PARAM_HOSTNAME
@@ -228,7 +228,7 @@ script_server_commands:
     content: |
       #!/usr/bin/bash -ex
       cd /root/ansible
-      fast-ansible-playbook --limit "$HOST_PATTERN" windows_lastminute.yml
+      ansible-playbook --limit "$HOST_PATTERN" windows_lastminute.yml
     parameters:
       - name: host_pattern
         env_var: HOST_PATTERN # default is same as name
@@ -254,9 +254,9 @@ script_server_commands:
     content: |
       #!/usr/bin/bash -ex
       cd /root/ansible
-      fast-ansible -m ansible.windows.win_shell -a 'stop-process -name "java" -force' $HOST_PATTERN
-      fast-ansible -m ansible.windows.win_shell -a "rm -force -r c:/users/icpc/appdata/local/temp/org.icpc*" $HOST_PATTERN
-      fast-ansible -m ansible.windows.win_reboot $HOST_PATTERN
+      ansible -m ansible.windows.win_shell -a 'stop-process -name "java" -force' $HOST_PATTERN
+      ansible -m ansible.windows.win_shell -a "rm -force -r c:/users/icpc/appdata/local/temp/org.icpc*" $HOST_PATTERN
+      ansible -m ansible.windows.win_reboot $HOST_PATTERN
     parameters:
       - name: host_pattern
         env_var: HOST_PATTERN # default is same as name
@@ -282,7 +282,7 @@ script_server_commands:
     content: |
       #!/usr/bin/bash -ex
       cd /root/ansible
-      fast-ansible-playbook --limit "$HOST_PATTERN" lastminute.yml
+      ansible-playbook --limit "$HOST_PATTERN" lastminute.yml
     parameters:
       - name: host_pattern
         env_var: HOST_PATTERN # default is same as name
@@ -303,7 +303,7 @@ script_server_commands:
     content: |
       #!/usr/bin/bash -ex
       cd /root/ansible
-      fast-ansible-playbook --limit "$HOST_PATTERN" lastminute.yml
+      ansible-playbook --limit "$HOST_PATTERN" lastminute.yml
     parameters:
       - name: host_pattern
         env_var: HOST_PATTERN # default is same as name
@@ -345,7 +345,7 @@ script_server_commands:
     content: |
       #!/usr/bin/bash -ex
       cd /root/ansible
-      fast-ansible-playbook --limit "$HOST_PATTERN" lastminute.yml
+      ansible-playbook --limit "$HOST_PATTERN" lastminute.yml
     parameters:
       - name: host_pattern
         env_var: HOST_PATTERN # default is same as name

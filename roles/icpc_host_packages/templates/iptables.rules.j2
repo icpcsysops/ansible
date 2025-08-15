@@ -34,11 +34,9 @@
 -A OUTPUT -d 10.3.3.208/29 -j ACCEPT
 -A INPUT -s 10.3.3.208/29 -j ACCEPT
 
-# ssh inbound (servers and vpn)
--A INPUT -p tcp -m tcp --dport 22 -s 10.3.3.208/29 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 22 -d 10.3.3.208/29 -j ACCEPT
--A INPUT -p tcp -m tcp --dport 22 -s 10.5.5.0/24 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 22 -d 10.5.5.0/24 -j ACCEPT
+# ssh inbound (from vlan30)
+-A INPUT -p tcp -m tcp --dport 22 -s 10.3.3.0/24 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 22 -d 10.3.3.0/24 -j ACCEPT
 
 # https inbound
 -A INPUT -p tcp --dport 443 -j ACCEPT

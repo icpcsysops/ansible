@@ -1,8 +1,8 @@
 ---
-- name: Reload nginx
+- name: Restart nginx
   ansible.builtin.service:
     name: nginx
-    state: reloaded
+    state: restarted
 
 - name: Systemd-resolved
   ansible.builtin.service:

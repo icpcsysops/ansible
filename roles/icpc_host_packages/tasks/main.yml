@@ -32,6 +32,13 @@
       - ssl-cert
     state: present
 
+- name: Ensure permissions on the web directory
+  ansible.builtin.file:
+    path: /var/www/html
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
 - name: Configure nginx for packages
   block:
     - name: Install packages.pem
@@ -39,7 +46,7 @@
         src: "/root/ca/intermediate/certs/packages{{ keyprefix | default('') }}.cert.pem"
         dest: /etc/ssl/certs/packages.pem
         mode: '0644'
-      notify: Reload nginx
+      notify: Restart nginx
 
     - name: Install packages.key
       ansible.builtin.copy:
@@ -47,24 +54,24 @@
         dest: /etc/ssl/private/packages.key
         group: ssl-cert
         mode: '0640'
-      notify: Reload nginx
+      notify: Restart nginx
 
     - name: Install sites-available/packages.conf
       ansible.builtin.copy:
         src: files/nginx.packages.conf
         dest: /etc/nginx/sites-available/packages.conf
         mode: '0644'
-      notify: Reload nginx
+      notify: Restart nginx
 
     - name: Link sites-available to sites-enabled
       ansible.builtin.file:
         dest: /etc/nginx/sites-enabled/packages.conf
         src: /etc/nginx/sites-available/packages.conf
         state: link
-      notify: Reload nginx
+      notify: Restart nginx
 
     - name: Remove default site
       ansible.builtin.file:
         path: /etc/nginx/sites-enabled/default
         state: absent
-      notify: Reload nginx
+      notify: Restart nginx

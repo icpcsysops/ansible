@@ -124,9 +124,6 @@
     - role: team
     - role: mediamtx
       when: enable_hls is defined and enable_hls
-    - role: ldapclient
-      tags: ldapclient
-      when: ldap_domain is defined
     - role: hyperthreadingdisabled
     - role: reverseproxy
       when: enable_reverseproxy is defined and enable_reverseproxy
@@ -198,22 +195,6 @@
         pkg: stress-ng
         state: present
 
-    - name: Switch from files to compat in nsswitch
-      tags: nsswitch
-      ansible.builtin.replace:
-        path: /etc/nsswitch.conf
-        regexp: '^{{ item }}(.*)files'
-        replace: "{{ item }}\\1compat"
-        owner: root
-        group: root
-        mode: '0644'
-      loop:
-        - passwd
-        - group
-        - shadow
-      notify:
-        - Reboot
-      when: ldap_domain is defined
     - name: Disable systemd-resolved
       ansible.builtin.systemd:
         name: systemd-resolved
@@ -357,12 +338,6 @@
       ansible.builtin.service:
         name: cups
         state: restarted
-
-- name: Configure ldap server
-  hosts: ldapserver
-  roles:
-    - role: ldapserver
-      tags: ldapserver
 
 - name: Send syslogs to `backup`
   hosts: all:!backup

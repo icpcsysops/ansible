@@ -89,7 +89,7 @@
     version: "{{ cds_version }}"
     dest: /srv/cds/CDS.zip
   register: cds_zip_download
-- name: Download and unpack CDS war to /srv/cdspackage
+- name: Download and unpack CDS war to /srv/cdspackage # noqa: command-instead-of-module no-changed-when
   ansible.builtin.shell: >
     unzip -jo /srv/cds/CDS.zip '*/CDS.war' -d /srv/cds/
   when: cds_zip_download.changed or not cds_war.stat.exists

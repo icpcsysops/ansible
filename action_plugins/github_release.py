@@ -61,7 +61,7 @@ class ActionModule(ActionBase):
             # ret['digest'] = asset.digest
 
             # See if we already have this file
-            cache_path = Path(f'{task_vars['inventory_dir']}') / 'internet' / self.repo / asset.name
+            cache_path = Path(task_vars['inventory_dir']) / 'internet' / self.repo / asset.name
             if self.cache:
                 cache_path.parent.mkdir(parents=True, exist_ok=True)
                 if cache_path.exists() and cache_path.stat().st_size == asset.size:

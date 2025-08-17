@@ -13,6 +13,7 @@
     ssh-keygen -t ed25519
       -f {{ ssh_ca_dir }}/{{ item }}_ca
       -C {{ item }}_ca
+      -N ""
   args:
     creates: "{{ ssh_ca_dir }}/{{ item }}_ca"
   with_items:

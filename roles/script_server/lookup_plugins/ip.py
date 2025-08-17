@@ -22,4 +22,10 @@ class LookupModule(LookupBase):
         if not isinstance(hostname, str):
             raise errors.AnsibleError("ip lookup expects a string (hostname)")
 
-        return [socket.gethostbyname(hostname)]
+        try:
+            retval = [socket.gethostbyname(hostname)]
+        except Exception:
+            # raise errors.AnsibleError("Unable to resolve hostname %s" % hostname)
+            return []
+
+        return retval

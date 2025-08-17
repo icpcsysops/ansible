@@ -1,0 +1,20 @@
+---
+- name: Ensure the ssh-ca directory exists
+  ansible.builtin.file:
+    path: "{{ ssh_ca_dir }}/{{ item }}"
+    state: directory
+    mode: "0700"
+  with_items:
+    - hosts
+    - users
+
+- name: Generate SSH Host+User CAs
+  ansible.builtin.command: >
+    ssh-keygen -t ed25519
+      -f {{ ssh_ca_dir }}/{{ item }}_ca
+      -C {{ item }}_ca
+  args:
+    creates: "{{ ssh_ca_dir }}/{{ item }}_ca"
+  with_items:
+    - host
+    - user

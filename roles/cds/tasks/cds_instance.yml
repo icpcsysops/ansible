@@ -94,6 +94,43 @@
     mode: '0600'
   register: cds_config_updated
 
+- name: Populate server.env for sentry dsn
+  ansible.builtin.copy:
+    content: |
+      #SENTRY_DSN="https://fill_with_sentry_dsn@replace.sentry.io/identifier"
+    dest: /srv/cds/wlp/usr/servers/{{ cds_instance_name }}/server.env
+    owner: cds
+    group: cds
+    mode: '0644'
+- name: Populate sentry.properties
+  ansible.builtin.copy:
+    content: |
+      #dsn=https://fill_with_sentry_dsn@replace.sentry.io/identifier"
+      # Add data like request headers and IP for users,
+      # see https://docs.sentry.io/platforms/java/data-management/data-collected/ for more info
+      send-default-pii=false
+    dest: /srv/cds/wlp/usr/servers/{{ cds_instance_name }}/sentry.properties
+    owner: cds
+    group: cds
+    mode: '0644'
+- name: Make sure jvm options file exists with proper content
+  ansible.builtin.copy:
+    content: |
+      -DICPC_OGG=false
+    dest: /srv/cds/wlp/usr/servers/{{ cds_instance_name }}/jvm.options
+    owner: cds
+    group: cds
+    mode: '0644'
+
+- name: Check if presentations are a symlink
+  ansible.builtin.stat:
+    path: /srv/cds/wlp/usr/servers/{{ cds_instance_name }}/config/present
+  register: presentations_stat
+- name: Delete presentations directory so we can make it a symlink
+  ansible.builtin.file:
+    path: /srv/cds/wlp/usr/servers/{{ cds_instance_name }}/config/present
+    state: absent
+  when: presentations_stat.stat.isdir | default(false)
 - name: Symlink presentations to the config directory
   ansible.builtin.file:
     state: link

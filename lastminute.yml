@@ -1,24 +1,72 @@
 ---
+- name: Configure backup server
+  hosts: backup
+  strategy: linear # we want this complete before we do any other hosts
+  roles:
+    - role: dnsmasq
+      tags: dnsmasq
+    - role: icpc_host_backup
+      tags: icpc_host_backup
+    # script_server needs to come after the hosts file has been configured (because it needs to lookup some hostnames)
+    - role: script_server
+      tags: script_server
+  tasks:
+    - name: Configure backup as ssh ca server
+      ansible.builtin.include_role:
+        name: ssh_ca
+        tasks_from: ca
+      tags: ssh_ca
+
 - name: Configure packages machines
   hosts: packages
   roles:
     - role: icpc_host_packages
       tags: icpc_host_packages
 
-# this needs to be first as ldap requires it
+- name: SSH CA Certs
+  hosts: all,!contestants
+  gather_facts: true # We need facts so we can limit the user certs to the ip of the host they're tied to
+  tags: ssh_ca
+  tasks:
+    - name: Configure host ssh keys and trust user CA
+      ansible.builtin.include_role:
+        name: ssh_ca
+
+    # Every host gets an icpc@hostname ssh certificate, and hosts allow those keys to log in by adding the names to
+    # ~/.ssh/authorized_principals. E.g. if you add icpc@cds to the file, then the icpc user on the cds has a key that will allow it to log in.
+    # A more practical example might be for the ccsadmins to all be allowed to log into the ccs server, or judgehosts, etc. So they don't have
+    # to distribute their own keys to every machine manually.
+    - name: Make sure the .ssh directory exists
+      ansible.builtin.file:
+        path: /home/icpc/.ssh
+        state: directory
+        mode: "0700"
+        owner: icpc
+        group: icpc
+    - name: Ensure id_ed25519 key for icpc@icpc
+      community.crypto.openssh_keypair:
+        path: /home/icpc/.ssh/id_ed25519
+        type: ed25519
+        owner: icpc
+        group: icpc
+    - name: Generate ssh cert for the key we just made
+      ansible.builtin.include_role:
+        name: ssh_ca
+        tasks_from: user
+      vars:
+        ssh_key_to_sign: /home/icpc/.ssh/id_ed25519.pub
+        ssh_principal: "icpc@{{ inventory_hostname }}"
+
 - name: Pre-configure apt
   hosts: all
+  pre_tasks:
+    - name: Run update-ca-certificates # TODO: fix upstream, for some reason this didn't get run on the image
+      ansible.builtin.command: update-ca-certificates
+      changed_when: false
   roles:
     - role: apt
       tags: apt
   tasks:
-    - name: Fix permissioning of intermediate cert
-      tags: fix_cert  # TODO this should be fixed in icpc2025
-      ansible.builtin.file:
-        path: /usr/share/ca-certificates/ICPC_WF_Intermediate_CA.crt
-        mode: "0644"
-      notify: Run update-ca-certificates
-
     - name: Fix LC_TIME
       ansible.builtin.lineinfile:
         path: /etc/default/locale
@@ -31,36 +79,12 @@
         regexp: ^LC_PAPER
         line: LC_PAPER="en_US.UTF-8"
       tags: fix_LC_PAPER
-    - name: Fix Root cert
-      ansible.builtin.copy:
-        src: /usr/share/ca-certificates/ICPC_WF_Root_CA.crt
-        dest: /usr/share/ca-certificates/ICPC_WF_Root_CA.crt
-        mode: "0644"
-      tags: fix_root  # TODO this should fixed in icpc2025
-      notify: Run update-ca-certificates
-  handlers:
-    - name: Run update-ca-certificates
-      ansible.builtin.command: /usr/sbin/update-ca-certificates
-      register: my_output  # <- Registers the command output.
-      changed_when: my_output.rc != 0  # <- Uses the return code to define when the task has changed.
-
 
 - name: Configure scoreboard machine
   hosts: packages,scoreboard
   roles:
     - role: scoreboard
       tags: scoreboard
-
-- name: Configure backups
-  hosts: backup*
-  roles:
-    - role: dnsmasq
-      tags: dnsmasq
-    - role: icpc_host_backup
-      tags: icpc_host_backup
-    # script_server needs to come after the hosts file has been configured (because it needs to lookup some hostnames)
-    - role: script_server
-      tags: script_server
 
 - name: Configure extra_nic machines
   hosts: backup, scoreboard, printsrv, cds, packages
@@ -222,7 +246,7 @@
       loop:
         - "icpc"
         - "team"
-      when: root_password is defined
+      when: root_password is defined and root_password is not none
 
     - name: Workaround nautilus auto-mounting
       ansible.builtin.file:
@@ -435,7 +459,7 @@
         state: present
         password: "{{ root_password }}"
       when:
-        - root_password is defined
+        - root_password is defined and root_password is not none
         - '"$6$" in root_password'
       tags: do_root_passwd
 
@@ -445,7 +469,7 @@
         state: present
         password: "{{ root_password | password_hash('sha512', root_password) }}"
       when:
-        - root_password is defined
+        - root_password is defined and root_password is not none
         - '"$6$" not in root_password'
 
     - name: Get GIT revision
@@ -593,6 +617,8 @@
       ansible.builtin.shell: >
         set -o pipefail &&
         echo "Provisioned at $(date +"%Y-%m-%d %H:%M:%S")\nRevision: $(git rev-list --full-history --all --abbrev-commit | head -1)\n"
+      args:
+        executable: /bin/bash # needed for pipefail
       become: false
       register: git_revision
       delegate_to: 127.0.0.1

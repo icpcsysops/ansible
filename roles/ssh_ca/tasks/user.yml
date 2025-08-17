@@ -1,0 +1,37 @@
+---
+- name: Stat the user key to sign
+  ansible.builtin.stat:
+    path: "{{ ssh_key_to_sign }}"
+  register: user_key_stat
+
+- name: Copy user key locally
+  ansible.builtin.fetch:
+    src: "{{ ssh_key_to_sign }}"
+    dest: "{{ ssh_ca_dir }}/users/{{ ssh_principal }}.pub"
+    flat: true
+  register: fetch_user_pubkey
+
+- name: Check if the user key cert already exists
+  ansible.builtin.stat:
+    path: "{{ ssh_ca_dir }}/users/{{ ssh_principal }}.key-cert.pub"
+  register: stat_user_key
+
+- name: Sign the user pubkey # noqa: no-changed-when
+  ansible.builtin.command:
+    cmd: >
+      ssh-keygen
+            -s {{ ssh_ca_dir }}/user_ca
+            -I {{ ssh_principal }}
+            -n {{ ssh_principal }}
+            -O source-address="{% for ip in ansible_all_ipv4_addresses %}{{ ip }}/32{% if not loop.last %},{% endif %}{% endfor %}"
+            {{ ssh_ca_dir }}/users/{{ ssh_principal }}.pub
+  delegate_to: localhost
+  when: fetch_user_pubkey is changed or not stat_user_key.stat.exists
+
+- name: Copy signed user pubkey back
+  ansible.builtin.copy:
+    src: "{{ ssh_ca_dir }}/users/{{ ssh_principal }}-cert.pub"
+    dest: "{{ ssh_key_to_sign | regex_replace('\\.pub$', '-cert.pub') }}"
+    owner: "{{ user_key_stat.stat.pw_name }}"
+    group: "{{ user_key_stat.stat.gr_name }}"
+    mode: "0600"

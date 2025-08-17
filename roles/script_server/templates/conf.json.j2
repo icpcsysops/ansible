@@ -5,16 +5,17 @@
         "trusted_ips": [
             {% for group in groups if group not in script_server_ignored_groups %}
             {%- for host in groups[group] -%}
-            "{{ hostvars[host].ansible_host}}",
+            "{{ lookup('ip', host, errors='ignore', wantlist=True) | first | default(hostvars[host].ansible_host) }}",
             {% endfor %}
             {%- endfor -%}
 
-            {% for u in script_server_admin_users %}"{{ lookup('ip', u)}}", {% endfor %}"127.0.0.1"
+            {% for u in script_server_admin_users %}"{{ lookup('ip', u)}}", {% endfor %}
+            "127.0.0.1"
         ],
         "allowed_users": [
             {% for group in groups if group not in script_server_ignored_groups %}
             {%- for host in groups[group] -%}
-            "{{ hostvars[host].ansible_host}}",
+            "{{ lookup('ip', host, errors='ignore', wantlist=True) | first | default(hostvars[host].ansible_host) }}",
             {% endfor -%}
             {%- endfor -%}
             "127.0.0.1"
@@ -24,7 +25,7 @@
             {% for group in groups if group not in script_server_ignored_groups -%}
             "{{group}}": [
                 {% for host in groups[group] -%}
-                "{{ hostvars[host].ansible_host}}" {{ ", " if not loop.last else "" }}
+                "{{ lookup('ip', host, errors='ignore', wantlist=True) | first | default(hostvars[host].ansible_host) }}" {{ ", " if not loop.last else "" }}
                 {% endfor -%}
             ],
             {% endfor -%}

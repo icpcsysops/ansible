@@ -1,3 +1,12 @@
 # array of local keys to add
 local_ssh_keys: []
 git_user_password: WFltGBxB/v4Fs
+
+gitserver_repos: []
+#   - name: ansible
+#     remote: git@github.com:icpcsysops/ansible
+#     deploy_key: /root/.ssh/ansible-deploykey
+
+#   - name: wf49baku
+#     remote: git@github.com:icpcsysops/wf49baku
+#     deploy_key: /root/.ssh/wf49baku-deploykey

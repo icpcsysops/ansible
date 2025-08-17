@@ -243,7 +243,7 @@
       loop:
         - "icpc"
         - "team"
-      when: root_password is defined
+      when: root_password is defined and root_password is not none
 
     - name: Workaround nautilus auto-mounting
       ansible.builtin.file:
@@ -456,7 +456,7 @@
         state: present
         password: "{{ root_password }}"
       when:
-        - root_password is defined
+        - root_password is defined and root_password is not none
         - '"$6$" in root_password'
       tags: do_root_passwd
 
@@ -466,7 +466,7 @@
         state: present
         password: "{{ root_password | password_hash('sha512', root_password) }}"
       when:
-        - root_password is defined
+        - root_password is defined and root_password is not none
         - '"$6$" not in root_password'
 
     - name: Get GIT revision

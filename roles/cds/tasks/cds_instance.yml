@@ -5,11 +5,6 @@
 # WLP_USER_DIR = the place where we put each instance (cds/live/p100)
 # WLP_OUTPUT_DIR = the place it writes random temp files and whatnot
 
-- name: Load accounts from yaml
-  ansible.builtin.include_vars:
-    name: cdsaccounts-{{ cds_name }}
-    file: "{{ cds_instance.accounts }}"
-
 - name: Set facts from the include context
   ansible.builtin.set_fact:
     cds_instance_name: "{{ cds_name }}"
@@ -17,7 +12,7 @@
     cds_https_port: "{{ cds_instance.https_port }}"
     cds_contests: "{{ cds_instance.contests }}"
     cds_domains: "{{ cds_instance.domains | default([]) }}"
-    cds_accounts: "{{ lookup('vars', 'cdsaccounts-' + cds_name)['accounts'] }}"
+    cds_accounts: "{{ lookup('file', cds_instance.accounts) | from_yaml }}"
     cds_needs_restart: "{{ needs_restart }}"
 
 - name: Create CDS directories

@@ -503,6 +503,15 @@
     - role: gitserver
       tags: gitserver
 
+- name: Clone the contest git repo on backup
+  hosts: backup
+  tasks:
+    - name: Clone the contest git repo
+      ansible.builtin.git:  # noqa: latest[git]
+        repo: "git@packages:contest_repo.git"
+        dest: /root/contest_repo
+      when: clone_contest_repo | bool
+
 - name: Configure the cds instances (new style)
   hosts: cds*
   roles:

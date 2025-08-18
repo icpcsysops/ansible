@@ -30,7 +30,7 @@
 
 - name: Copy the key.p12 for the instance
   ansible.builtin.copy:
-    src: files/cds-key.p12
+    src: /root/ca/cds.p12
     dest: /var/lib/cds/{{ cds_instance_name }}/resources/security/key.p12
     owner: cds
     group: cds

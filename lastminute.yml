@@ -16,6 +16,18 @@
         name: ssh_ca
         tasks_from: ca
       tags: ssh_ca
+    - name: Make sure root's key has a pubkey present so we can make a cert for it
+      ansible.builtin.shell: >
+        ssh-keygen -y -f /root/.ssh/id_ed25519 > /root/.ssh/id_ed25519.pub
+      args:
+        creates: /root/.ssh/id_ed25519.pub
+    - name: Generate ssh cert for root@backup (mainly for gitserver)
+      ansible.builtin.include_role:
+        name: ssh_ca
+        tasks_from: user
+      vars:
+        ssh_key_to_sign: /root/.ssh/id_ed25519.pub
+        ssh_principal: "root@{{ inventory_hostname }}"
 
 - name: Configure packages machines
   hosts: packages

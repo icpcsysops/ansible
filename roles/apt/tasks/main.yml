@@ -3,11 +3,12 @@
   ansible.builtin.lineinfile:
     path: /etc/hosts
     line: "{{ baseip }}.{{ item.ip }}	{{ item.hostname }}" # noqa: no-tabs
+    regexp: '{{ baseip }}.{{ item.ip }}\s+{{ item.hostname }}'
     owner: root
     group: root
     mode: '0644'
   loop:
-    - {ip: 208, hostname: printsrv}
+    - {ip: 208, hostname: "scoreboard printsrv"}
     - {ip: 209, hostname: packages}
     - {ip: 210, hostname: backup}
 

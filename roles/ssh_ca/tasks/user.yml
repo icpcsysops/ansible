@@ -13,7 +13,7 @@
 
 - name: Check if the user key cert already exists
   ansible.builtin.stat:
-    path: "{{ ssh_ca_dir }}/users/{{ ssh_principal }}.key-cert.pub"
+    path: "{{ ssh_ca_dir }}/users/{{ ssh_principal }}-cert.pub"
   register: stat_user_key
 
 - name: Sign the user pubkey # noqa: no-changed-when

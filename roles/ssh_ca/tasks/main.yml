@@ -66,3 +66,15 @@
     group: root
     mode: "0644"
   notify: Restart sshd
+
+- name: Set up icpc user's authorized_principals
+  ansible.builtin.copy:
+    content: |
+      {% for principal in authorized_principals %}
+      {{ principal }}
+      {% endfor %}
+    dest: /home/icpc/.ssh/authorized_principals
+    owner: icpc
+    group: icpc
+    mode: "0644"
+  when: authorized_principals is defined and authorized_principals | length > 0

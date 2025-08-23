@@ -1,7 +1,7 @@
 ---
 extra_nic_configs: []
 cds_version: latest-unreleased
-cds_contest_git_repo: git@packages:wf49baku.git
+cds_contest_git_repo: git@packages:contest_repo.git
 
 ccs_url: &ccs_url https://domjudge/api/contests/wf48_systest2
 ccs_user: &ccs_user cds
@@ -62,12 +62,12 @@ cds_config:
 #         username: *ccs_user
 #         password: *ccs_pass
     # Path to a yaml file inside vars/ containing an accounts array
-    accounts: cds/cds-accounts.yaml
+    accounts: /root/contest_repo/servers/cds/accounts.yaml
     domains: *cds_presentation_domains
   p100:
     http_port: 9080
     https_port: 9443
-    accounts: cds/p100-accounts.yaml
+    accounts: /root/contest_repo/servers/p100/accounts.yaml
     contests:
       - name: finals
         path: finals
@@ -78,7 +78,7 @@ cds_config:
   live:
     http_port: 7080
     https_port: 7443
-    accounts: cds/live-accounts.yaml
+    accounts: /root/contest_repo/servers/live/accounts.yaml
     contests:
       - name: finals
         path: finals

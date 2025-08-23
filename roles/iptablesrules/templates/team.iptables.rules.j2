@@ -143,12 +143,6 @@
 -A OUTPUT -p udp --dport 515 -d 10.3.3.216 -j ACCEPT
 -A OUTPUT -p tcp --dport 515 -d 10.3.3.216 -j ACCEPT
 
-# ldap to servers
--A INPUT -p tcp --sport 389 -s 10.3.3.210/31 -j ACCEPT
--A OUTPUT -p tcp --dport 389 -d 10.3.3.210/31 -j ACCEPT
--A INPUT -p tcp --sport 636 -s 10.3.3.210/31 -j ACCEPT
--A OUTPUT -p tcp --dport 636 -d 10.3.3.210/31 -j ACCEPT
-
 # printing (samba)
 # allow ICMP ping incoming client request from servers
 -A INPUT -p icmp --icmp-type 8 -s 10.3.3.208/29 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT

@@ -3,7 +3,7 @@
   hosts: contestants
   gather_facts: false
   vars:
-    firefox_default: https://icpcastana.contest.codeforces.com/
+    firefox_default: https://icpcbaku.contest.codeforces.com/
     users:
       # spares
       team143: passw0rd

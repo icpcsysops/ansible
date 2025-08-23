@@ -71,10 +71,6 @@
 
 - name: Pre-configure apt
   hosts: all
-  pre_tasks:
-    - name: Run update-ca-certificates # TODO: fix upstream, for some reason this didn't get run on the image
-      ansible.builtin.command: update-ca-certificates
-      changed_when: false
   roles:
     - role: apt
       tags: apt

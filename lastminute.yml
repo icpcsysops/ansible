@@ -16,6 +16,18 @@
         name: ssh_ca
         tasks_from: ca
       tags: ssh_ca
+    - name: Make sure root's key has a pubkey present so we can make a cert for it
+      ansible.builtin.shell: >
+        ssh-keygen -y -f /root/.ssh/id_ed25519 > /root/.ssh/id_ed25519.pub
+      args:
+        creates: /root/.ssh/id_ed25519.pub
+    - name: Generate ssh cert for root@backup (mainly for gitserver)
+      ansible.builtin.include_role:
+        name: ssh_ca
+        tasks_from: user
+      vars:
+        ssh_key_to_sign: /root/.ssh/id_ed25519.pub
+        ssh_principal: "root@{{ inventory_hostname }}"
 
 - name: Configure packages machines
   hosts: packages
@@ -59,10 +71,6 @@
 
 - name: Pre-configure apt
   hosts: all
-  pre_tasks:
-    - name: Run update-ca-certificates # TODO: fix upstream, for some reason this didn't get run on the image
-      ansible.builtin.command: update-ca-certificates
-      changed_when: false
   roles:
     - role: apt
       tags: apt
@@ -124,9 +132,6 @@
     - role: team
     - role: mediamtx
       when: enable_hls is defined and enable_hls
-    - role: ldapclient
-      tags: ldapclient
-      when: ldap_domain is defined
     - role: hyperthreadingdisabled
     - role: reverseproxy
       when: enable_reverseproxy is defined and enable_reverseproxy
@@ -216,22 +221,6 @@
         pkg: stress-ng
         state: present
 
-    - name: Switch from files to compat in nsswitch
-      tags: nsswitch
-      ansible.builtin.replace:
-        path: /etc/nsswitch.conf
-        regexp: '^{{ item }}(.*)files'
-        replace: "{{ item }}\\1compat"
-        owner: root
-        group: root
-        mode: '0644'
-      loop:
-        - passwd
-        - group
-        - shadow
-      notify:
-        - Reboot
-      when: ldap_domain is defined
     - name: Disable systemd-resolved
       ansible.builtin.systemd:
         name: systemd-resolved
@@ -375,12 +364,6 @@
       ansible.builtin.service:
         name: cups
         state: restarted
-
-- name: Configure ldap server
-  hosts: ldapserver
-  roles:
-    - role: ldapserver
-      tags: ldapserver
 
 - name: Send syslogs to `backup`
   hosts: all:!backup
@@ -533,6 +516,15 @@
   roles:
     - role: gitserver
       tags: gitserver
+
+- name: Clone the contest git repo on backup
+  hosts: backup
+  tasks:
+    - name: Clone the contest git repo
+      ansible.builtin.git:  # noqa: latest[git]
+        repo: "git@packages:contest_repo.git"
+        dest: /root/contest_repo
+      when: clone_contest_repo | bool
 
 - name: Configure the cds instances (new style)
   hosts: cds*

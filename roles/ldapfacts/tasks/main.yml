@@ -1,3 +1,0 @@
-- name: Set LDAP domain in LDAP format
-  ansible.builtin.set_fact:
-    ldap_domain_dc: dc={{ ldap_domain | replace(".", ",dc=") }}

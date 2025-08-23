@@ -29,24 +29,6 @@
 -A OUTPUT -d 10.3.3.208/29 -j ACCEPT
 -A INPUT -s 10.3.3.208/29 -j ACCEPT
 
-{%- if ldap %}
-# ldap inbound
--A INPUT -p tcp --sport 389 -s 10.3.3.210 -j ACCEPT
--A OUTPUT -p tcp --dport 389 -d 10.3.3.210 -j ACCEPT
--A INPUT -p tcp --sport 389 -s 10.3.3.211 -j ACCEPT
--A OUTPUT -p tcp --dport 389 -d 10.3.3.211 -j ACCEPT
--A INPUT -p tcp --sport 636 -s 10.3.3.210 -j ACCEPT
--A OUTPUT -p tcp --dport 636 -d 10.3.3.210 -j ACCEPT
--A INPUT -p tcp --sport 636 -s 10.3.3.211 -j ACCEPT
--A OUTPUT -p tcp --dport 636 -d 10.3.3.211 -j ACCEPT
-
-# ldap outbound
--A INPUT -p tcp --dport 189 -j ACCEPT
--A OUTPUT -p tcp --sport 189 -j ACCEPT
--A INPUT -p tcp --dport 636 -j ACCEPT
--A OUTPUT -p tcp --sport 636 -j ACCEPT
-{%- endif %}
-
 # DNS outbound
 -A INPUT -p tcp --sport 53 -j ACCEPT
 -A OUTPUT -p tcp --dport 53 -j ACCEPT

@@ -87,10 +87,10 @@
   no_log: true
   diff: false
   loop: "{{ gitserver_repos }}"
-  when: item.deploy_key is defined
+  when: item.deploy_key | default(false)
 
 - name: Clone/update repositories
-  ansible.builtin.git:
+  ansible.builtin.git:  # noqa: latest[git]
     repo: "{{ item.remote }}"
     dest: "{{ git_home_dir }}/{{ item.name }}.git"
     bare: true
@@ -99,10 +99,10 @@
   become: true
   become_user: git
   loop: "{{ gitserver_repos }}"
-  when: item.deploy_key is defined
+  when: item.deploy_key | default(false)
 
 - name: Clone public repos without authentication
-  ansible.builtin.git:
+  ansible.builtin.git:  # noqa: latest[git]
     repo: "{{ item.remote }}"
     dest: "{{ git_home_dir }}/{{ item.name }}.git"
     bare: true
@@ -110,7 +110,7 @@
   become: true
   become_user: git
   loop: "{{ gitserver_repos }}"
-  when: item.deploy_key is not defined
+  when: not (item.deploy_key | default(false))
 
 - name: Configure the key properly in the repo for manual commands
   community.general.git_config:
@@ -121,4 +121,4 @@
   become: true
   become_user: git
   loop: "{{ gitserver_repos }}"
-  when: item.deploy_key is defined
+  when: item.deploy_key | default(false)

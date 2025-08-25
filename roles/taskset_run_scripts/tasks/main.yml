@@ -5,7 +5,7 @@
     state: present
     regexp: '^([ ]*)(java|kotlin|pypy)(.*)$'
     backrefs: true
-    line: '\1taskset -c 2 \2\3'
+    line: '\1taskset -c {{ taskset_default_core }} \2\3'
   loop:
     - runpython3
     - runkotlin
@@ -17,7 +17,7 @@
     state: present
     regexp: '^(./a.out)(.*)$'
     backrefs: true
-    line: 'taskset -c 2 \1\2'
+    line: 'taskset -c {{ taskset_default_core }} \1\2'
   loop:
     - runc
     - runcpp

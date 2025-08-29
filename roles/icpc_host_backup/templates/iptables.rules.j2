@@ -131,6 +131,12 @@
 -A INPUT -p icmp --icmp-type 8 -s 10.3.3.208/29 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
 -A OUTPUT -p icmp --icmp-type 0 -d 10.3.3.208/29 -m state --state ESTABLISHED,RELATED -j ACCEPT
 
+# ssh from mgmt machines
+-A OUTPUT -p tcp --sport 22 -d 172.29.1.251 -j ACCEPT
+-A INPUT -p tcp --dport 22 -s 172.29.1.251 -j ACCEPT
+-A OUTPUT -p tcp --sport 22 -d 172.29.1.252 -j ACCEPT
+-A INPUT -p tcp --dport 22 -s 172.29.1.252 -j ACCEPT
+
 # enable outgoing ICMP request
 -A OUTPUT -p icmp --icmp-type 8 -j ACCEPT
 # enable incoming ICMP reply

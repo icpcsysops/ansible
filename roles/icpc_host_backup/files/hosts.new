@@ -394,14 +394,6 @@
 
 10.3.3.240      green-analyst-blueentry
 
-# 10.3.3.251-254 MGMT systems
-# Management Systems
-#10.3.3.251	Troy-MGMT
-172.29.1.251	Troy-MGMT
-#10.3.3.252	Keith-MGMT
-172.29.1.252	Keith-MGMT
-
-
 #############################################
 # Print/Balloon Net - VLAN  40              #
 # 10.4.4.0/23                               #
@@ -552,6 +544,10 @@
 172.29.1.228  green-judgehost8
 
 
+# 172.29.1.251-254 MGMT systems
+# Management Systems
+172.29.1.251	troy-mgmt
+172.29.1.252	keith-mgmt
 
 
 # 172.29.2.5    CloudKeyManagement-hynan

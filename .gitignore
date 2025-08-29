@@ -5,3 +5,4 @@
 /files/*.zip
 /roles/script_server/lookup_plugins/__pycache__/
 __pycache__
+.github_release_cache

@@ -20,9 +20,11 @@ cds_presentation_domains: &cds_presentation_domains
     - balloon
     - coachview
     - deboer
-    - david
     - nicky
     - mattias
+    - michael
+  - - p100Admin
+    - p100Presentation
 
 # ccs_url: &ccs_url https://domjudge/api/contests/contest_id
 # ccs_user: &ccs_user cds

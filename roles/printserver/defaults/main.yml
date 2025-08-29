@@ -1,5 +1,5 @@
 ---
-# useful to disbale during imaging phase
+# useful to disable during imaging phase
 contest_printer_enabled: true
 
 # this also supports a model: (defaults to everywhere)

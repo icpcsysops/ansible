@@ -5,7 +5,7 @@ contest_ids:
 ntp_servers:
   - 172.29.1.20
   - 10.3.3.209
-  - 10.3.3.211
+  - 10.3.3.208
 ntp_pool:
   - 0.ubuntu.pool.ntp.org
   - 1.ubuntu.pool.ntp.org

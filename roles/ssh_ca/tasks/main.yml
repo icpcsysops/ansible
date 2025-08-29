@@ -67,6 +67,14 @@
     mode: "0644"
   notify: Restart sshd
 
+- name: Make sure the .ssh directory exists
+  ansible.builtin.file:
+    path: /home/icpc/.ssh
+    state: directory
+    mode: "0700"
+    owner: icpc
+    group: icpc
+
 - name: Set up icpc user's authorized_principals
   ansible.builtin.copy:
     content: |

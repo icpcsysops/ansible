@@ -524,7 +524,7 @@
       ansible.builtin.git:  # noqa: latest[git]
         repo: "git@packages:contest_repo.git"
         dest: /root/contest_repo
-      when: false
+      when: clone_contest_repo is defined and clone_contest_repo|bool
 
 - name: Configure the cds instances (new style)
   hosts: cds*

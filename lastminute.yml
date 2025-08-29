@@ -570,9 +570,12 @@
     printer_name: systemsprinter
   roles:
     - role: cups
-    - role: ccstools
+  tasks:
+    - include_role:
+        name: ccstools
       when: ccs  == "domjudge"
-    - role: reverseproxy
+    - include_role:
+        name: reverseproxy
       when: enable_reverseproxy is defined and enable_reverseproxy
 
 - name: Configure others printers

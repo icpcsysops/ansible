@@ -415,7 +415,7 @@
 
 10.4.4.149	balloonmanager
 # 10.4.4.200/29 for printers
-10.4.4.201	teamprint1
+10.4.4.201	teamprint1 balloonprint
 10.4.4.202	teamprint2
 10.4.4.203	teamprint3
 10.4.4.204	judgeprint

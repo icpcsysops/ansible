@@ -410,6 +410,13 @@
     tech_notes: "{{ '/root/ansible/files/%s.TechNotes.%s.pdf'|format(contest_detail, papersize) }}"
 
   tasks:
+    # will be fixed in icpc2026
+    - name: Ensure /etc/ssh/sshd_config.d/50-cloud-init.conf does not exist
+      ansible.builtin.file:
+        path: /etc/ssh/sshd_config.d/50-cloud-init.conf
+        state: absent
+      notify: Restart sshd
+
     # stat file first
     - name: Get file stat of JudgingNotes to be able to perform a check in the following task
       tags: icpc_docs
@@ -503,6 +510,11 @@
     - name: Reboot
       ansible.builtin.reboot:
       when: reboot_enabled
+    - name: Restart sshd
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+
 
 - name: Configure the reverse proxy
   hosts: reverseproxy

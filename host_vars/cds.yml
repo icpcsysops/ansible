@@ -130,23 +130,12 @@ cds_config:
 #         username: *ccs_user
 #         password: *ccs_pass
     # Path to a yaml file inside vars/ containing an accounts array
-    accounts: /root/contest_repo/servers/cds/accounts.yaml
+    accounts: /root/contest_repo/servers/cds/config/accounts.yaml
     domains: *cds_presentation_domains
-  #p100:
-  #  http_port: 9080
-  #  https_port: 9443
-  #  accounts: /root/contest_repo/servers/p100/accounts.yaml
-  #  contests:
-  #    - name: finals
-  #      path: finals
-  #      ccs:
-  #        url: https://cds/api/contests/wf48_finals
-  #        username: deboer # should be a p100 user on the cds, but this account doesn't exist yet
-  #        password: cheerleading-laughter-harvestman
   live:
     http_port: 7080
     https_port: 7443
-    accounts: /root/contest_repo/servers/live/accounts.yaml
+    accounts: /root/contest_repo/servers/live/config/accounts.yaml
     contests:
       - name: systest0
         path: systest0

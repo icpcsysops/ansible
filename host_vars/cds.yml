@@ -167,16 +167,16 @@ cds_config:
           url: *ccs_url_systest2
           username: *ccs_user
           password: *ccs_pass
-      - name: challenge
-        path: challenge
-        record_reactions: true
-        video:
-          desktop: http://team{0}:9090
-          webcam: http://team{0}:8080
-        ccs:
-          url: *ccs_url_challenge
-          username: *ccs_user
-          password: *ccs_pass
+      #- name: challenge
+      #  path: challenge
+      #  record_reactions: true
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #  ccs:
+      #    url: *ccs_url_challenge
+      #    username: *ccs_user
+      #    password: *ccs_pass
       - name: dress
         path: dress
         record_reactions: true

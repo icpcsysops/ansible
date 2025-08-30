@@ -7,8 +7,8 @@ ccs_url_systest0: &ccs_url_systest0 https://pc2:50443/contests/wf49_systest0
 ccs_url_systest0_dj: &ccs_url_systest0_dj https://domjudge/contests/wf49_systest0
 ccs_url_systest1: &ccs_url_systest1 https://pc2:50443/contests/wf49_systest1
 ccs_url_systest2: &ccs_url_systest2 https://pc2:50443/contests/wf49_systest2
-ccs_url_dress: &ccs_url_dress https://pc2:50443/contests/wf49_systest0
-ccs_url_finals: &ccs_url_finals https://pc2:50443/contests/wf49_systest0
+ccs_url_dress: &ccs_url_dress https://pc2:50443/contests/wf49_dress
+ccs_url_finals: &ccs_url_finals https://pc2:50443/contests/wf49_finals
 ccs_url_challenge: &ccs_url_challenge https://pc2:50443/contests/wf49_systest0
 ccs_user: &ccs_user cds
 ccs_pass: &ccs_pass electrician-code-carmine

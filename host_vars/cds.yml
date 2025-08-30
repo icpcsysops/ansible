@@ -45,8 +45,8 @@ cds_config:
       - name: systest0
         path: systest0
         video:
-          desktop: http://team153:9090
-          webcam: http://team153:8080
+          desktop: http://team{0}:9090
+          webcam: http://team{0}:8080
         ccs:
           url: *ccs_url_systest0
           username: *ccs_user
@@ -60,8 +60,8 @@ cds_config:
       - name: systest1
         path: systest1
         video:
-          desktop: http://team153:9090
-          webcam: http://team153:8080
+          desktop: http://team{0}:9090
+          webcam: http://team{0}:8080
         ccs:
           url: *ccs_url_systest1
           username: *ccs_user
@@ -69,8 +69,8 @@ cds_config:
       - name: systest2
         path: systest2
         video:
-          desktop: http://team153:9090
-          webcam: http://team153:8080
+          desktop: http://team{0}:9090
+          webcam: http://team{0}:8080
         ccs:
           url: *ccs_url_systest2
           username: *ccs_user
@@ -152,8 +152,8 @@ cds_config:
         path: systest0
         record_reactions: true
         video:
-          desktop: http://team153:9090
-          webcam: http://team153:8080
+          desktop: http://team{0}:9090
+          webcam: http://team{0}:8080
         ccs:
           url: *ccs_url_systest0
           username: *ccs_user
@@ -162,8 +162,8 @@ cds_config:
         path: systest1
         record_reactions: true
         video:
-          desktop: http://team153:9090
-          webcam: http://team153:8080
+          desktop: http://team{0}:9090
+          webcam: http://team{0}:8080
         ccs:
           url: *ccs_url_systest1
           username: *ccs_user
@@ -172,8 +172,8 @@ cds_config:
         path: systest2
         record_reactions: true
         video:
-          desktop: http://team153:9090
-          webcam: http://team153:8080
+          desktop: http://team{0}:9090
+          webcam: http://team{0}:8080
         ccs:
           url: *ccs_url_systest2
           username: *ccs_user

@@ -47,10 +47,10 @@ cds_config:
         video:
           desktop: http://team{0}:9090
           webcam: http://team{0}:8080
-        ccs:
-          url: *ccs_url_systest0
-          username: *ccs_user
-          password: *ccs_pass
+        #ccs:
+        #  url: *ccs_url_systest0
+        #  username: *ccs_user
+        #  password: *ccs_pass
       #- name: systest0_dj
       #  path: systest0_dj
       #  ccs:
@@ -89,19 +89,19 @@ cds_config:
         video:
           desktop: http://team{0}:9090
           webcam: http://team{0}:8080
-        ccs:
-          url: *ccs_url_dress
-          username: *ccs_user
-          password: *ccs_pass
+        #ccs:
+        #  url: *ccs_url_dress
+        #  username: *ccs_user
+        #  password: *ccs_pass
       - name: finals
         path: finals
         video:
           desktop: http://team{0}:9090
           webcam: http://team{0}:8080
-        ccs:
-          url: *ccs_url_finals
-          username: *ccs_user
-          password: *ccs_pass
+        #ccs:
+        #  url: *ccs_url_finals
+        #  username: *ccs_user
+        #  password: *ccs_pass
 #     - name: example
 #       path: example
 #       ccs:
@@ -143,20 +143,20 @@ cds_config:
         video:
           desktop: http://team{0}:9090
           webcam: http://team{0}:8080
-        ccs:
-          url: *ccs_url_systest0
-          username: *ccs_user
-          password: *ccs_pass
+        #ccs:
+        #  url: *ccs_url_systest0
+        #  username: *ccs_user
+        #  password: *ccs_pass
       - name: systest1
         path: systest1
         record_reactions: true
         video:
           desktop: http://team{0}:9090
           webcam: http://team{0}:8080
-        ccs:
-          url: *ccs_url_systest1
-          username: *ccs_user
-          password: *ccs_pass
+        #ccs:
+        #  url: *ccs_url_systest1
+        #  username: *ccs_user
+        #  password: *ccs_pass
       - name: systest2
         path: systest2
         record_reactions: true
@@ -183,11 +183,11 @@ cds_config:
         video:
           desktop: http://team{0}:9090
           webcam: http://team{0}:8080
-        ccs:
-          url: *ccs_url_dress
-          username: *ccs_user
-          password: *ccs_pass
-      - name: finals
+        #ccs:
+        #  url: *ccs_url_dress
+        #  username: *ccs_user
+        #  password: *ccs_pass
+      - #name: finals
         path: finals
         record_reactions: true
         video:

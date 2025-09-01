@@ -42,30 +42,30 @@ cds_config:
     http_port: 80
     https_port: 443
     contests:
-      - name: systest0
-        path: systest0
-        video:
-          desktop: http://team{0}:9090
-          webcam: http://team{0}:8080
-        #ccs:
-        #  url: *ccs_url_systest0
-        #  username: *ccs_user
-        #  password: *ccs_pass
-      #- name: systest0_dj
-      #  path: systest0_dj
-      #  ccs:
-      #    url: *ccs_url_systest0_dj
-      #    username: *ccs_user
-      #    password: *ccs_pass
-      - name: systest1
-        path: systest1
-        video:
-          desktop: http://team{0}:9090
-          webcam: http://team{0}:8080
-        ccs:
-          url: *ccs_url_systest1
-          username: *ccs_user
-          password: *ccs_pass
+      #- name: systest0
+      #  path: systest0
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #  #ccs:
+      #  #  url: *ccs_url_systest0
+      #  #  username: *ccs_user
+      #  #  password: *ccs_pass
+      ##- name: systest0_dj
+      ##  path: systest0_dj
+      ##  ccs:
+      ##    url: *ccs_url_systest0_dj
+      ##    username: *ccs_user
+      ##    password: *ccs_pass
+      #- name: systest1
+      #  path: systest1
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #  #ccs:
+      #  #  url: *ccs_url_systest1
+      #  #  username: *ccs_user
+      #  #  password: *ccs_pass
       - name: systest2
         path: systest2
         video:
@@ -137,26 +137,26 @@ cds_config:
     https_port: 7443
     accounts: /root/contest_repo/servers/live/config/accounts.yaml
     contests:
-      - name: systest0
-        path: systest0
-        record_reactions: true
-        video:
-          desktop: http://team{0}:9090
-          webcam: http://team{0}:8080
-        #ccs:
-        #  url: *ccs_url_systest0
-        #  username: *ccs_user
-        #  password: *ccs_pass
-      - name: systest1
-        path: systest1
-        record_reactions: true
-        video:
-          desktop: http://team{0}:9090
-          webcam: http://team{0}:8080
-        #ccs:
-        #  url: *ccs_url_systest1
-        #  username: *ccs_user
-        #  password: *ccs_pass
+      #- name: systest0
+      #  path: systest0
+      #  record_reactions: true
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #  #ccs:
+      #  #  url: *ccs_url_systest0
+      #  #  username: *ccs_user
+      #  #  password: *ccs_pass
+      #- name: systest1
+      #  path: systest1
+      #  record_reactions: true
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #  #ccs:
+      #  #  url: *ccs_url_systest1
+      #  #  username: *ccs_user
+      #  #  password: *ccs_pass
       - name: systest2
         path: systest2
         record_reactions: true
@@ -173,10 +173,10 @@ cds_config:
       #  video:
       #    desktop: http://team{0}:9090
       #    webcam: http://team{0}:8080
-      #  ccs:
-      #    url: *ccs_url_challenge
-      #    username: *ccs_user
-      #    password: *ccs_pass
+      #  #ccs:
+      #  #  url: *ccs_url_challenge
+      #  #  username: *ccs_user
+      #  #  password: *ccs_pass
       - name: dress
         path: dress
         record_reactions: true

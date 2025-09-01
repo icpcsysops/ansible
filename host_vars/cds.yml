@@ -66,16 +66,16 @@ cds_config:
       #  #  url: *ccs_url_systest1
       #  #  username: *ccs_user
       #  #  password: *ccs_pass
-      - name: systest2
-        path: systest2
-        video:
-          desktop: http://team{0}:9090
-          webcam: http://team{0}:8080
-          audio: http://team{0}:7070
-        ccs:
-          url: *ccs_url_systest2
-          username: *ccs_user
-          password: *ccs_pass
+      #- name: systest2
+      #  path: systest2
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #    audio: http://team{0}:7070
+      #  ccs:
+      #    url: *ccs_url_systest2
+      #    username: *ccs_user
+      #    password: *ccs_pass
       #- name: challenge
       #  path: challenge
       #  video:
@@ -91,10 +91,10 @@ cds_config:
           desktop: http://team{0}:9090
           webcam: http://team{0}:8080
           audio: http://team{0}:7070
-        #ccs:
-        #  url: *ccs_url_dress
-        #  username: *ccs_user
-        #  password: *ccs_pass
+        ccs:
+          url: *ccs_url_dress
+          username: *ccs_user
+          password: *ccs_pass
       - name: finals
         path: finals
         video:
@@ -171,17 +171,17 @@ cds_config:
       #  #  url: *ccs_url_systest1
       #  #  username: *ccs_user
       #  #  password: *ccs_pass
-      - name: systest2
-        path: systest2
-        record_reactions: true
-        video:
-          desktop: http://team{0}:9090
-          webcam: http://team{0}:8080
-          audio: http://team{0}:7070
-        ccs:
-          url: *ccs_url_systest2
-          username: *ccs_user
-          password: *ccs_pass
+      #- name: systest2
+      #  path: systest2
+      #  record_reactions: true
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #    audio: http://team{0}:7070
+      #  ccs:
+      #    url: *ccs_url_systest2
+      #    username: *ccs_user
+      #    password: *ccs_pass
       #- name: challenge
       #  path: challenge
       #  record_reactions: true
@@ -199,10 +199,10 @@ cds_config:
           desktop: http://team{0}:9090
           webcam: http://team{0}:8080
           audio: http://team{0}:7070
-        #ccs:
-        #  url: *ccs_url_dress
-        #  username: *ccs_user
-        #  password: *ccs_pass
+        ccs:
+          url: *ccs_url_dress
+          username: *ccs_user
+          password: *ccs_pass
       - name: finals
         path: finals
         record_reactions: true

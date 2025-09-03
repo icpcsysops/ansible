@@ -8,4 +8,5 @@ fallback_ntp_hosts:
   - "{{ baseip }}.209"
   - "{{ baseip }}.210"
   - "{{ baseip }}.211"
-firefox_default: https://domjudge
+# firefox_default: https://domjudge
+firefox_default: http://contest

@@ -85,26 +85,25 @@ cds_config:
       #    url: *ccs_url_challenge
       #    username: *ccs_user
       #    password: *ccs_pass
-      - name: dress
-        path: dress
-        video:
-          desktop: http://team{0}:9090
-          webcam: http://team{0}:8080
-          audio: http://team{0}:7070
-        ccs:
-          url: *ccs_url_dress
-          username: *ccs_user
-          password: *ccs_pass
+      #- name: dress
+      #  path: dress
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #    audio: http://team{0}:7070
+      #  ccs:
+      #    url: *ccs_url_dress
+      #    username: *ccs_user
+      #    password: *ccs_pass
       - name: finals
         path: finals
         video:
           desktop: http://team{0}:9090
           webcam: http://team{0}:8080
-          audio: http://team{0}:7070
-        #ccs:
-        #  url: *ccs_url_finals
-        #  username: *ccs_user
-        #  password: *ccs_pass
+        ccs:
+          url: *ccs_url_finals
+          username: *ccs_user
+          password: *ccs_pass
 #     - name: example
 #       path: example
 #       ccs:
@@ -181,28 +180,27 @@ cds_config:
       #  #  url: *ccs_url_challenge
       #  #  username: *ccs_user
       #  #  password: *ccs_pass
-      - name: dress
-        path: dress
-        record_reactions: true
-        video:
-          desktop: http://team{0}:9090
-          webcam: http://team{0}:8080
-          audio: http://team{0}:7070
-        ccs:
-          url: *ccs_url_dress
-          username: *ccs_user
-          password: *ccs_pass
+      #- name: dress
+      #  path: dress
+      #  record_reactions: true
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #    audio: http://team{0}:7070
+      #  ccs:
+      #    url: *ccs_url_dress
+      #    username: *ccs_user
+      #    password: *ccs_pass
       - name: finals
         path: finals
         record_reactions: true
         video:
           desktop: http://team{0}:9090
           webcam: http://team{0}:8080
-          audio: http://team{0}:7070
-        #ccs:
-        #  url: *ccs_url_finals
-        #  username: *ccs_user
-        #  password: *ccs_pass
+        ccs:
+          url: *ccs_url_finals
+          username: *ccs_user
+          password: *ccs_pass
 #       ccs:
 #         url: https://domjudge/api/contests/wf48_dress
 #         username: cds

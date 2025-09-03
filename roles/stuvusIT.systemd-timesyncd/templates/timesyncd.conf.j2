@@ -4,3 +4,4 @@
 [Time]
 NTP={{ timesync_ntp_hosts | default("") | join(" ") }}
 FallbackNTP={{ timesync_fallback_ntp_hosts | join(" ") }}
+PollIntervalMaxSec=5m

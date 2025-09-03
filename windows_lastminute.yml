@@ -13,8 +13,10 @@
 - name: Windows hosts
   hosts: windows
   gather_facts: false
+  tags: windows
   roles:
     - role: windows
+    - role: fluent_bit
 
 - name: Resolver hosts
   hosts: win_resolvers

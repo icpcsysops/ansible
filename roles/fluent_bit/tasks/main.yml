@@ -1,0 +1,39 @@
+---
+- name: Download fluent-bit (and cache it locally)
+  delegate_to: localhost
+  ansible.builtin.get_url:
+    url: https://packages.fluentbit.io/windows/fluent-bit-4.0.8-win64.exe
+    dest: files/fluentbit.exe
+
+- name: Install fluentbit from exe installer
+  block:
+    - name: Fetch exe
+      ansible.windows.win_copy:
+        src: files/fluentbit.exe
+        dest: c:\windows\temp\fluentbit.exe
+    - name: Install it
+      ansible.windows.win_command:
+        cmd: c:\windows\temp\fluentbit.exe /S /D=c:\tools\fluent-bit
+
+- name: Configure fluent-bit to collect logs
+  ansible.windows.win_template:
+    src: templates/fluent-bit.yaml.j2
+    dest: c:\tools\fluent-bit\conf\fluent-bit.yaml
+
+- name: Configure fluent-bit to run as a service
+  ansible.windows.win_service:
+    name: fluent-bit
+    path: c:\tools\fluent-bit\bin\fluent-bit.exe -c c:\tools\fluent-bit\conf\fluent-bit.yaml
+    start_mode: auto
+    state: started
+
+- name: Firewall rule to allow port 2021
+  community.windows.win_firewall_rule:
+    name: Windows Exporter
+    localport: 2021
+    action: allow
+    direction: in
+    protocol: tcp
+    profiles: private
+    state: present
+    enabled: true

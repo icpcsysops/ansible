@@ -21,42 +21,43 @@ scrape_configs:
   - job_name: systems
     static_configs:
       - targets:
-        - localhost:9100
-        labels:
-          instance: backup
-      - targets:
-        - {{ hostvars['cds'].ansible_host }}:9100
-        labels:
-          instance: cds
-      - targets:
-        - {{ hostvars['packages'].ansible_host }}:9100
-        labels:
-          instance: packages
-      - targets:
-        - {{ hostvars['printsrv'].ansible_host }}:9100
-        labels:
-          instance: printsrv
+        - "localhost:9100"
+        - "cds:9100"
+        - "packages:9100"
+        - "printsrv:9100"
 {% if 'reverseproxy' in hostvars %}
-      - targets:
-        - {{ hostvars['reverseproxy'].ansible_host }}:9100
-        labels:
-          instance: reverseproxy
+        - "reverseproxy:9100"
 {% endif %}
-{% if 'scoreboard' in hostvars %}
-      - targets:
-        - {{ hostvars['scoreboard'].ansible_host }}:9100
-        labels:
-          instance: scoreboard
-{% endif %}
+    relabel_configs: # remove the port from the instance label
+      - source_labels: [__address__]
+        regex: '(.+):(\d+)'
+        target_label: instance
+        replacement: '${1}'   # this is implicit default anyway
 
   - job_name: node_teams
     static_configs:
-{%if "contestants" in groups %}{% for host in groups["contestants"] %}
       - targets:
-        - {{ hostvars[host].ansible_host }}:9100
-        labels:
-          instance: {{ host }}
+{%if "contestants" in groups %}{% for host in groups["contestants"] %}
+        - "{{ host }}:9100"
 {% endfor %}{% endif %}
+    relabel_configs: # remove the port from the instance label
+      - source_labels: [__address__]
+        regex: '(.+):(\d+)'
+        target_label: instance
+        replacement: '${1}'   # this is implicit default anyway
+
+  - job_name: windows
+    static_configs:
+      - targets: # windows node exporter from fluent-bit
+{%if "windows" in groups %}{% for host in groups["windows"] %}
+        - "{{ host }}:2021"
+{% endfor %}{% endif %}
+    relabel_configs: # remove the port from the instance label
+      - source_labels: [__address__]
+        regex: '(.+):(\d+)'
+        target_label: instance
+        replacement: '${1}'   # this is implicit default anyway
+
 
   - job_name: blackbox
     metrics_path: /probe

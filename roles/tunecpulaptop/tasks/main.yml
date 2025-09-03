@@ -1,0 +1,23 @@
+---
+- name: Install tune_cpu_laptop script
+  ansible.builtin.copy:
+    src: files/disable-turbo-laptop
+    dest: /usr/sbin/disable-turbo-laptop
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Set tune_cpu_laptop service
+  ansible.builtin.copy:
+    src: files/tune_cpu_laptop.service
+    dest: /lib/systemd/system/tune_cpu_laptop.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Run tune_cpu_laptop
+  ansible.builtin.systemd:
+    name: tune_cpu_laptop.service
+    state: started
+    enabled: true
+    daemon_reload: true

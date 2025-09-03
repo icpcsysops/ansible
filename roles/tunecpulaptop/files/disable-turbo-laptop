@@ -1,0 +1,52 @@
+#!/bin/bash
+set -eu -o pipefail
+
+shopt -s extglob
+
+declare -A core_ids
+
+# If you want to have 2 judges, then enable this section and set pc2_cpu_override to 2
+# This is for core8, cpus 1 & 2.  Crank up cpu1, turn off thread cpu2
+##cpu=/sys/devices/system/cpu/cpu1
+### crank up clock to max
+##echo performance > $cpu/cpufreq/scaling_governor
+### disable 2nd thread
+##cpu_thread=/sys/devices/system/cpu/cpu2
+##echo 0 > $cpu_thread/online
+###
+
+# This is for core12, cpus 3 & 4.  Crank up cpu3, turn off thread cpu4
+cpu=/sys/devices/system/cpu/cpu3
+# crank up clock to max
+echo performance > $cpu/cpufreq/scaling_governor
+# disable 2nd thread
+cpu_thread=/sys/devices/system/cpu/cpu4
+echo 0 > $cpu_thread/online
+
+
+DIR_INTEL=/sys/devices/system/cpu/intel_pstate
+DIR_AMD=/sys/devices/system/cpu/cpufreq
+if [ -d $DIR_INTEL ]; then
+    # now disable turbo boost
+    FILE=$DIR_INTEL/no_turbo
+    echo -n 1 > $FILE || echo "Could not write to '$FILE', ignoring for now..."
+    if [ $(cat $FILE) -ne 1 ]; then
+        echo "Error: turboboost still enabled!"
+        exit 1
+    fi
+
+    # increase freq from powersaving to normal, but don't overclock
+    echo 100 > $DIR_INTEL/min_perf_pct
+    echo 100 > $DIR_INTEL/max_perf_pct
+elif [ -d $DIR_AMD ]; then
+    # now disable boosting
+    FILE=$DIR_AMD/boost
+    echo -n 0 > $FILE || echo "Could not write to '$FILE', ignoring for now..."
+    if [ $(cat $FILE) -ne 0 ]; then
+        echo "Error: turboboost still enabled!"
+        exit 1
+    fi
+else
+    echo "Warning: kernel (turbo) boost config not found in '$DIR_INTEL' or '$DIR_AMD'."
+fi
+

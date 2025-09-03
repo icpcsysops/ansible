@@ -36,7 +36,7 @@
       tags: icpc_host_packages
 
 - name: SSH CA Certs
-  hosts: all,!contestants
+  hosts: all,!contestants,!coachviews
   gather_facts: true # We need facts so we can limit the user certs to the ip of the host they're tied to
   tags: ssh_ca
   tasks:
@@ -109,6 +109,33 @@
   hosts: coachview*
   roles:
     - role: coachview
+  tasks:
+    - name: Update root password (if root_password already crypted)
+      ansible.builtin.user:
+        name: "root"
+        state: present
+        password: "{{ root_password }}"
+      when:
+        - root_password is defined and root_password is not none
+        - '"$6$" in root_password'
+      tags: do_root_passwd
+
+    - name: Update root password (if root_password is cleartext)
+      ansible.builtin.user:
+        name: "root"
+        state: present
+        password: "{{ root_password | password_hash('sha512', root_password) }}"
+      when:
+        - root_password is defined and root_password is not none
+        - '"$6$" not in root_password'
+    - name: Remove icpc and team user from img
+      ansible.builtin.user:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - "icpc"
+        - "team"
+      when: root_password is defined and root_password is not none
 
 - name: Configure everything but contestants and ntpservers to use backup for dns
   hosts: all,!contestants,!ntpservers

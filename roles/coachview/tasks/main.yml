@@ -26,17 +26,11 @@
 - name: Enable autologin to user coachview
   ansible.builtin.copy:
     content: |
-      [daemon]
-      AutomaticLoginEnable = true
-      AutomaticLogin = cv
-      [security]
-
-      [xdmcp]
-
-      [chooser]
-
-      [debug]
-    dest: /etc/gdm3/custom.conf
+      [SeatDefaults]
+      # Autologin
+      autologin-user=cv
+      autologin-timeout=0
+    dest: /etc/lightdm/lightdm.conf.d/coachview.conf
     owner: root
     group: root
     mode: '0644'
@@ -88,8 +82,8 @@
   ignore_errors: true
   changed_when: false
 
-- name: Restart gdm3
+- name: Restart lightdm
   ansible.builtin.systemd:
-    name: gdm3
+    name: lightdm
     state: restarted
   when: cv_running.rc != 0

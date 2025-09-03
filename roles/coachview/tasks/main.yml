@@ -40,41 +40,26 @@
     path: /cv/coachview.sh
   register: coachview
 
-- name: Download and install the coachview once
-  when: not coachview.stat.exists
-  block:
-    - name: Get prerelease version
-      delegate_to: localhost
-      ansible.builtin.uri:
-        url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=3
-        headers: "{{ github_headers }}"
-        method: GET
-        return_content: true
-        status_code: 200
-        body_format: json
-      register: latest_coachview_release_array
-      when: coachview_version is not defined
+- name: Download coachview
+  github_release:
+    repo: icpctools/icpctools
+    asset: "^coachview-.*\\.zip$"
+    version: "{{ coachview_version }}"
+    dest: /cv/coachview.zip
+  when: false
 
-    - name: Set coachview latest version
-      ansible.builtin.set_fact:
-        coachview_version: "{{ latest_coachview_release_array.json[0].name | replace('v', '') }}"
-      when: coachview_version is not defined
+- name: Copy coachview zip
+  ansible.builtin.copy:
+    src: files/coachview.zip
+    dest: /cv/coachview.zip
 
-    - name: Download the coachview once
-      delegate_to: localhost
-      ansible.builtin.get_url:
-        url: https://github.com/icpctools/icpctools/releases/download/v{{ coachview_version }}/coachview-{{ coachview_version }}.zip
-        dest: /tmp/coachview-{{ coachview_version }}.zip
-        mode: '0640'
-
-    - name: Unpack the client
-      ansible.builtin.unarchive:
-        src: /tmp/coachview-{{ coachview_version }}.zip
-        dest: /cv/
-        owner: cv
-        group: cv
-      become_user: cv
-      become: true
+- name: Unpack the client
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: /cv/coachview.zip
+    dest: /cv/
+    owner: cv
+    group: cv
 
 - name: Check if coachview is currently running
   ansible.builtin.command: pgrep --uid cv

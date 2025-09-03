@@ -1,12 +1,10 @@
 ---
-- name: Create the user the named hosts for contest
+- name: Create the user the named hosts for contest on constestants
   gather_facts: false
   hosts: contestants
   vars:
-    contest: TODO
-    # add linux-accounts.yml here(remove non-team accounts)
-    # then add spare accounts
-
+    contest: &contest TODO
+    accounts_yaml: /root/contest_repo/passwork/{{ contest }}/linux_accounts.yaml
 
   tasks:
     - name: Clear /home
@@ -40,32 +38,76 @@
             src: "{{ contest }}-samples.zip"
             dest: /etc/skel/Desktop/samps
 
+    - name: Fetch the team password to a fact
+      ansible.builtin.set_fact:
+        team_password: "{{ 'passw0rd' if 'spares' in group_names else ((lookup('file', accounts_yaml)|from_yaml)['users'][inventory_hostname])}}"
     - name: Create the user on named host
       ansible.builtin.user:
         name: "{{ inventory_hostname }}"
-        password: "{{ users[inventory_hostname] | password_hash('sha512') }}"
+        password: "{{ team_password | password_hash('sha512') }}"
         comment: "{{ inventory_hostname }},,,"
         shell: /bin/bash
         group: teams
         create_home: true
-
-    - name: Configure lightdm ccs greeter
+    - name: Create a .netrc file for pc2
       ansible.builtin.copy:
-        content: |
-          [General]
-          ;greeter-icon-theme=oxygen
-          greeter-background-image=/usr/share/backgrounds/ICPCLogo-greeter.png
-          loginform-offset-x=50%
-          loginform-offset-y=40%
-          ccs-contest-api-url={{ ccs_contest_url }}
-          ccs-autologin-username={{ inventory_hostname }}
-          ccs-autologin-password={{ users[inventory_hostname] }}
-          ;ccs-start-minimum-msec=500
-          ;ccs-team-name={{ inventory_hostname }}
-          ;ccs-team-label-color=white
-          ;ccs-team-label-shadow-color= ;unset
-        dest: /etc/lightdm/lightdm-qt5-greeter.conf
-        owner: root
-        group: root
-        mode: '0600'
-      diff: false
+        dest: /home/{{ inventory_hostname }}/.netrc
+        content: "machine pc2 login {{ inventory_hostname }} password {{ team_password }}\n"
+        owner: "{{ inventory_hostname }}"
+        group: teams
+        mode: 0600
+      when: ccs == "pc2"
+
+- name: Configure the human_judges
+  gather_facts: false
+  hosts: human_judges
+  vars:
+    contest: *contest
+
+  tasks:
+    - name: Clear /etc/skel/Desktop/samps
+      ansible.builtin.file:
+        state: absent
+        path: /etc/skel/Desktop/samps
+
+    - name: Clear /home/icpc/Desktop/samps
+      ansible.builtin.file:
+        state: absent
+        path: /home/icpc/Desktop/samps
+
+    - name: Check if contest-samples.zip exists
+      delegate_to: localhost
+      ansible.builtin.stat:
+        path: "files/{{ contest }}-samples.zip"
+      register: samples_zip
+
+    - name: If contest-samples.zip exist extract it
+      when: samples_zip.stat.exists
+      block:
+        - name: Create /etc/skel/Desktop/samps
+          ansible.builtin.file:
+            path: /etc/skel/Desktop/samps
+            state: directory
+            mode: '0755'
+            owner: root
+            group: root
+
+        - name: Deploy contest-samples.zip to /etc/skel/Desktop/samps
+          ansible.builtin.unarchive:
+            src: "{{ contest }}-samples.zip"
+            dest: /etc/skel/Desktop/samps
+
+        - name: Create /home/icpc/Desktop/samps
+          ansible.builtin.file:
+            path: /home/icpc/Desktop/samps
+            state: directory
+            mode: '0755'
+            owner: icpc
+            group: icpc
+
+        - name: Deploy contest-samples.zip to /home/icpc/Desktop/samps
+          ansible.builtin.unarchive:
+            src: "{{ contest }}-samples.zip"
+            dest: /home/icpc/Desktop/samps
+            owner: icpc
+            group: icpc

@@ -7,19 +7,6 @@
     owner: root
     group: root
 
-- name: Add printers to /etc/hosts
-  ansible.builtin.lineinfile:
-    state: present
-    line: "{{ item.ip }} {{ item.name }}"
-    path: /etc/hosts
-  loop:
-    - {ip: 10.4.4.200, name: balloonprinter}
-    - {ip: 10.4.4.201, name: teamprint1}
-    - {ip: 10.4.4.202, name: teamprint2}
-    - {ip: 10.4.4.203, name: teamprint3}
-    - {ip: 10.4.4.204, name: judgeprinter}
-    - {ip: 10.4.4.205, name: systemsprinter}
-
 - name: Install packages needed to munging pdfs
   ansible.builtin.package:
     name:
@@ -132,10 +119,34 @@
   loop: "{{ printserver_print_config }}"
 
 
-# TODO: add the university names+logos, and team photos
-# They go in files like this, with names based on
-# /usr/share/cups/data/UniversityNames/$user.txt
-# /usr/share/cups/data/Pictures/$user.jpg
-# /usr/share/cups/data/Logos/$user.png
-#
-#
+- name: Create the directories for our metadata
+  ansible.builtin.file:
+    state: directory
+    path: /usr/share/cups/data/{{ item }}
+  loop:
+    - UniversityNames
+    - Pictures
+    - Logos
+
+- name: Create university information for team
+  ansible.builtin.copy:
+    content: "{{ item.display_name }}"
+    dest: /usr/share/cups/data/UniversityNames/team{{ item.id }}.txt
+    mode: 644
+  loop: "{{ lookup('file', '/root/contest_repo/contests/' + printsrv_contest_id + '/teams.json') | from_json }}"
+
+- name: Copy logos
+  ansible.builtin.copy:
+    src: "/root/contest_repo/contests/{{ printsrv_contest_id }}/organizations/{{ item.organization_id }}/logo.png"
+    dest: /usr/share/cups/data/Logos/team{{ item.id }}.png
+    mode: 644
+  loop: "{{ lookup('file', '/root/contest_repo/contests/' + printsrv_contest_id + '/teams.json') | from_json }}"
+  ignore_errors: true
+
+- name: Copy team pictures
+  ansible.builtin.copy:
+    src: "/root/contest_repo/contests/{{ printsrv_contest_id }}/teams/{{ item.id }}/photo.jpg"
+    dest: /usr/share/cups/data/Pictures/team{{ item.id }}.jpg
+    mode: 644
+  loop: "{{ lookup('file', '/root/contest_repo/contests/' + printsrv_contest_id + '/teams.json') | from_json }}"
+  ignore_errors: true

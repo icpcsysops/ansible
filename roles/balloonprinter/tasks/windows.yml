@@ -1,6 +1,7 @@
 - name: Install jre
   chocolatey.chocolatey.win_chocolatey:
-    name: openjdk11jre
+    name: openjdk
+    version: 21.0.0
     state: present
   when: not skip_chocolatey
 

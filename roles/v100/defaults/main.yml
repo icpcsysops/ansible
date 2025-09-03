@@ -1,2 +1,2 @@
 ---
-v100_video_device: /dev/video0
+vlc_webcam_device: video2

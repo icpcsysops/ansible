@@ -17,9 +17,16 @@
 # router os crap
 -A INPUT -p udp -m udp --dport 5678 -j REJECT
 
+# balloon manager
+-A INPUT -p udp -m udp -s 10.4.4.149 --dport 53 -j DROP
+-A INPUT -p tcp -m tcp -s 10.4.4.149 --dport 53 -j DROP
+
 # internal interface
 -A INPUT -i lo -j ACCEPT
 -A OUTPUT -o lo -j ACCEPT
+
+# drop multicast
+-A INPUT -d 224.0.0.1 -j DROP
 
 # open up server to server communication
 -A OUTPUT -d 10.3.3.197 -j ACCEPT
@@ -28,6 +35,8 @@
 -A INPUT -s 10.3.3.207 -j ACCEPT
 -A OUTPUT -d 10.3.3.208/29 -j ACCEPT
 -A INPUT -s 10.3.3.208/29 -j ACCEPT
+
+
 
 # DNS outbound
 -A INPUT -p tcp --sport 53 -j ACCEPT

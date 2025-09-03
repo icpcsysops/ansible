@@ -92,7 +92,7 @@
 - name: Populate server.env for sentry dsn
   ansible.builtin.copy:
     content: |
-      #SENTRY_DSN="https://fill_with_sentry_dsn@replace.sentry.io/identifier"
+      SENTRY_DSN="{{ cds_sentry_dsn|default("") }}"
     dest: /srv/cds/wlp/usr/servers/{{ cds_instance_name }}/server.env
     owner: cds
     group: cds

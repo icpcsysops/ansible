@@ -252,7 +252,7 @@ script_server_commands:
     group: cds
     allowed_users: *cds_allowed_users
     content: |
-      #!/usr/bin/bash -ex
+      #!/usr/bin/bash -x
       cd /root/ansible
       ansible -m ansible.windows.win_shell -a 'stop-process -name "java" -force' $HOST_PATTERN
       ansible -m ansible.windows.win_shell -a "rm -force -r c:/users/icpc/appdata/local/temp/org.icpc*" $HOST_PATTERN
@@ -266,14 +266,6 @@ script_server_commands:
         values:
           - presentation_admins
           - presentation_clients
-          - green-presclient1
-          - green-presclient2
-          - green-presclient3
-          - green-presclient4
-          - green-presclient5
-          - green-presclient6
-          - green-presclient7
-          - green-presclient8
 
   - name: cds-lastminute
     description: Runs the ansible playbook lastminute.yml (against cds resources)
@@ -357,8 +349,8 @@ script_server_commands:
           - domjudge-ccsadmin*
           - domjudge
           - emergency
-          - domjudge_analysts
-          - green-judge*
+          - analyst_judgehosts
+          - analyst_server
 
           # These two are "virtual" ips
           # - domjudge-1 domserver-1
@@ -371,9 +363,9 @@ script_server_commands:
           - domjudge-ccsadmin3
           - domjudge-ccsadmin4
           - domjudge-ccsadmin5
-          - domjudge-ccsadmin6
-          - domjudge-ccsadmin7
-          - domjudge-ccsadmin8
+         #- domjudge-ccsadmin6
+         #- domjudge-ccsadmin7
+         #- domjudge-ccsadmin8
 
           # Individual judgehosts
           - domjudge-judgehost1
@@ -386,20 +378,20 @@ script_server_commands:
           - domjudge-judgehost8
           - domjudge-judgehost9
           - domjudge-judgehost10
-          - domjudge-judgehost11
-          - domjudge-judgehost12
-          - domjudge-judgehost13
-          - domjudge-judgehost14
-          - domjudge-judgehost15
-          - domjudge-judgehost16
-          - domjudge-judgehost17
-          - domjudge-judgehost18
-          - domjudge-judgehost19
-          - domjudge-judgehost20
-          - domjudge-judgehost21
-          - domjudge-judgehost22
-          - domjudge-judgehost23
-          - domjudge-judgehost24
+         #- domjudge-judgehost11
+         #- domjudge-judgehost12
+         #- domjudge-judgehost13
+         #- domjudge-judgehost14
+         #- domjudge-judgehost15
+         #- domjudge-judgehost16
+         #- domjudge-judgehost17
+         #- domjudge-judgehost18
+         #- domjudge-judgehost19
+         #- domjudge-judgehost20
+         #- domjudge-judgehost21
+         #- domjudge-judgehost22
+         #- domjudge-judgehost23
+         #- domjudge-judgehost24
           # - domjudge-judgehost25
           # - domjudge-judgehost26
           # - domjudge-judgehost27
@@ -409,7 +401,7 @@ script_server_commands:
           # - domjudge-judgehost31
           # - domjudge-judgehost32
 
-          - analysts-green
+          - domjudge-analyst-green
           - green-judgehost1
           - green-judgehost2
           - green-judgehost3

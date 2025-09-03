@@ -1,1 +1,2 @@
-fast-ansible -m shell -a "pkill -u p" contestants
+./fast-ansible -m shell -a "pkill -u p" contestants
+./fast-ansible-playbook --limit contestants disable_p100.yml

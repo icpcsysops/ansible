@@ -29,6 +29,11 @@
         ssh_key_to_sign: /root/.ssh/id_ed25519.pub
         ssh_principal: "root@{{ inventory_hostname }}"
 
+- name: Undo "pr" coisas
+  hosts: all
+  roles:
+    - undo_teamtracking
+
 - name: Configure packages machines
   hosts: packages
   roles:

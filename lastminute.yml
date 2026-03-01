@@ -190,6 +190,18 @@
         force: true
         state: link
       tags: fix_clion
+
+    - name: Install a2ps
+      ansible.builtin.apt:
+        name: a2ps
+
+    - name: Install printfile
+      ansible.builtin.copy:
+        src: files/printfile
+        dest: /usr/local/bin/printfile
+        mode: '0755'
+        owner: root
+        group: root
     - name: Remove network-manager so teams can't wifi things or whatnot
       ansible.builtin.apt:
         name: network-manager

@@ -163,7 +163,8 @@
     - role: team
     - role: mediamtx
       when: enable_hls is defined and enable_hls
-    - role: hyperthreadingdisabled
+    #    - role: hyperthreadingdisabled
+    - role: tunecpulaptop
     - role: reverseproxy
       when: enable_reverseproxy is defined and enable_reverseproxy
     - role: p100

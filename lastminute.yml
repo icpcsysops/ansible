@@ -476,6 +476,14 @@
     tech_notes: "{{ '/root/ansible/files/%s.TechNotes.%s.pdf'|format(contest_detail, papersize) }}"
 
   tasks:
+    - name: Copy updated logos (we should do this every year)
+      ansible.builtin.copy:
+        src: files/{{ item }}
+        dest: /usr/share/backgrounds/{{ item }}
+      loop:
+        - ICPCLogo-greeter.png
+        - ICPCLogo-on-dark-smaller.png
+
     # will be fixed in icpc2026
     - name: Ensure /etc/ssh/sshd_config.d/50-cloud-init.conf does not exist
       ansible.builtin.file:

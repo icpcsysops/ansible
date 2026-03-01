@@ -176,7 +176,6 @@
       tags: iptablesrules
     - role: martkeys
       when: disable_martkeys is not defined or not disable_martkeys
-    - role: lightdm_ccs_greeter
 
   tasks:
     - name: Remove network-manager so teams can't wifi things or whatnot

@@ -623,17 +623,18 @@
 - name: Configure balloonmanager printers
   hosts: balloonmanager
   vars:
-    device_uri: 'printers/balloonprinter'
-    printer_name: balloonprinter
+    device_uri: 'printers/balloonprint'
+    printer_name: balloonprint
   roles:
     - role: cups
     - role: balloonprinter
 
-- name: Configure ccsadmin printers
-  hosts: ccsadmin*
+- name: Configure systems printers
+  hosts: ccsadmin,human_judges,pc2,pc2backup,backup,cds,keith-mgmt,troy-mgmt
+  tags: systemsprinters
   vars:
-    device_uri: 'printers/systemsprinter'
-    printer_name: systemsprinter
+    device_uri: 'printers/systemsprint'
+    printer_name: systemsprint
   roles:
     - role: cups
 
@@ -655,8 +656,8 @@
 - name: Configure others printers
   hosts: others:!printsrv
   vars:
-    device_uri: 'printers/systemsprinter'
-    printer_name: systemsprinter
+    device_uri: 'printers/systemsprint'
+    printer_name: systemsprint
   roles:
     - role: cups
 

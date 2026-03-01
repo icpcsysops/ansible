@@ -179,6 +179,13 @@
       when: disable_martkeys is not defined or not disable_martkeys
 
   tasks:
+    - name: Fix /usr/bin/clion
+      ansible.builtin.file:
+        src: /opt/clion/bin/clion
+        dest: /usr/bin/clion
+        force: true
+        state: link
+      tags: fix_clion
     - name: Remove network-manager so teams can't wifi things or whatnot
       ansible.builtin.apt:
         name: network-manager

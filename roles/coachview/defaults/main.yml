@@ -1,6 +1,7 @@
 coachview_cds_url: https://10.3.3.207/api/contests/
 # optional hard-code a version
 # coachview_version: 2.5.991
+coachview_version: latest-unreleased
 coachview_user: coachview
 coachview_pass: cds_coachview_password
 skip_chocolatey: false

@@ -3,4 +3,6 @@
 resolver_user: presentation
 resolver_pass: cds_presentation_password
 resolver_cds_url: https://10.3.3.207/api/contests/
+resolver_args: ""
 github_headers: {}
+skip_chocolatey: false

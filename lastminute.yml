@@ -2,6 +2,9 @@
 - name: Configure backup server
   hosts: backup
   strategy: linear # we want this complete before we do any other hosts
+  vars:
+    device_uri: 'printers/systemsprint'
+    printer_name: systemsprint
   roles:
     - role: dnsmasq
       tags: dnsmasq
@@ -10,6 +13,7 @@
     # script_server needs to come after the hosts file has been configured (because it needs to lookup some hostnames)
     - role: script_server
       tags: script_server
+    - role: cups
   tasks:
     - name: Configure backup as ssh ca server
       ansible.builtin.include_role:

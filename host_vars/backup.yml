@@ -47,7 +47,15 @@ script_server_commands:
     content: |
       #!/usr/bin/bash -ex
       cd /root/ansible
-      ansible-playbook --limit "$PARAM_HOSTNAME" lastminute.yml
+
+      # Team machines need to disable sleeping. Also we want to handle running lastminute on them manually.
+      if [[ $PARAM_HOSTNAME  =~ ^team ]]; then
+        ssh $PARAM_HOSTNAME systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+        sleep 30
+        ssh $PARAM_HOSTNAME systemctl restart lightdm
+      else
+        ansible-playbook --limit "$PARAM_HOSTNAME" lastminute.yml
+      fi
     parameters:
       - name: hostname
         env_var: PARAM_HOSTNAME

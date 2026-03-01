@@ -204,9 +204,13 @@
         group: root
     - name: Remove network-manager so teams can't wifi things or whatnot
       ansible.builtin.apt:
-        name: network-manager
+        name: "{{ item }}"
+        state: absent
         purge: true
         autoremove: true
+      with_items:
+        - network-manager
+        - network-manager-gnome
 
     # more things to fix in icpc-pycharm
     - name: Fix location in printers.conf

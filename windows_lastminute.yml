@@ -54,6 +54,7 @@
 
 - name: Balloon printer hosts
   hosts: win_balloonprinters
+  tags: balloonprinter
   gather_facts: true
   roles:
     - role: balloonprinter

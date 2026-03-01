@@ -1,0 +1,59 @@
+#!/usr/sbin/nft -f
+flush ruleset
+table ip filter {
+        set NTP {
+           typeof ip daddr
+           elements =  { 10.3.3.208, 10.3.3.209, 10.3.3.210 }
+        }
+	chain INPUT {
+		type filter hook input priority filter; policy accept;
+		iifname "lo" accept
+		ct state related,established accept
+		ip saddr 10.3.3.210 tcp sport 22 accept comment "ssh from backup"
+		ip saddr 10.3.3.207 tcp dport 7070 accept comment "audio to cds"
+		ip saddr 10.3.3.207 tcp dport 8080 accept comment "webcam to cds"
+		ip saddr 10.3.3.207 tcp dport 9090 accept comment "desktop to cds"
+		ip saddr 10.3.3.209 tcp dport 9100 accept comment "node_exporter metrics"
+		ip saddr 10.3.3.208/29 ip protocol icmp icmp type echo-request ct state new,related,established accept
+		ip protocol icmp icmp type echo-request ct state new,related,established counter jump drop-n-log
+		ip saddr 10.3.3.210 ip protocol icmp icmp type destination-unreachable accept
+	}
+
+	chain FORWARD {
+		type filter hook forward priority filter; policy drop;
+	}
+
+	chain OUTPUT {
+		type filter hook output priority filter; policy accept;
+		oifname "lo" accept
+		ip daddr 10.3.3.210 tcp dport 5000 accept
+		ip daddr 10.3.3.207 tcp dport 11443 accept
+		ip daddr 10.3.3.210 udp dport 514 accept
+		ip daddr 10.3.3.209 tcp dport 443 accept
+		ip daddr 10.3.3.208/29 ip protocol icmp icmp type echo-reply ct state related,established accept
+		ip protocol icmp icmp type echo-reply ct state related,established counter jump drop-n-log
+		ip protocol icmp skgid 2000 icmp type echo-request counter jump drop-n-log
+		ct state related,established accept
+		ip daddr 10.1.1.254 accept
+		ip daddr 10.1.1.0/24 counter jump drop-n-log
+		ip daddr {{ challenge_ip }} tcp dport 443 accept
+		ip daddr @NTP tcp dport 123 accept
+		ip daddr @NTP udp dport 123 accept
+		counter jump drop-n-log
+	}
+
+	chain accept-in-log {
+		counter log prefix "accept-in-log:"
+		counter accept
+	}
+
+	chain accept-out-log {
+		counter log prefix "accept-out-log:"
+		counter accept
+	}
+
+	chain drop-n-log {
+		limit rate 5/minute burst 7 packets counter log prefix "DENIED:"
+		counter drop
+	}
+}

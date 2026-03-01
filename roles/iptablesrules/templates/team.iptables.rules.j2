@@ -18,6 +18,9 @@
 -A INPUT -i lo -j ACCEPT
 -A OUTPUT -o lo -j ACCEPT
 
+# Drop noisy broadcast/bonjour/multicast junk
+-A INPUT -d 224.0.0.1 -j DROP
+-A INPUT -s 0.0.0.0 -d 255.255.255.255 -j DROP
 # something on login or usb plugin causes this traffic
 -A OUTPUT -p udp -m udp --dport 137 -j REJECT
 -A OUTPUT -p udp -m udp --dport 1124 -j REJECT
@@ -49,101 +52,64 @@
 -A INPUT -p udp -m udp --dport 5678 -j REJECT
 
 
-# prom from the backup
--A INPUT -p tcp -m tcp --dport 9100 -s 10.3.3.210 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 9100 -d 10.3.3.210 -j ACCEPT
-
-# http to/from scoreboard
--A INPUT -p tcp --sport 80 -s 10.3.3.208/31 -j ACCEPT
--A OUTPUT -p tcp --dport 80 -d 10.3.3.208/31 -j ACCEPT
+# prom from the packages
+-A INPUT -p tcp -m tcp --dport 9100 -s 10.3.3.209 -j ACCEPT
+# maybe change to conntrack for the OUTPUT rule so we can drop this.
+-A OUTPUT -p tcp -m tcp --sport 9100 -d 10.3.3.209 -j ACCEPT
 
 {% if enable_reverseproxy -%}
 #TODO: make the ip for reverseproxy a lookup/variable/something better than hardcoded
 # http(s) to/from reverseproxy
 -A INPUT -p tcp --sport {{ ccs_port }} -s 10.3.3.205/32 -j ACCEPT
--A OUTPUT -p tcp --dport {{ ccs_port }} -d 10.3.3.205/32 -j ACCEPT
 
 {% else -%}
 # https to/from ccs primary
--A INPUT -p tcp --sport {{ ccs_port }} -s {{ ccs_ip }}/32 -j ACCEPT
 -A OUTPUT -p tcp --dport {{ ccs_port }} -d {{ ccs_ip }}/32 -j ACCEPT
+-A INPUT -p tcp --sport {{ ccs_port }} -s {{ ccs_ip }}/32 -j ACCEPT
 
 {% if ccs == "pc2" -%}
 # pc2 needs this port for the pc2 command line submit client (because reasons)
--A INPUT -p tcp --sport 50444 -s {{ ccs_ip }}/32 -j ACCEPT
--A OUTPUT -p tcp --dport 50444 -d {{ ccs_ip }}/32 -j ACCEPT
+-A OUTPUT -p tcp --dport 50443 -d {{ ccs_ip }}/32 -j ACCEPT
+-A INPUT -p tcp --sport 50443 -s {{ ccs_ip }}/32 -j ACCEPT
 {% endif -%}
 
 {% endif -%}
 
 # https to/from packages
--A INPUT -p tcp --sport 443 -s 10.3.3.209/32 -j ACCEPT
 -A OUTPUT -p tcp --dport 443 -d 10.3.3.209/32 -j ACCEPT
 
 # ntp
 {% for host in groups['ntpservers'] -%}
 -A OUTPUT -p tcp --dport 123 -d {{ hostvars[host].ansible_host }} -j ACCEPT
 -A OUTPUT -p udp --dport 123 -d {{ hostvars[host].ansible_host }} -j ACCEPT
--A INPUT -p tcp --sport 123 -s {{ hostvars[host].ansible_host }} -j ACCEPT
--A INPUT -p udp --sport 123 -s {{ hostvars[host].ansible_host }} -j ACCEPT
 {% endfor %}
-# why the server gateway?
--A OUTPUT -p tcp --dport 123 -d 10.3.3.254 -j ACCEPT
--A OUTPUT -p udp --dport 123 -d 10.3.3.254 -j ACCEPT
 
 # p100 uses https on port {{ cds_port }}
 -A OUTPUT -p tcp --dport {{ cds_port }} -d {{ cds_ip }}/32 -j ACCEPT
--A INPUT -p tcp --sport {{ cds_port }} -s {{ cds_ip }}/32 -j ACCEPT
 
-# ssh inbound
+# ssh inbound from backup
 -A INPUT -p tcp -m tcp --dport 22 -s 10.3.3.208/29 -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 22 -d 10.3.3.208/29 -j ACCEPT
 
 {% if enable_vlc -%}
+# vlc audio inbound
+-A INPUT -p tcp -m tcp --dport 7070 -s {{ cds_ip }}/32 -j ACCEPT
 # vlc webcam inbound
 -A INPUT -p tcp -m tcp --dport 8080 -s {{ cds_ip }}/32 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 8080 -d {{ cds_ip }}/32 -j ACCEPT
-
 # vlc screen inbound
 -A INPUT -p tcp -m tcp --dport 9090 -s {{ cds_ip }}/32 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 9090 -d {{ cds_ip }}/32 -j ACCEPT
-
 {% endif %}
+
 {% if enable_mediamtx %}
 # mediamtx
 -A INPUT -p tcp -m tcp --dport 8888 -s {{ cds_ip }}/32 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 8888 -d {{ cds_ip }}/32 -j ACCEPT
-
 {% endif %}
-# ssh to backup (used by rsync)
--A INPUT -p tcp -m tcp --sport 22 -s 10.3.3.213 -j ACCEPT
--A OUTPUT -p tcp -m tcp --dport 22 -d 10.3.3.213 -j ACCEPT
--A INPUT -p tcp -m tcp --sport 22 -s 10.3.3.210 -j ACCEPT
--A OUTPUT -p tcp -m tcp --dport 22 -d 10.3.3.210 -j ACCEPT
 
 # syslog
--A INPUT -p udp --sport 514 -s 10.3.3.208/29 -j ACCEPT
--A OUTPUT -p udp --dport 514 -d 10.3.3.208/29 -j ACCEPT
-
-# printing (ipp)
-# to ballonmanager
--A INPUT -p tcp --sport 631 -s 10.3.3.149 -j ACCEPT
--A INPUT -p udp --sport 631 -s 10.3.3.149 -j ACCEPT
--A OUTPUT -p tcp --dport 631 -d 10.3.3.149 -j ACCEPT
--A OUTPUT -p udp --dport 631 -d 10.3.3.149 -j ACCEPT
-# to authprint
--A INPUT -p tcp --sport 631 -s 10.3.3.208 -j ACCEPT
--A INPUT -p udp --sport 631 -s 10.3.3.208 -j ACCEPT
+-A OUTPUT -p udp --dport 514 -d 10.3.3.210 -j ACCEPT
+# allow printing to printsrv
 -A OUTPUT -p tcp --dport 631 -d 10.3.3.208 -j ACCEPT
--A OUTPUT -p udp --dport 631 -d 10.3.3.208 -j ACCEPT
 
-# printing (ldp)
--A INPUT -p udp --sport 515 -s 10.3.3.216 -j ACCEPT
--A INPUT -p tcp --sport 515 -s 10.3.3.216 -j ACCEPT
--A OUTPUT -p udp --dport 515 -d 10.3.3.216 -j ACCEPT
--A OUTPUT -p tcp --dport 515 -d 10.3.3.216 -j ACCEPT
-
-# printing (samba)
 # allow ICMP ping incoming client request from servers
 -A INPUT -p icmp --icmp-type 8 -s 10.3.3.208/29 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
 -A OUTPUT -p icmp --icmp-type 0 -d 10.3.3.208/29 -m state --state ESTABLISHED,RELATED -j ACCEPT
@@ -153,15 +119,12 @@
 -A INPUT -p icmp --icmp-type 3 -s 10.3.3.210 -j ACCEPT
 
 # disable outgoing ICMP request
--A OUTPUT -p icmp --icmp-type 8 -j drop-n-log
+-A OUTPUT -m owner --gid-owner 2000 -p icmp --icmp-type 8 -j drop-n-log
 
-# ypbind sends this out to find the fastest server
-# unknown state
--A OUTPUT -p icmp -j ACCEPT
-
-# what else
-# -A INPUT -m state --state ESTABLISHED,RELATED -j accept-in-log
-# -A OUTPUT -m state --state NEW,ESTABLISHED,RELATED -j accept-out-log
+# allow related outbound
+-A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+# and input related
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 
 # drop rest
 -A OUTPUT -j drop-n-log

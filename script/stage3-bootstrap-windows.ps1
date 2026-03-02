@@ -37,6 +37,9 @@ cmd.exe /c reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Network\
 # Enable psremoting
 Enable-PSRemoting -Force
 
+# Enable CredSSP authentication
+Enable-WSManCredSSP -Role Server -Force
+
 # Set quickconfig for winrmm
 cmd.exe /c winrm quickconfig -q
 cmd.exe /c winrm quickconfig -transport:http

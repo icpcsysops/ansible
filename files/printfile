@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# enscript -1 --line-numbers --header='Printed by %n from %m, this is page $% of $=' $*
+a2ps -1 --line-numbers=1 $*
+
+# eof

@@ -1,0 +1,12 @@
+[Unit]
+Description=Tune CPU cores: disable turboboost, downclocking, etc.
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/disable-turbo-laptop
+RemainAfterExit=true
+ExecStartPre=/bin/sleep 10
+
+[Install]
+WantedBy=multi-user.target
+

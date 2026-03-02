@@ -1,0 +1,17 @@
+[Unit]
+Description=VLC Audio streaming
+After=network.target
+
+[Service]
+User=camera
+Type=simple
+CPUAffinity={{ vlc_webcam_cpu_affinity }}
+
+# with software encoding
+ExecStart=/bin/bash -c "ffmpeg -hide_banner -f alsa -channels 1 -i {{ vlc_alsa_device }} -c:a aac -f mpegts - | cvlc --play-and-exit - --sout '#transcode{}:standard{access=http,mux=ts,dst=:7070,name=stream,mime=video/ts}'"
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

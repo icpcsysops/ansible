@@ -1,0 +1,28 @@
+---
+service:
+  log_file: c:\tools\fluent-bit\fluent-bit.log
+pipeline:
+  inputs:
+    # Capture logs from fluent-bit itself
+    - name: tail
+      path: c:\tools\fluent-bit\fluent-bit.log
+      tag: logs
+    # Collect presclient logs
+    - name: tail
+      path: c:\users\{{ ansible_user }}\desktop\presclient\logs\*.log
+      tag: logs
+    # Collect metrics too
+    - name: windows_exporter_metrics
+      tag: node_metrics
+      scrape_interval: 5
+  outputs:
+    # Expose windows metrics on port 2021
+    - name: prometheus_exporter
+      match: node_metrics
+      host: 0.0.0.0
+      port: 2021
+    # Send all logs to our monitoring server
+    - name: loki
+      host: {{ monitoring_host }}
+      match: logs
+

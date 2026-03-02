@@ -3,9 +3,15 @@ extra_nic_configs: []
 cds_version: latest-unreleased
 cds_contest_git_repo: git@packages:contest_repo.git
 
-ccs_url: &ccs_url https://domjudge/api/contests/wf48_systest2
+ccs_url_systest0: &ccs_url_systest0 https://pc2:50450/contests/wf49_systest0
+ccs_url_systest0_dj: &ccs_url_systest0_dj https://domjudge/api/contests/wf49_systest0
+ccs_url_systest1: &ccs_url_systest1 https://pc2:50450/contests/wf49_systest1
+ccs_url_systest2: &ccs_url_systest2 https://pc2:50450/contests/wf49_systest2
+ccs_url_dress: &ccs_url_dress https://pc2:50450/contests/wf49_dress
+ccs_url_finals: &ccs_url_finals https://pc2:50450/contests/wf49_finals
+ccs_url_challenge: &ccs_url_challenge https://pc2:50450/contests/wf49_systest0
 ccs_user: &ccs_user cds
-ccs_pass: &ccs_pass physicist-five-miracles
+ccs_pass: &ccs_pass electrician-code-carmine
 cds_presentation_domains: &cds_presentation_domains
   - - matveyAdmin
     - matvey
@@ -14,9 +20,11 @@ cds_presentation_domains: &cds_presentation_domains
     - balloon
     - coachview
     - deboer
-    - david
     - nicky
     - mattias
+    - michael
+  - - p100Admin
+    - p100Presentation
 
 # ccs_url: &ccs_url https://domjudge/api/contests/contest_id
 # ccs_user: &ccs_user cds
@@ -34,6 +42,68 @@ cds_config:
     http_port: 80
     https_port: 443
     contests:
+      #- name: systest0
+      #  path: systest0
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #  #ccs:
+      #  #  url: *ccs_url_systest0
+      #  #  username: *ccs_user
+      #  #  password: *ccs_pass
+      ##- name: systest0_dj
+      ##  path: systest0_dj
+      ##  ccs:
+      ##    url: *ccs_url_systest0_dj
+      ##    username: *ccs_user
+      ##    password: *ccs_pass
+      #- name: systest1
+      #  path: systest1
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #  #ccs:
+      #  #  url: *ccs_url_systest1
+      #  #  username: *ccs_user
+      #  #  password: *ccs_pass
+      #- name: systest2
+      #  path: systest2
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #    audio: http://team{0}:7070
+      #  ccs:
+      #    url: *ccs_url_systest2
+      #    username: *ccs_user
+      #    password: *ccs_pass
+      #- name: challenge
+      #  path: challenge
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #  ccs:
+      #    url: *ccs_url_challenge
+      #    username: *ccs_user
+      #    password: *ccs_pass
+      #- name: dress
+      #  path: dress
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #    audio: http://team{0}:7070
+      #  ccs:
+      #    url: *ccs_url_dress
+      #    username: *ccs_user
+      #    password: *ccs_pass
+      - name: finals
+        path: finals
+        video:
+          desktop: http://team{0}:9090
+          webcam: http://team{0}:8080
+        ccs:
+          url: *ccs_url_finals
+          username: *ccs_user
+          password: *ccs_pass
 #     - name: example
 #       path: example
 #       ccs:
@@ -43,15 +113,15 @@ cds_config:
 #       video:
 #         desktop: http://team{0}:9090
 #         webcam: http://team{0}:8080
-      - name: finals
-        path: finals
-        video:
-          desktop: http://team{0}:9090
-          webcam: http://team{0}:8080
-        ccs:
-          url: https://domjudge/api/contests/wf48_finals
-          username: *ccs_user
-          password: *ccs_pass
+#      - name: finals
+#        path: finals
+#        video:
+#          desktop: http://team{0}:9090
+#          webcam: http://team{0}:8080
+#        ccs:
+#          url: https://pc2/api/contests/wf49_finals
+#          username: *ccs_user
+#          password: *ccs_pass
 #     - name: finals
 #       path: finals
 #       video:
@@ -62,34 +132,75 @@ cds_config:
 #         username: *ccs_user
 #         password: *ccs_pass
     # Path to a yaml file inside vars/ containing an accounts array
-    accounts: /root/contest_repo/servers/cds/accounts.yaml
+    accounts: /root/contest_repo/servers/cds/config/accounts.yaml
     domains: *cds_presentation_domains
-  p100:
-    http_port: 9080
-    https_port: 9443
-    accounts: /root/contest_repo/servers/p100/accounts.yaml
-    contests:
-      - name: finals
-        path: finals
-        ccs:
-          url: https://cds/api/contests/wf48_finals
-          username: deboer # should be a p100 user on the cds, but this account doesn't exist yet
-          password: cheerleading-laughter-harvestman
   live:
     http_port: 7080
     https_port: 7443
-    accounts: /root/contest_repo/servers/live/accounts.yaml
+    accounts: /root/contest_repo/servers/live/config/accounts.yaml
     contests:
+      #- name: systest0
+      #  path: systest0
+      #  record_reactions: true
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #  #ccs:
+      #  #  url: *ccs_url_systest0
+      #  #  username: *ccs_user
+      #  #  password: *ccs_pass
+      #- name: systest1
+      #  path: systest1
+      #  record_reactions: true
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #  #ccs:
+      #  #  url: *ccs_url_systest1
+      #  #  username: *ccs_user
+      #  #  password: *ccs_pass
+      #- name: systest2
+      #  path: systest2
+      #  record_reactions: true
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #    audio: http://team{0}:7070
+      #  ccs:
+      #    url: *ccs_url_systest2
+      #    username: *ccs_user
+      #    password: *ccs_pass
+      #- name: challenge
+      #  path: challenge
+      #  record_reactions: true
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #  #ccs:
+      #  #  url: *ccs_url_challenge
+      #  #  username: *ccs_user
+      #  #  password: *ccs_pass
+      #- name: dress
+      #  path: dress
+      #  record_reactions: true
+      #  video:
+      #    desktop: http://team{0}:9090
+      #    webcam: http://team{0}:8080
+      #    audio: http://team{0}:7070
+      #  ccs:
+      #    url: *ccs_url_dress
+      #    username: *ccs_user
+      #    password: *ccs_pass
       - name: finals
         path: finals
         record_reactions: true
-        ccs:
-          url: https://domjudge/api/contests/wf48_finals
-          username: cds
-          password: physicist-five-miracles
         video:
           desktop: http://team{0}:9090
           webcam: http://team{0}:8080
+        ccs:
+          url: *ccs_url_finals
+          username: *ccs_user
+          password: *ccs_pass
 #       ccs:
 #         url: https://domjudge/api/contests/wf48_dress
 #         username: cds

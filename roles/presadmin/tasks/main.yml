@@ -1,38 +1,29 @@
 - name: Install jre
   chocolatey.chocolatey.win_chocolatey:
-    name: openjdk11jre
+    name: openjdk
+    version: 21.0.0
     state: present
   when: not skip_chocolatey
 
-- name: Update/download and install the presentation client
-  block:
-    - name: Get prerelease version
-      delegate_to: 127.0.0.1
-      ansible.builtin.uri:
-        url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=3
-        method: GET
-        return_content: true
-        status_code: 200
-        body_format: json
-      register: latest_presentation_release_array
-      when: presadmin_version is not defined
+- name: Download presentation zip
+  github_release:
+    repo: icpctools/icpctools
+    asset: "^presentationAdmin-.*\\.zip$"
+    version: "{{ presadmin_version }}"
+    dest: files/presentationAdmin.zip
+  delegate_to: localhost
+  register: github_presadmin
 
-    - name: Set presentation admin latest version
-      ansible.builtin.set_fact:
-        presadmin_version: "{{ latest_presentation_release_array.json[0].name | replace('v', '') }}"
-      when: presadmin_version is not defined
+- name: Download presentation admin
+  ansible.windows.win_copy:
+    src: github_presadmin.cache_path
+    dest: /Users/{{ ansible_user }}/Desktop/presentationAdmin.zip
 
-    - name: Download presentation admin
-      ansible.windows.win_get_url:
-        url: https://github.com/icpctools/icpctools/releases/download/v{{ presadmin_version }}/presentationAdmin-{{ presadmin_version }}.zip
-        dest: /Users/{{ ansible_user }}/Desktop/presentationAdmin-{{ presadmin_version }}.zip
-
-    - name: Unzip presentation admin
-      community.windows.win_unzip:
-        src: /Users/{{ ansible_user }}/Desktop/presentationAdmin-{{ presadmin_version }}.zip
-        dest: /Users/{{ ansible_user }}/Desktop/presadmin
-        remote_src: true
-        creates: /Users/{{ ansible_user }}/Desktop/presadmin
+- name: Unzip presentation admin
+  community.windows.win_unzip:
+    src: "{{ github_presadmin.cache_path }}"
+    dest: /Users/{{ ansible_user }}/Desktop/presadmin
+    creates: /Users/{{ ansible_user }}/Desktop/presadmin
 
 - name: Add bat script to launch the presentation admin
   ansible.windows.win_copy:

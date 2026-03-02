@@ -127,10 +127,13 @@
     owner: root
     group: root
 
-- name: Ensure config.pl
-  ansible.builtin.template:
-    src: config.pl.j2
-    dest: /root/contest/backup/scripts/config.pl
-    mode: '0600'
+
+- name: ulimit for open files for root
+  ansible.builtin.copy:
+    dest: /etc/security/limits.d/backup.conf
+    content: |
+      root    soft  nofile   12288
+      root    hard  nofile   12288
+    mode: '0644'
     owner: root
     group: root

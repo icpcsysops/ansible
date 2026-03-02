@@ -1,0 +1,22 @@
+---
+- name: Run a video load test(using coachview machines as clients)
+  hosts: coachviews
+  gather_facts: false
+  vars:
+    cds_contest: wf49_dress
+    cds_credentials: cds_user:cds_password
+    stream_count: 34
+    stream_type: webcam # or desktop
+    stream_duration: 300
+  tasks:
+    - name: Figure out my host index
+      set_fact:
+        host_index: "{{ ansible_play_hosts.index(inventory_hostname) }}"
+    - name: Create load test script
+      ansible.builtin.template:
+        src: load-test.sh
+        dest: /tmp/load-test.sh
+        mode: '0755'
+
+    - name: Run the load script
+      ansible.builtin.shell: /tmp/load-test.sh

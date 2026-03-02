@@ -28,44 +28,22 @@
     path: /p/client.sh
   register: pres
 
-- name: Get presclient version
-  when: internet and pres_version is not defined
-  block:
-    - name: Get prerelease version once
-      delegate_to: localhost
-      ansible.builtin.uri:
-        url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=3
-        method: GET
-        return_content: true
-        status_code: 200
-        body_format: json
-      register: latest_presentationclient_release_array
+- name: Download p100
+  github_release:
+    repo: icpctools/icpctools
+    asset: "^presentations-.*\\.zip$"
+    version: "{{ p100_version }}"
+    dest: /p/p100.zip
 
-    - name: Set presentation client latest version
-      ansible.builtin.set_fact:
-        pres_version: "{{ latest_presentationclient_release_array.json[0].name | replace('v', '') }}"
+- name: Copy presentations zip
+  ansible.builtin.copy:
+    src: files/presentations.zip
+    dest: /p/p100.zip
 
-- name: Download and install the presentation client
-  when: not pres.stat.exists
-  block:
-    - name: Download the client once
-      delegate_to: localhost
-      ansible.builtin.get_url:
-        url: https://github.com/icpctools/icpctools/releases/download/v{{ pres_version }}/presentations-{{ pres_version }}.zip
-        headers: "{{ github_headers }}"
-        dest: /tmp/presentations-{{ pres_version }}.zip
-        mode: '0640'
-      when: internet
-
-    - name: Unpack the client
-      ansible.builtin.unarchive:
-        src: "{{ item }}"
-        dest: /p/
-        owner: p
-        group: p
-      become_user: p
-      become: true
-      with_first_found:
-        - files:
-            - /tmp/presentations-{{ pres_version }}.zip
-            - files/presentations-{{ pres_version }}.zip
+- name: Unpack the client
+  ansible.builtin.unarchive:
+    src: "/p/p100.zip"
+    remote_src: true
+    dest: /p/
+    owner: p
+    group: p

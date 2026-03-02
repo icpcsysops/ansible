@@ -27,7 +27,7 @@ export ICPC_TOOLS_IP={{ ansible_host }}
 
 sleep 5
 while true; do
-	java -Xmx1024m -cp "lib/*" org.icpc.tools.presentation.contest.internal.ClientLauncher https://{{ cds_ip }}:{{ cds_port }}/api/contests/{{ cds_endpoint | default("") }} presentation {{ cds_p100_password }} --name team {{ p100_args | default("") }}
+	java -Xmx1024m -cp "lib/*" org.icpc.tools.presentation.contest.internal.ClientLauncher https://{{ cds_ip }}:{{ cds_port }}/api/contests/{{ cds_endpoint | default("") }} {{ cds_p100_user | default("presentation") }} {{ cds_p100_password }} --name team {{ p100_args | default("") }}
   result=$?
   echo $result >> /p/resultcode.txt
   if [ $result = 254 ]

@@ -19,12 +19,17 @@ gsettings set org.gnome.desktop.screensaver idle-activation-enabled false
 gsettings set org.gnome.desktop.session idle-delay 0
 # end additions for run
 
+# Uncomment the xrandr/modify as appropriate to make this work for weird display configurations
+# Disable laptop screen so it only shows on the external monitor
+# xrandr --output eDP-1 --off
+
 # Basic WM so vlc can go fullscreen
 xfwm4 --replace &
+
 
 sleep 2
 while true; do
   # no-qt-privacy-ask gets rid of some vlc nag/popup
-  /usr/bin/vlc --no-qt-privacy-ask --fullscreen v4l2://{{ v100_video_device }}
+  /usr/bin/vlc --no-qt-privacy-ask --fullscreen v4l2:///dev/{{ vlc_webcam_device }}
   sleep 2
 done

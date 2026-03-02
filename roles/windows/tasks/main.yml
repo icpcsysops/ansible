@@ -67,12 +67,12 @@
 
 - name: Copy the certificates
   ansible.windows.win_copy:
-    src: /usr/share/ca-certificates/ICPC_WF_Root_CA.crt
+    src: /usr/local/share/ca-certificates/ICPC_WF_Root_CA.crt
     dest: c:\windows\temp\root.crt
 
 - name: Copy the intermediate cert too
   ansible.windows.win_copy:
-    src: /usr/share/ca-certificates/ICPC_WF_Intermediate_CA.crt
+    src: /usr/local/share/ca-certificates/ICPC_WF_Intermediate_CA.crt
     dest: c:\windows\temp\intermediate.crt
 
 - name: Trust the ca cert

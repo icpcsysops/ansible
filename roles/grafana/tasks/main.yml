@@ -37,11 +37,9 @@
 # Setup loki which gathers our logs
 - name: Install loki
   ansible.builtin.unarchive:
-    src: https://github.com/grafana/loki/releases/download/v2.5.0/loki-linux-amd64.zip
+    src: https://github.com/grafana/loki/releases/download/v3.5.3/loki-linux-amd64.zip
     dest: /usr/bin/
     remote_src: true
-    owner: domjudge
-    group: domjudge
   when: loki
 
 - name: Dir for loki settings
@@ -81,7 +79,7 @@
 ## Setup grafana
 - name: Install grafana
   ansible.builtin.apt:
-    name: grafana-enterprise
+    deb: https://dl.grafana.com/grafana-enterprise/release/12.1.1/grafana-enterprise_12.1.1_16903967602_linux_amd64.deb
     state: present
   notify: Restart grafana
 

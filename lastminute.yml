@@ -2,6 +2,9 @@
 - name: Configure backup server
   hosts: backup
   strategy: linear # we want this complete before we do any other hosts
+  vars:
+    device_uri: 'printers/systemsprint'
+    printer_name: systemsprint
   roles:
     - role: dnsmasq
       tags: dnsmasq
@@ -10,6 +13,7 @@
     # script_server needs to come after the hosts file has been configured (because it needs to lookup some hostnames)
     - role: script_server
       tags: script_server
+    - role: cups
   tasks:
     - name: Configure backup as ssh ca server
       ansible.builtin.include_role:
@@ -36,7 +40,7 @@
       tags: icpc_host_packages
 
 - name: SSH CA Certs
-  hosts: all,!contestants
+  hosts: all,!contestants,!coachviews
   gather_facts: true # We need facts so we can limit the user certs to the ip of the host they're tied to
   tags: ssh_ca
   tasks:
@@ -109,6 +113,33 @@
   hosts: coachview*
   roles:
     - role: coachview
+  tasks:
+    - name: Update root password (if root_password already crypted)
+      ansible.builtin.user:
+        name: "root"
+        state: present
+        password: "{{ root_password }}"
+      when:
+        - root_password is defined and root_password is not none
+        - '"$6$" in root_password'
+      tags: do_root_passwd
+
+    - name: Update root password (if root_password is cleartext)
+      ansible.builtin.user:
+        name: "root"
+        state: present
+        password: "{{ root_password | password_hash('sha512', root_password) }}"
+      when:
+        - root_password is defined and root_password is not none
+        - '"$6$" not in root_password'
+    - name: Remove icpc and team user from img
+      ansible.builtin.user:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - "icpc"
+        - "team"
+      when: root_password is defined and root_password is not none
 
 - name: Configure everything but contestants and ntpservers to use backup for dns
   hosts: all,!contestants,!ntpservers
@@ -132,7 +163,8 @@
     - role: team
     - role: mediamtx
       when: enable_hls is defined and enable_hls
-    - role: hyperthreadingdisabled
+    #    - role: hyperthreadingdisabled
+    - role: tunecpulaptop
     - role: reverseproxy
       when: enable_reverseproxy is defined and enable_reverseproxy
     - role: p100
@@ -145,14 +177,40 @@
       tags: iptablesrules
     - role: martkeys
       when: disable_martkeys is not defined or not disable_martkeys
-    - role: lightdm_ccs_greeter
 
   tasks:
+    - name: Install python3-tk
+      ansible.builtin.apt:
+        name: python3-tk
+      tags: install_tk
+    - name: Fix /usr/bin/clion
+      ansible.builtin.file:
+        src: /opt/clion/bin/clion
+        dest: /usr/bin/clion
+        force: true
+        state: link
+      tags: fix_clion
+
+    - name: Install a2ps
+      ansible.builtin.apt:
+        name: a2ps
+
+    - name: Install printfile
+      ansible.builtin.copy:
+        src: files/printfile
+        dest: /usr/local/bin/printfile
+        mode: '0755'
+        owner: root
+        group: root
     - name: Remove network-manager so teams can't wifi things or whatnot
       ansible.builtin.apt:
-        name: network-manager
+        name: "{{ item }}"
+        state: absent
         purge: true
         autoremove: true
+      with_items:
+        - network-manager
+        - network-manager-gnome
 
     # more things to fix in icpc-pycharm
     - name: Fix location in printers.conf
@@ -187,14 +245,14 @@
       ansible.builtin.lineinfile:
         path: /etc/profile.d/pc2submit_profile.sh
         regexp: '^export SUBMITBASEURL=.*$'
-        line: 'export SUBMITBASEURL=https://pc2server:50443'
+        line: 'export SUBMITBASEURL=https://pc2:50443'
       tags: ccstools
       when: ccs == "pc2"
 
-    - name: Add pc2server to /etc/hosts
+    - name: Add pc2 and pc2server to /etc/hosts
       ansible.builtin.lineinfile:
         path: /etc/hosts
-        line: '10.3.3.214	pc2server'
+        line: '10.3.3.214	pc2 pc2server'
         owner: root
         group: root
         mode: '0644'
@@ -393,6 +451,14 @@
       timesync_ntp_hosts: "{{ ntp_hosts }}"
       timesync_fallback_ntp_hosts: "{{ fallback_ntp_hosts }}"
       tags: systemd-timesyncd
+  tasks:
+    - name: Fix /etc/timezone
+      ansible.builtin.copy:
+        dest: /etc/timezone
+        content: "{{ timezone }}"
+        mode: "0644"
+        owner: root
+        group: root
 
 - name: Set up our ntp servers
   hosts: ntpservers
@@ -410,6 +476,21 @@
     tech_notes: "{{ '/root/ansible/files/%s.TechNotes.%s.pdf'|format(contest_detail, papersize) }}"
 
   tasks:
+    - name: Copy updated logos (we should do this every year)
+      ansible.builtin.copy:
+        src: files/{{ item }}
+        dest: /usr/share/backgrounds/{{ item }}
+      loop:
+        - ICPCLogo-greeter.png
+        - ICPCLogo-on-dark-smaller.png
+
+    # will be fixed in icpc2026
+    - name: Ensure /etc/ssh/sshd_config.d/50-cloud-init.conf does not exist
+      ansible.builtin.file:
+        path: /etc/ssh/sshd_config.d/50-cloud-init.conf
+        state: absent
+      notify: Restart sshd
+
     # stat file first
     - name: Get file stat of JudgingNotes to be able to perform a check in the following task
       tags: icpc_docs
@@ -503,6 +584,11 @@
     - name: Reboot
       ansible.builtin.reboot:
       when: reboot_enabled
+    - name: Restart sshd
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+
 
 - name: Configure the reverse proxy
   hosts: reverseproxy
@@ -524,7 +610,7 @@
       ansible.builtin.git:  # noqa: latest[git]
         repo: "git@packages:contest_repo.git"
         dest: /root/contest_repo
-      when: false
+      when: clone_contest_repo is defined and clone_contest_repo|bool
 
 - name: Configure the cds instances (new style)
   hosts: cds*
@@ -537,17 +623,18 @@
 - name: Configure balloonmanager printers
   hosts: balloonmanager
   vars:
-    device_uri: 'printers/balloonprinter'
-    printer_name: balloonprinter
+    device_uri: 'printers/balloonprint'
+    printer_name: balloonprint
   roles:
     - role: cups
     - role: balloonprinter
 
-- name: Configure ccsadmin printers
-  hosts: ccsadmin*
+- name: Configure systems printers
+  hosts: ccsadmin,human_judges,pc2,pc2backup,backup,cds,keith-mgmt,troy-mgmt
+  tags: systemsprinters
   vars:
-    device_uri: 'printers/systemsprinter'
-    printer_name: systemsprinter
+    device_uri: 'printers/systemsprint'
+    printer_name: systemsprint
   roles:
     - role: cups
 
@@ -558,16 +645,19 @@
     printer_name: systemsprinter
   roles:
     - role: cups
-    - role: ccstools
+  tasks:
+    - include_role:
+        name: ccstools
       when: ccs  == "domjudge"
-    - role: reverseproxy
+    - include_role:
+        name: reverseproxy
       when: enable_reverseproxy is defined and enable_reverseproxy
 
 - name: Configure others printers
   hosts: others:!printsrv
   vars:
-    device_uri: 'printers/systemsprinter'
-    printer_name: systemsprinter
+    device_uri: 'printers/systemsprint'
+    printer_name: systemsprint
   roles:
     - role: cups
 

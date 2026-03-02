@@ -96,6 +96,7 @@
     bare: true
     key_file: "{{ git_home_dir }}/.ssh/git-privatekey-{{ item.name }}"
     accept_newhostkey: true # does trust-on-first-use
+    update: false
   become: true
   become_user: git
   loop: "{{ gitserver_repos }}"
@@ -107,6 +108,7 @@
     dest: "{{ git_home_dir }}/{{ item.name }}.git"
     bare: true
     accept_newhostkey: true # does trust-on-first-use
+    update: false
   become: true
   become_user: git
   loop: "{{ gitserver_repos }}"

@@ -10,3 +10,9 @@
     name: vlc-webcam
     state: restarted
     daemon_reload: true
+
+- name: Restart vlc-audio
+  ansible.builtin.service:
+    name: vlc-audio
+    state: restarted
+    daemon_reload: true

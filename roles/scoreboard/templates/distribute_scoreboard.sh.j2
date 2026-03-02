@@ -15,10 +15,14 @@ while [ 1 ]; do
   sed -i 's#/images/banners/.*\.png#header.svg#' index.html
   echo -n . # dot 2 after fixing banner
 
-  scp -q index.html scoreboard@$scorehost:
+  scp -q index.html {{ scoreboard_user | default("scoreboard") }}@$scorehost:
   echo -n . # dot 3 after upload scorboard
 
-  ssh scoreboard@$scorehost "mv ~/index.html /var/www/html/{{ scoreboard_subdir }}index.html"
+{% if scoreboard_path -%}
+  ssh {{ scoreboard_user | default("scoreboard") }}@$scorehost "mv ~/index.html {{ scoreboard_path }}index.html"
+{% else -%}
+  ssh {{ scoreboard_user | default("scoreboard") }}@$scorehost "mv ~/index.html /var/www/html/{{ scoreboard_subdir }}index.html"
+{% endif -%}
   echo done at `date`.
   sleep 30
 done

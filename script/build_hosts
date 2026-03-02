@@ -359,12 +359,15 @@ windows:
         document = f"""
 grafana:
   hosts:
-    backup:
+    packages:
 ntpservers:
   hosts:
     printsrv:
+      ansible_host: 10.3.3.208
     backup:
+      ansible_host: 10.3.3.210
     packages:
+      ansible_host: 10.3.3.211
 """
         print(document, file=fh)
         with open("../list.team", "wt") as list_fh:
@@ -377,9 +380,15 @@ contestants:
     floor:
 """
             document2 = f"""
+spares:
+  hosts:
+    team{max_team-1}
+    team{max_team}
 floor:
   hosts:
     {contestants}
+  children:
+    spares:
 """
             print(document2, file=fh, end="")
             print(document, file=fh, end="")

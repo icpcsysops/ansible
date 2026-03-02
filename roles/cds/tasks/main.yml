@@ -61,13 +61,13 @@
   register: wlp_cds_pkg_installed
   check_mode: false
 
-- name: Download wlp.CDS
-  github_release:
-    repo: icpctools/icpctools
-    asset: "^wlp.CDS-.*\\.zip$"
-    version: "{{ cds_version }}"
-    dest: /srv/cds/wlp.CDS.zip
-  when: not wlp_cds_pkg_installed.stat.exists
+#- name: Download wlp.CDS
+#  github_release:
+#    repo: icpctools/icpctools
+#    asset: "^wlp.CDS-.*\\.zip$"
+#    version: "{{ cds_version }}"
+#    dest: /srv/cds/wlp.CDS.zip
+#  when: not wlp_cds_pkg_installed.stat.exists
 
 - name: Download and unpack full CDS if it doesn't exist
   ansible.builtin.unarchive:

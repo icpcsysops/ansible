@@ -41,6 +41,21 @@
     create_home: true
     shell: /bin/sh
 
+- name: Deploy vlc-audio.service
+  ansible.builtin.template:
+    src: vlc-audio.service.j2
+    dest: /lib/systemd/system/vlc-audio.service
+    owner: root
+    group: root
+    mode: '0644'
+# notify: Restart vlc-audio
+  when: false
+- name: Enable and start vlc-audio.service
+  ansible.builtin.service:
+    name: vlc-audio
+    enabled: false # using dsnoop with 2 sources cause audio stutter on some machines so we disable it
+    state: stopped
+
 - name: Deploy vlc-webcam.service
   ansible.builtin.template:
     src: vlc-webcam.service.j2

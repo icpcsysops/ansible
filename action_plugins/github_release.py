@@ -12,6 +12,7 @@ display = Display()
 
 # Hook magic caching into github
 install_cache(
+    stale_if_error=True, # give us whatever we had last, even if we're rate limited by github
     cache_control=True,
     urls_expire_after={
         '*.github.com': 360,  # Placeholder expiration; should be overridden by Cache-Control

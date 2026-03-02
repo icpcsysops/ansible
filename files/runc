@@ -1,3 +1,4 @@
 #!/bin/bash
 
-ulimit -s unlimited; taskset -c 2 ./a.out "$@"
+ulimit -s 2097152
+taskset -c 3 ./a.out "$@"

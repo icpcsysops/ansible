@@ -1,0 +1,20 @@
+---
+- name: Remove /root/sh.fix
+  ansible.builtin.file:
+    state: absent
+    path: /root/sh.fix
+
+- name: Remove directory and files under /usr/share/timesync
+  ansible.builtin.file:
+    state: absent
+    path: usr/share/timesync
+
+- name: Remove /var/spool/cron/crontabs/root
+  ansible.builtin.file:
+    state: absent
+    path: /var/spool/cron/crontabs/root
+
+- name: Remove /etc/profile.d/firstlogin_profile.sh
+  ansible.builtin.file:
+    state: absent
+    path: /etc/profile.d/firstlogin_profile.sh

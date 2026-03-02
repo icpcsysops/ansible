@@ -9,6 +9,7 @@
 - name: Check if the host key cert already exists
   ansible.builtin.stat:
     path: "{{ ssh_ca_dir }}/hosts/{{ inventory_hostname }}.key-cert.pub"
+  delegate_to: localhost
   register: stat_host_key
 
 - name: Sign the SSH Host Key for {{ inventory_hostname }} # noqa: no-changed-when

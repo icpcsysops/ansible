@@ -480,6 +480,7 @@
       ansible.builtin.copy:
         src: files/{{ item }}
         dest: /usr/share/backgrounds/{{ item }}
+        mode: '0644'
       loop:
         - ICPCLogo-greeter.png
         - ICPCLogo-on-dark-smaller.png
@@ -610,7 +611,7 @@
       ansible.builtin.git:  # noqa: latest[git]
         repo: "git@packages:contest_repo.git"
         dest: /root/contest_repo
-      when: clone_contest_repo is defined and clone_contest_repo|bool
+      when: clone_contest_repo is defined and clone_contest_repo | bool
 
 - name: Configure the cds instances (new style)
   hosts: cds*
@@ -646,10 +647,12 @@
   roles:
     - role: cups
   tasks:
-    - include_role:
+    - name: Call ccstools if ccs is domjudge
+      ansible.builtin.include_role:
         name: ccstools
-      when: ccs  == "domjudge"
-    - include_role:
+      when: ccs == "domjudge"
+    - name: Call reverseproxy if we have enable_reverseproxy set
+      ansible.builtin.include_role:
         name: reverseproxy
       when: enable_reverseproxy is defined and enable_reverseproxy
 

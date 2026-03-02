@@ -10,7 +10,7 @@
     stream_duration: 300
   tasks:
     - name: Figure out my host index
-      set_fact:
+      ansible.builtin.set_fact:
         host_index: "{{ ansible_play_hosts.index(inventory_hostname) }}"
     - name: Create load test script
       ansible.builtin.template:
@@ -19,4 +19,6 @@
         mode: '0755'
 
     - name: Run the load script
-      ansible.builtin.shell: /tmp/load-test.sh
+      ansible.builtin.command: /tmp/load-test.sh
+      register: load_test
+      changed_when: load_test.rc != 0

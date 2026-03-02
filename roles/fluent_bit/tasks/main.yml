@@ -4,6 +4,7 @@
   ansible.builtin.get_url:
     url: https://packages.fluentbit.io/windows/fluent-bit-4.0.8-win64.exe
     dest: files/fluentbit.exe
+    mode: '0644'
 
 - name: Install fluentbit from exe installer
   block:

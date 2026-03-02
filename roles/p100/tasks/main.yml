@@ -39,6 +39,7 @@
   ansible.builtin.copy:
     src: files/presentations.zip
     dest: /p/p100.zip
+    mode: '0644'
 
 - name: Unpack the client
   ansible.builtin.unarchive:

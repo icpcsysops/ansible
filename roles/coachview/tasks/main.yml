@@ -52,6 +52,7 @@
   ansible.builtin.copy:
     src: files/coachview.zip
     dest: /cv/coachview.zip
+    mode: '0644'
 
 - name: Unpack the client
   ansible.builtin.unarchive:

@@ -1,22 +1,21 @@
 ---
--  name: Copy per contest hosts to /etc/hosts on backup
-   ansible.builtin.copy:
-     src: "{{ item }}"
-     dest: /etc/hosts
-     mode: '0644'
-   with_first_found:
-     - files/hosts.{{ contest }}.new
-     - files/hosts.new
+- name: Copy per contest hosts to /etc/hosts on backup
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /etc/hosts
+    mode: '0644'
+  with_first_found:
+    - files/hosts.{{ contest }}.new
+    - files/hosts.new
   notify: Restart dnsmasq
-  wnen: inventory_host == 'backup'
+  when: inventory_host == 'backup'
 
--  name: Copy per contest hosts to /etc/hosts on non-backup
-   ansible.builtin.copy:
-     src: "{{ item }}"
-     dest: /etc/hosts
-     mode: '0644'
-   with_first_found:
-     - files/hosts.{{ contest }}.new
-     - files/hosts.new
-  wnen: inventory_host != 'backup'
-
+- name: Copy per contest hosts to /etc/hosts on non-backup
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /etc/hosts
+    mode: '0644'
+  with_first_found:
+    - files/hosts.{{ contest }}.new
+    - files/hosts.new
+  when: inventory_host != 'backup'

@@ -371,9 +371,9 @@ script_server_commands:
           - domjudge-ccsadmin3
           - domjudge-ccsadmin4
           - domjudge-ccsadmin5
-         #- domjudge-ccsadmin6
-         #- domjudge-ccsadmin7
-         #- domjudge-ccsadmin8
+         # - domjudge-ccsadmin6
+         # - domjudge-ccsadmin7
+         # - domjudge-ccsadmin8
 
           # Individual judgehosts
           - domjudge-judgehost1
@@ -386,21 +386,21 @@ script_server_commands:
           - domjudge-judgehost8
           - domjudge-judgehost9
           - domjudge-judgehost10
-         #- domjudge-judgehost11
-         #- domjudge-judgehost12
-         #- domjudge-judgehost13
-         #- domjudge-judgehost14
-         #- domjudge-judgehost15
-         #- domjudge-judgehost16
-         #- domjudge-judgehost17
-         #- domjudge-judgehost18
-         #- domjudge-judgehost19
-         #- domjudge-judgehost20
-         #- domjudge-judgehost21
-         #- domjudge-judgehost22
-         #- domjudge-judgehost23
-         #- domjudge-judgehost24
-          # - domjudge-judgehost25
+         # - domjudge-judgehost11
+         # - domjudge-judgehost12
+         # - domjudge-judgehost13
+         # - domjudge-judgehost14
+         # - domjudge-judgehost15
+         # - domjudge-judgehost16
+         # - domjudge-judgehost17
+         # - domjudge-judgehost18
+         # - domjudge-judgehost19
+         # - domjudge-judgehost20
+         # - domjudge-judgehost21
+         # - domjudge-judgehost22
+         # - domjudge-judgehost23
+         # - domjudge-judgehost24
+         # - domjudge-judgehost25
           # - domjudge-judgehost26
           # - domjudge-judgehost27
           # - domjudge-judgehost28

@@ -123,6 +123,7 @@
   ansible.builtin.file:
     state: directory
     path: /usr/share/cups/data/{{ item }}
+    mode: '0755'
   loop:
     - UniversityNames
     - Pictures
@@ -132,21 +133,21 @@
   ansible.builtin.copy:
     content: "{{ item.display_name }}"
     dest: /usr/share/cups/data/UniversityNames/team{{ item.id }}.txt
-    mode: 644
+    mode: '0644'
   loop: "{{ lookup('file', '/root/contest_repo/contests/' + printsrv_contest_id + '/teams.json') | from_json }}"
 
 - name: Copy logos
   ansible.builtin.copy:
     src: "/root/contest_repo/contests/{{ printsrv_contest_id }}/organizations/{{ item.organization_id }}/logo.png"
     dest: /usr/share/cups/data/Logos/team{{ item.id }}.png
-    mode: 644
+    mode: '0644'
   loop: "{{ lookup('file', '/root/contest_repo/contests/' + printsrv_contest_id + '/teams.json') | from_json }}"
-  ignore_errors: true
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Copy team pictures
   ansible.builtin.copy:
     src: "/root/contest_repo/contests/{{ printsrv_contest_id }}/teams/{{ item.id }}/photo.jpg"
     dest: /usr/share/cups/data/Pictures/team{{ item.id }}.jpg
-    mode: 644
+    mode: '0644'
   loop: "{{ lookup('file', '/root/contest_repo/contests/' + printsrv_contest_id + '/teams.json') | from_json }}"
-  ignore_errors: true
+  ignore_errors: "{{ ansible_check_mode }}"

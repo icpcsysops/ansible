@@ -40,7 +40,7 @@
 
     - name: Fetch the team password to a fact
       ansible.builtin.set_fact:
-        team_password: "{{ 'passw0rd' if 'spares' in group_names else ((lookup('file', accounts_yaml)|from_yaml)['users'][inventory_hostname])}}"
+        team_password: "{{ 'passw0rd' if 'spares' in group_names else ((lookup('file', accounts_yaml) | from_yaml)['users'][inventory_hostname]) }}"
     - name: Create the user on named host
       ansible.builtin.user:
         name: "{{ inventory_hostname }}"
@@ -55,7 +55,7 @@
         content: "machine pc2 login {{ inventory_hostname }} password {{ team_password }}\n"
         owner: "{{ inventory_hostname }}"
         group: teams
-        mode: 0600
+        mode: "0600"
       when: ccs == "pc2"
 
 - name: Configure the human_judges

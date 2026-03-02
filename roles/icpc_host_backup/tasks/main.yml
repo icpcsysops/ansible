@@ -128,7 +128,7 @@
     group: root
 
 
-- name: ulimit for open files for root
+- name: Set ulimit for open files for root
   ansible.builtin.copy:
     dest: /etc/security/limits.d/backup.conf
     content: |

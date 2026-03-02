@@ -7,6 +7,14 @@ import sys
 import subprocess
 import time
 import threading
+import json
+import shutil
+import zipfile
+
+teams_json = f"/root/contest_repo/shared/teams.json"
+bdir = "/backups"
+backup_dir = f"{bdir}/team_rsyncs"
+borg_repo = f"{bdir}/borg_repo"
 
 
 def run_backupclient(teamname, contest_id):
@@ -58,15 +66,37 @@ def do_team_contestid_loop(args):
         process.wait()
 
 
-bdir = "/backups"
-backup_dir = f"{bdir}/team_rsyncs"
-borg_repo = f"{bdir}/borg_repo"
-if not os.path.isdir(backup_dir):
-    print(f"Error: {backup_dir} does not exist")
-    sys.exit(1)
-if not os.path.isfile(f"{bdir}/list.team"):
-    print(f"Error: {bdir}/list.team does not exist")
-    sys.exit(1)
+def map_teamid_to_icpc_id():
+    with open(teams_json, "rt") as f:
+        data = json.load(f)
+    return data
+
+
+def create_cms_zip(args):
+    for contest_id in args.contest_ids:
+        cms_extracted_dir = f"{backup_dir}/{contest_id}/cms_extracted"
+        if os.path.isdir(cms_extracted_dir):
+            shutil.rmtree(cms_extracted_dir)
+        os.mkdir(f"{cms_extracted_dir}")
+        team_data = map_teamid_to_icpc_id()
+        for line in team_data:
+            icpc_id = line["icpc_id"]
+            os.mkdir(f"{cms_extracted_dir}/{icpc_id}")
+            teamid = line["label"]
+            shutil.copy(
+                f"{backup_dir}/{contest_id}/{teamid}/backup.{teamid}.zip",
+                f"{cms_extracted_dir}/{icpc_id}/backup.zip",
+            )
+        zip_filename = f"{backup_dir}/{contest_id}/backups.{contest_id}.{datetime.now().strftime('%Y%m%d%H%M%S')}.zip"
+        old_dir = os.getcwd()
+        os.chdir(f"{cms_extracted_dir}")
+        with zipfile.ZipFile(zip_filename, "w", zipfile.ZIP_STORED) as myzip:
+            for line in team_data:
+                icpc_id = line["icpc_id"]
+                if os.path.isfile(f"{icpc_id}/backup.zip"):
+                    myzip.write(f"{icpc_id}/backup.zip")
+        os.chdir(old_dir)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -81,6 +111,13 @@ if __name__ == "__main__":
         help="what contest_id to store the backups in",
     )
     args = parser.parse_args()
+    if not os.path.isdir(backup_dir):
+        print(f"Error: {backup_dir} does not exist")
+        sys.exit(1)
+    if not os.path.isfile(f"{bdir}/list.team"):
+        print(f"Error: {bdir}/list.team does not exist")
+        sys.exit(1)
+
     with open(f"{bdir}/list.team", "rt") as fh:
         teams = [x for x in fh.read().splitlines() if x.startswith("team")]
 
@@ -98,7 +135,8 @@ if __name__ == "__main__":
         print(f"Staring backup loop {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         do_team_contestid_loop(args)
         if os.path.isfile(f"{bdir}/stop"):
-            print(f"Found {bdir}/stop, exiting")
+            print(f"Found {bdir}/stop, creating backup.zip for cms upload, and exiting")
+            create_cms_zip(args)
             sys.exit(0)
         elapsed_time = time.time() - start_time
         time.sleep(max(min(60, 60 - elapsed_time), 0))

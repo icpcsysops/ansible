@@ -1,0 +1,48 @@
+---
+- name: Copy in a chrony.conf file
+  ansible.builtin.copy:
+    content: |
+      {% for p in ntp_pool | default([]) -%}
+      pool {{ p }} iburst
+      {% endfor -%}
+
+      {% for ntp_server in ntp_servers | default([]) -%}
+      server {{ ntp_server }} iburst
+      {% endfor %}
+
+      {% if chrony_server %}
+      allow 10.0.0.0/8
+      allow 172.16.0.0/12
+      allow 192.168.0.0/16
+      {% endif %}
+
+      # This directive specify the file into which chronyd will store the rate
+      # information.
+      driftfile /var/lib/chrony/chrony.drift
+
+      # Save NTS keys and cookies.
+      ntsdumpdir /var/lib/chrony
+
+      # Log files location.
+      logdir /var/log/chrony
+
+      # Stop bad estimates upsetting machine clock.
+      maxupdateskew 100.0
+
+      # This directive enables kernel synchronisation (every 11 minutes) of the
+      # real-time clock. Note that it can't be used along with the 'rtcfile' directive.
+      rtcsync
+
+      # Step the system clock instead of slewing it if the adjustment is larger than
+      # one second, but only in the first three clock updates.
+      makestep 1 3
+
+      # Get TAI-UTC offset and leap seconds from the system tz database.
+      # This directive must be commented out when using time sources serving
+      # leap-smeared time.
+      leapsectz right/UTC
+    dest: /etc/chrony/chrony.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart chrony

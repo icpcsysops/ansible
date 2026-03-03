@@ -23,10 +23,10 @@ pc2_ccsadmin = {}
 contestants = {}
 admins = "    troy-mgmt:\n    keith-mgmt:\n"
 if args.wf:
-    name = "wf2025"
-    detail = "2025Baku"
-    timezone = "Asia/Baku"
-    max_team = 146
+    name = "wf2026"
+    detail = "2026Dubai"
+    timezone = "Asia/Dubai"
+    max_team = 155
     max_human_judge = 15
     max_pc2_autojudge = 12
     max_pc2_ccsadmin = 4
@@ -46,8 +46,8 @@ if args.wf:
     local_domjudge_server = True
     backup_domjudge_server = True
 else:
-    name = "nac2025"
-    detail = "2025Florida"
+    name = "nac2026"
+    detail = "2026Florida"
     timezone = "America/New_York"
     max_team = 55
     max_human_judge = 6

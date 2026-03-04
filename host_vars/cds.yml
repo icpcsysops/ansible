@@ -3,13 +3,13 @@ extra_nic_configs: []
 cds_version: latest-unreleased
 cds_contest_git_repo: git@packages:contest_repo.git
 
-ccs_url_systest0: &ccs_url_systest0 https://pc2:50450/contests/wf49_systest0
-ccs_url_systest0_dj: &ccs_url_systest0_dj https://domjudge/api/contests/wf49_systest0
-ccs_url_systest1: &ccs_url_systest1 https://pc2:50450/contests/wf49_systest1
-ccs_url_systest2: &ccs_url_systest2 https://pc2:50450/contests/wf49_systest2
-ccs_url_dress: &ccs_url_dress https://pc2:50450/contests/wf49_dress
-ccs_url_finals: &ccs_url_finals https://pc2:50450/contests/wf49_finals
-ccs_url_challenge: &ccs_url_challenge https://pc2:50450/contests/wf49_systest0
+# ccs_url_systest0: &ccs_url_systest0 https://pc2:50450/contests/wf49_systest0
+# ccs_url_systest0_dj: &ccs_url_systest0_dj https://domjudge/api/contests/wf49_systest0
+ccs_url_systest1: &ccs_url_systest1 https://pc2:50450/contests/systest1
+ccs_url_systest2: &ccs_url_systest2 https://pc2:50450/contests/systest2
+ccs_url_dress: &ccs_url_dress https://pc2:50450/contests/dress
+ccs_url_nac: &ccs_url_nac https://pc2:50450/contests/nac
+ccs_url_challenge: &ccs_url_challenge https://pc2:50450/contests/challenge
 ccs_user: &ccs_user cds
 ccs_pass: &ccs_pass electrician-code-carmine
 cds_presentation_domains: &cds_presentation_domains
@@ -57,15 +57,15 @@ cds_config:
       # #    url: *ccs_url_systest0_dj
       # #    username: *ccs_user
       # #    password: *ccs_pass
-      # - name: systest1
-      #   path: systest1
-      #   video:
-      #     desktop: http://team{0}:9090
-      #     webcam: http://team{0}:8080
-      #  #ccs:
-      #  #  url: *ccs_url_systest1
-      #  #  username: *ccs_user
-      #  #  password: *ccs_pass
+      - name: systest1
+        path: systest1
+        video:
+          desktop: http://team{0}:9090
+          webcam: http://team{0}:8080
+        ccs:
+          url: *ccs_url_systest1
+          username: *ccs_user
+          password: *ccs_pass
       # - name: systest2
       #   path: systest2
       #   video:
@@ -95,15 +95,15 @@ cds_config:
       #     url: *ccs_url_dress
       #     username: *ccs_user
       #     password: *ccs_pass
-      - name: finals
-        path: finals
-        video:
-          desktop: http://team{0}:9090
-          webcam: http://team{0}:8080
-        ccs:
-          url: *ccs_url_finals
-          username: *ccs_user
-          password: *ccs_pass
+      # - name: finals
+      #   path: finals
+      #   video:
+      #     desktop: http://team{0}:9090
+      #     webcam: http://team{0}:8080
+      #   ccs:
+      #     url: *ccs_url_nac
+      #     username: *ccs_user
+      #     password: *ccs_pass
 #     - name: example
 #       path: example
 #       ccs:
@@ -149,16 +149,16 @@ cds_config:
       #  #  url: *ccs_url_systest0
       #  #  username: *ccs_user
       #  #  password: *ccs_pass
-      # - name: systest1
-      #   path: systest1
-      #   record_reactions: true
-      #   video:
-      #     desktop: http://team{0}:9090
-      #     webcam: http://team{0}:8080
-      #  #ccs:
-      #  #  url: *ccs_url_systest1
-      #  #  username: *ccs_user
-      #  #  password: *ccs_pass
+      - name: systest1
+        path: systest1
+        record_reactions: true
+        video:
+          desktop: http://team{0}:9090
+          webcam: http://team{0}:8080
+        ccs:
+          url: *ccs_url_systest1
+          username: *ccs_user
+          password: *ccs_pass
       # - name: systest2
       #    path: systest2
       #   record_reactions: true
@@ -191,16 +191,16 @@ cds_config:
       #     url: *ccs_url_dress
       #     username: *ccs_user
       #     password: *ccs_pass
-      - name: finals
-        path: finals
-        record_reactions: true
-        video:
-          desktop: http://team{0}:9090
-          webcam: http://team{0}:8080
-        ccs:
-          url: *ccs_url_finals
-          username: *ccs_user
-          password: *ccs_pass
+      # - name: finals
+      #   path: finals
+      #   record_reactions: true
+      #   video:
+      #     desktop: http://team{0}:9090
+      #     webcam: http://team{0}:8080
+      #   ccs:
+      #     url: *ccs_url_nac
+      #     username: *ccs_user
+      #     password: *ccs_pass
 #       ccs:
 #         url: https://domjudge/api/contests/wf48_dress
 #         username: cds

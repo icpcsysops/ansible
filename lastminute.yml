@@ -1,4 +1,13 @@
 ---
+
+# These are some on-site changes we need to apply to all hosts (and maybe bake into the base image)
+- name: Last minute fixes
+  gather_facts: false
+  hosts: all
+  roles:
+    - role: remove_practice
+    - role: image_building_fixes
+
 - name: Configure backup server
   hosts: backup
   strategy: linear # we want this complete before we do any other hosts

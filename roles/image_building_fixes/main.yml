@@ -1,0 +1,20 @@
+---
+# This file holds changes that should move into icpc-image-building, but we need fixed onsite now, so they're here.
+
+# Fix for kotlin in intellij, it needs to be pointed at an m2 repo properly
+- name: Create .m2 directory in /etc/skel
+  file:
+    path: /etc/skel/.m2
+    state: directory
+- name: Set up m2 settings.xml to point to /opt/m2/repository
+  copy:
+    content: |
+      <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+        <localRepository>/opt/m2/repository</localRepository>
+        <offline>true</offline>
+      </settings>
+    dest: /etc/skel/.m2/settings.xml
+    owner: root
+    group: root
+    mode: '0644'

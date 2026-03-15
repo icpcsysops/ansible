@@ -1,0 +1,49 @@
+---
+# This puts the system into the real contest state by removing all the practice related things
+
+- name: Remove practice team accounts
+  block:
+    - name: Find existing accounts
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          getent passwd | awk -F: '$1 ~ /^team[0-9]+$/ {print $1}'
+        executable: /bin/bash
+      register: team_accounts
+      changed_when: false
+    - name: Remove all team user accounts
+      ansible.builtin.user:
+        name: "{{ item }}"
+        state: absent
+        remove: true
+      loop: "{{ team_accounts.stdout_lines }}"
+
+
+- name: Remove teamtracking/phonehome stuff
+  block:
+    - name: Remove scripts
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /root/sh.sysfix
+        - /var/spool/cron/crontabs/root
+        - /etc/profile.d/firstlogin_profile.sh
+
+    - name: Remove reverseproxy config for teamtracking
+      ansible.builtin.replace:
+        path: /etc/nginx/sites-enabled/reverseproxy
+        # Matches a server { ... } block containing "server_name contest2;"
+        # (?s) lets . match newlines; [^{]*? prevents matching across server blocks;
+        # .*?\n\} non-greedily finds the closing brace at the start of a line
+        # Assumptions:
+        #   - The server block's closing } is at the start of a line (no indentation)
+        #   - Nested blocks (e.g. location {}) have their closing } indented
+        #   - There are no other top-level { before server_name within the block
+        regexp: '(?s)server\s*\{[^{]*?server_name\s+contest2;.*?\n\}\n'
+        replace: ''
+
+    - name: Reload nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded

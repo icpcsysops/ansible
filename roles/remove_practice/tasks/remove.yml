@@ -7,7 +7,7 @@
       ansible.builtin.shell:
         cmd: |
           set -o pipefail
-          getent passwd | awk -F: '$1 ~ /^team[0-9]+$/ {print $1}'
+          getent passwd | awk -F: '$1 ~ /^team[0-9]*$/ {print $1}'
         executable: /bin/bash
       register: team_accounts
       changed_when: false
@@ -43,6 +43,12 @@
         #   - There are no other top-level { before server_name within the block
         regexp: '(?s)server\s*\{[^{]*?server_name\s+contest2;.*?\n\}\n'
         replace: ''
+
+    - name: Remove contest2 from /etc/hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        state: absent
+        regexp: contest2
 
     - name: Reload nginx
       ansible.builtin.service:

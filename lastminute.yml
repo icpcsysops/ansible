@@ -4,6 +4,7 @@
 - name: Last minute fixes
   gather_facts: false
   hosts: all
+  tags: last_minute
   roles:
     - role: remove_practice
     - role: image_building_fixes

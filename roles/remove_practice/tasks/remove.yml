@@ -29,6 +29,7 @@
         - /root/sh.sysfix
         - /var/spool/cron/crontabs/root
         - /etc/profile.d/firstlogin_profile.sh
+        - /usr/share/timesync
 
     - name: Remove reverseproxy config for teamtracking
       ansible.builtin.replace:

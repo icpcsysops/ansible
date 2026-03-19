@@ -21,9 +21,8 @@
       ignore_errors: true
       changed_when: false
     - name: Clear /tmp/org.icpc.tools.cache* dir
-      ansible.builtin.file:
-        path: /tmp/org.icpc.tools.cache*
-        state: absent
+      ansible.builtin.shell:
+        cmd: rm -rf /tmp/org.icpc.tools.cache*
       when: p_running.rc != 0
     - name: Restart lightdm
       ansible.builtin.systemd:

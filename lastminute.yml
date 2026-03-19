@@ -120,7 +120,7 @@
       loop: "{{ extra_nic_configs }}"
 
 - name: Configure coachview machines
-  hosts: coachview*
+  hosts: coachviews
   roles:
     - role: coachview
   tasks:
@@ -607,7 +607,7 @@
       when: clone_contest_repo is defined and clone_contest_repo | bool
 
 - name: Configure the cds instances (new style)
-  hosts: cds*
+  hosts: cds
   roles:
     - role: cds
       tags: cds

@@ -17,7 +17,7 @@
   ansible.builtin.lineinfile:
     path: /etc/cups/cupsd.conf
     regexp: 'Listen localhost:631'
-    line: 'Listen *:631'
+    line: 'Listen 0.0.0.0:631'
   notify: Restart cups
 
 - name: Add ServerAlias to cupsd.conf

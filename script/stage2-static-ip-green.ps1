@@ -1,8 +1,8 @@
 # The base octet to start at
-$baseOctet = 64
+$baseOctet = 32
 $netsize = 22
 # Prompt the user for the last octet of the IP address
-$LastOctet = [int] (Read-Host "Enter presclient number (e.g., 1 for 172.29.1.64): ") + ($baseOctet-1)
+$LastOctet = [int] (Read-Host "Enter presclient number (e.g., 1 for 172.29.1.31): ") + ($baseOctet-1)
 
 # Construct the full IP address
 $IPAddress = "172.29.1.$LastOctet"

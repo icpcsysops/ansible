@@ -381,7 +381,7 @@
 
 
 # 10.3.3.208/28 for servers
-10.3.3.208	printsrv scoreboard 
+10.3.3.208	printsrv
 10.3.3.209	packages
 10.3.3.210	backup
 10.3.3.212	kattis kattismaster kattis-test kattis-dress kattis-final

@@ -214,10 +214,9 @@ pc2_aj:
             print_server("reverseproxy", "10.3.3.205", servers)
         # print_server("media", "10.3.3.206", servers);
         print_server("cds", "10.3.3.207", servers)
-        print_server("scoreboard", "10.3.3.208", servers)
+        print_server("printsrv", "10.3.3.208", servers)
         print_server("packages", "10.3.3.209", servers)
         print_server("backup", "10.3.3.210", servers)
-        print_server("printsrv", "10.3.3.211", servers)
         # this is windows box
         # print_server("balloonmanager", "10.4.4.149", servers)
         if local_kattis_server:

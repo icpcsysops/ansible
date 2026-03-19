@@ -33,7 +33,7 @@ script_server_commands:
           - all
           - backup
           - packages
-          - scoreboard
+          - printsrv
           - cds
 
 script_server_command_defaults:

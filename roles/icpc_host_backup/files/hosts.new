@@ -381,7 +381,7 @@
 
 
 # 10.3.3.208/28 for servers
-10.3.3.208	printsrv scoreboard 
+10.3.3.208	printsrv
 10.3.3.209	packages
 10.3.3.210	backup
 10.3.3.212	kattis kattismaster kattis-test kattis-dress kattis-final
@@ -518,7 +518,7 @@
 172.29.0.190	analyst30
 172.29.0.191	analyst31
 172.29.0.192 	icat
-
+172.29.0.207    coachview-cds
 
 172.29.1.20	clock
 172.29.1.50	sysops-printer
@@ -530,7 +530,7 @@
 172.29.1.101	Netmon
 172.29.1.191	builder
 172.29.1.207   cds-green
-172.29.1.208   scoreboard-green
+172.29.1.208   printsrv-green
 172.29.1.209   packages-green
 172.29.1.210   backup-green
 

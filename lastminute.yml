@@ -102,14 +102,14 @@
         line: LC_PAPER="en_US.UTF-8"
       tags: fix_LC_PAPER
 
-- name: Configure scoreboard machine
-  hosts: packages,scoreboard
+- name: Configure scoreboard role
+  hosts: packages
   roles:
     - role: scoreboard
       tags: scoreboard
 
 - name: Configure extra_nic machines
-  hosts: backup, scoreboard, printsrv, cds, packages
+  hosts: backup, printsrv, cds, packages
   tags: extra_nics
   tasks:
     - name: Configure nics

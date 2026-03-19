@@ -55,6 +55,7 @@
     name: vlc-audio
     enabled: false # using dsnoop with 2 sources cause audio stutter on some machines so we disable it
     state: stopped
+  when: false
 
 - name: Deploy vlc-webcam.service
   ansible.builtin.template:

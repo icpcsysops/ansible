@@ -2,6 +2,8 @@
 local_ssh_keys: []
 git_user_password: WFltGBxB/v4Fs
 
+gitserver_authorized_principals: []
+
 gitserver_repos: []
 #   - name: ansible
 #     remote: git@github.com:icpcsysops/ansible

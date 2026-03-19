@@ -7,3 +7,5 @@
 __pycache__
 .github_release_cache
 internet
+/ether.list.csv
+/ip_link.output.txt

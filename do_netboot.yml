@@ -5,6 +5,7 @@
   vars:
     efibootmgr: true
     dellcctk: false # use the dell command to force pxe boot next boot
+    efibootmgr_search: 'UEFI: PXE IPv4'
   tasks:
     - name: Install efibootmgr
       ansible.builtin.package:
@@ -12,8 +13,18 @@
         state: present
       when: efibootmgr
 
+    - name: Figure out the network boot device
+      ansible.builtin.shell:
+        cmd: >
+          efibootmgr |
+          grep '{{ efibootmgr_search }}' |
+          cut -f1 -d' ' |
+          sed s/^Boot// |
+          tr -d '*'
+      register: net_boot_device
+
     - name: Efibootmgr to force a netboot
-      ansible.builtin.command: efibootmgr -n 1
+      ansible.builtin.command: efibootmgr -n {{ net_boot_device.stdout }}
       changed_when: false
       when: efibootmgr
 

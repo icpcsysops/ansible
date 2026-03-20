@@ -5,6 +5,7 @@
   vars:
     contest: &contest TODO
     accounts_yaml: /root/contest_repo/passwork/{{ contest }}/linux-accounts.yaml
+    sample_zip: /root/contest_repo/contests/{{ contest }}/config/{{ contest }}-samples.zip
 
   tasks:
     - name: Clear /home
@@ -19,7 +20,7 @@
     - name: Check if contest-samples.zip exists
       delegate_to: localhost
       ansible.builtin.stat:
-        path: "files/{{ contest }}-samples.zip"
+        path: "{{ sample_zip }}"
       register: samples_zip
 
     - name: If contest-samples.zip exist extract it
@@ -35,7 +36,7 @@
 
         - name: Deploy contest-samples.zip to /etc/skel/Desktop/samps
           ansible.builtin.unarchive:
-            src: "{{ contest }}-samples.zip"
+            src: "{{ sample_zip }}"
             dest: /etc/skel/Desktop/samps
 
     - name: Fetch the team password to a fact
@@ -78,7 +79,7 @@
     - name: Check if contest-samples.zip exists
       delegate_to: localhost
       ansible.builtin.stat:
-        path: "files/{{ contest }}-samples.zip"
+        path: "{{ sample_zip }}"
       register: samples_zip
 
     - name: If contest-samples.zip exist extract it
@@ -94,7 +95,7 @@
 
         - name: Deploy contest-samples.zip to /etc/skel/Desktop/samps
           ansible.builtin.unarchive:
-            src: "{{ contest }}-samples.zip"
+            src: "{{ sample_zip }}"
             dest: /etc/skel/Desktop/samps
 
         - name: Create /home/icpc/Desktop/samps
@@ -107,7 +108,7 @@
 
         - name: Deploy contest-samples.zip to /home/icpc/Desktop/samps
           ansible.builtin.unarchive:
-            src: "{{ contest }}-samples.zip"
+            src: "{{ sample_zip }}"
             dest: /home/icpc/Desktop/samps
             owner: icpc
             group: icpc

@@ -268,6 +268,16 @@
         mode: '0644'
       tags: ccstools
       when: ccs == "pc2"
+    - name: Update reverse proxy config for contest to point to pc2
+      ansible.builtin.copy:
+        src: files/pc2-reverseproxy.conf
+        dest: /etc/nginx/sites-available/reverseproxy.conf
+        mode: '0644'
+        owner: root
+        group: root
+      tags: ccstools
+      when: ccs == "pc2"
+      notify: Restart nginx
 
     # TODO fixed in this to icpc2024
     - name: Disable idle-dim
@@ -428,6 +438,10 @@
     - name: Update grub
       ansible.builtin.command: /usr/sbin/update-grub
       changed_when: false
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
     - name: Restart cups
       ansible.builtin.service:
         name: cups

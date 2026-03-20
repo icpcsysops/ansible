@@ -477,6 +477,7 @@
       loop:
         - ICPCLogo-greeter.png
         - ICPCLogo-on-dark-smaller.png
+      tags: logos
 
     # will be fixed in icpc2026
     - name: Ensure /etc/ssh/sshd_config.d/50-cloud-init.conf does not exist

@@ -142,7 +142,7 @@
     dest: /usr/share/cups/data/Logos/team{{ item.id }}.png
     mode: '0644'
   loop: "{{ lookup('file', '/root/contest_repo/contests/' + printsrv_contest_id + '/teams.json') | from_json }}"
-  ignore_errors: "{{ ansible_check_mode }}"
+  failed_when: false
 
 - name: Copy team pictures
   ansible.builtin.copy:
@@ -150,4 +150,4 @@
     dest: /usr/share/cups/data/Pictures/team{{ item.id }}.jpg
     mode: '0644'
   loop: "{{ lookup('file', '/root/contest_repo/contests/' + printsrv_contest_id + '/teams.json') | from_json }}"
-  ignore_errors: "{{ ansible_check_mode }}"
+  failed_when: false

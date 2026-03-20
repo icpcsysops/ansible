@@ -3,11 +3,12 @@
 
 # Fix for kotlin in intellij, it needs to be pointed at an m2 repo properly
 - name: Create .m2 directory in /etc/skel
-  file:
+  ansible.builtin.file:
     path: /etc/skel/.m2
     state: directory
+    mode: '0755'
 - name: Set up m2 settings.xml to point to /opt/m2/repository
-  copy:
+  ansible.builtin.copy:
     content: |
       <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">

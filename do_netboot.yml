@@ -16,12 +16,14 @@
     - name: Figure out the network boot device
       ansible.builtin.shell:
         cmd: >
+          set -o pipefail
           efibootmgr |
           grep '{{ efibootmgr_search }}' |
           cut -f1 -d' ' |
           sed s/^Boot// |
           tr -d '*'
       register: net_boot_device
+      changed_when: false
 
     - name: Efibootmgr to force a netboot
       ansible.builtin.command: efibootmgr -n {{ net_boot_device.stdout }}

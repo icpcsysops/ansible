@@ -4,7 +4,7 @@
   hosts: contestants
   vars:
     contest: &contest TODO
-    accounts_yaml: /root/contest_repo/passwork/{{ contest }}/linux_accounts.yaml
+    accounts_yaml: /root/contest_repo/passwork/{{ contest }}/linux-accounts.yaml
 
   tasks:
     - name: Clear /home

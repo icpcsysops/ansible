@@ -530,7 +530,7 @@
 172.29.1.101	Netmon
 172.29.1.191	builder
 172.29.1.207   cds-green
-172.29.1.208   scoreboard-green
+172.29.1.208   printsrv-green
 172.29.1.209   packages-green
 172.29.1.210   backup-green
 

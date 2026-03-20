@@ -1,0 +1,24 @@
+---
+- name: Generate Fog Server MAC List
+  hosts: contestants
+  strategy: linear
+  gather_facts: true
+  vars:
+     # Default image_id if not provided via --extra-vars "img_id=X"
+    img_id: 1
+    target_ifc: "eth0"
+
+  tasks:
+    - name: Generate CSV file from all hosts in one shot
+      ansible.builtin.copy:
+        dest: ./ether.list.csv
+        # This J2 expression builds the entire file content in memory
+        content: |
+          {% for host in ansible_play_hosts %}
+          {% set mac = hostvars[host]['ansible_default_ipv4']['macaddress'] | default('') %}
+          {% if mac != '' %}
+          {{ mac }},{{ host }},,,{{ img_id }}
+          {% endif %}
+          {% endfor %}
+      run_once: true
+      delegate_to: localhost

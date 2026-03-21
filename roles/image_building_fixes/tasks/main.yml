@@ -19,3 +19,59 @@
     owner: root
     group: root
     mode: '0644'
+
+- name: Fix IntelliJ
+  block:
+    - ansible.builtin.file:
+        state: directory
+        path: /etc/skel/.config/JetBrains/IdeaIC2025.2/options/
+        recurse: true
+        mode: "0755"
+
+    - ansible.builtin.copy:
+        src: files/jdk.table.xml
+        dest: /etc/skel/.config/JetBrains/IdeaIC2025.2/options/jdk.table.xml
+        mode: "0644"
+
+# ??? DO WE NEED THIS? We did it at NAC/Baku, but TBD if it's necessary
+- name: Fix /usr/bin/clion
+  ansible.builtin.file:
+    src: /opt/clion/bin/clion
+    dest: /usr/bin/clion
+    force: true
+    state: link
+  tags: fix_clion
+
+- name: Fix idea binary when launching from cli by making it a symlink to the same executable the desktop icon uses
+  ansible.builtin.file:
+    src: /usr/lib/idea/bin/idea.sh
+    dest: /usr/bin/idea
+    state: link
+    force: true
+
+- name: Install stress-ng
+  ansible.builtin.apt:
+    pkg: stress-ng
+    state: present
+
+- name: Install python3-tk
+  ansible.builtin.apt:
+    name: python3-tk
+  tags: install_tk
+
+- name: Install a2ps (used by printfile command)
+  ansible.builtin.apt:
+    name: a2ps
+
+# Does this make sense? or does policykit do it now?
+- name: Disable idle-dim
+  ansible.builtin.copy:
+    dest: /usr/share/glib-2.0/schemas/21_icpc_power_schema.gschema.override
+    content: |
+      [org.gnome.settings-daemon.plugins.power]
+      idle-dim=false
+    mode: '0644'
+  register: icpc_power_schema
+- name: Glib-compile-schemas
+  ansible.builtin.command: glib-compile-schemas /usr/share/glib-2.0/schemas
+  when: icpc_power_schema.changed

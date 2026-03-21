@@ -138,7 +138,7 @@
 
 - name: Copy logos
   ansible.builtin.copy:
-    src: "/root/contest_repo/contests/{{ printsrv_contest_id }}/organizations/{{ item.organization_id }}/logo.png"
+    src: "/root/contest_repo/contests/{{ printsrv_contest_id }}/organizations/{{ item.organization_id }}/logo.svg"
     dest: /usr/share/cups/data/Logos/team{{ item.id }}.png
     mode: '0644'
   loop: "{{ lookup('file', '/root/contest_repo/contests/' + printsrv_contest_id + '/teams.json') | from_json }}"

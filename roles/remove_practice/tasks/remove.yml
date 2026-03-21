@@ -1,5 +1,22 @@
 ---
 # This puts the system into the real contest state by removing all the practice related things
+- name: Remove network-manager so teams can't wifi things or whatnot
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: absent
+    purge: true
+    autoremove: true
+  with_items:
+    - network-manager
+    - network-manager-gnome
+
+- name: Unmask systemd-networkd
+  ansible.builtin.service:
+    name: "{{ item }}"
+    masked: false
+  loop:
+    - systemd-networkd.service
+    - systemd-networkd.socket
 
 - name: Remove practice team accounts
   block:

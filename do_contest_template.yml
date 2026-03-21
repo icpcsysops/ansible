@@ -64,6 +64,7 @@
   hosts: human_judges
   vars:
     contest: *contest
+    sample_zip: /root/contest_repo/contests/{{ contest }}/config/{{ contest }}-samples.zip
 
   tasks:
     - name: Clear /etc/skel/Desktop/samps

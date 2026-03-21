@@ -54,6 +54,12 @@
   notify:
     - Rsyslog
 
+- name: Install root ssh config
+  ansible.builtin.copy:
+    src: files/ssh.config
+    dest: /root/.ssh/config
+    mode: '0644'
+
 # Overwrite the default rsyslog.conf file with our custom one
 # It switches weekly to daily, and adds a couple extra logfiles
 # to monitor.

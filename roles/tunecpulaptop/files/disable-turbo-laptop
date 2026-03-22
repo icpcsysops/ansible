@@ -5,24 +5,52 @@ shopt -s extglob
 
 declare -A core_ids
 
-# If you want to have 2 judges, then enable this section and set pc2_cpu_override to 2
-# This is for core8, cpus 1 & 2.  Crank up cpu1, turn off thread cpu2
-##cpu=/sys/devices/system/cpu/cpu1
-### crank up clock to max
-##echo performance > $cpu/cpufreq/scaling_governor
-### disable 2nd thread
-##cpu_thread=/sys/devices/system/cpu/cpu2
-##echo 0 > $cpu_thread/online
-###
+devdir=/sys/devices/system/cpu
+desiredcpu=$devdir/cpu2
+disablecpu=$devdir/cpu3
 
-# This is for core12, cpus 3 & 4.  Crank up cpu3, turn off thread cpu4
-cpu=/sys/devices/system/cpu/cpu3
-# crank up clock to max
-echo performance > $cpu/cpufreq/scaling_governor
-# disable 2nd thread
-cpu_thread=/sys/devices/system/cpu/cpu4
-echo 0 > $cpu_thread/online
+# shellcheck disable=SC2012
+for cpu in $desiredcpu $disablecpu
+do
+    [[ $(basename $cpu) =~ ^cpu[0-9]+$ ]] || continue
 
+    # Reenable stuff in case we are rerunning this script.
+    [ -f $cpu/online ] && echo 1 > $cpu/online
+    if [ -f $cpu/cpufreq/scaling_governor ]; then
+        chmod u+w $cpu/cpufreq/scaling_governor
+    fi
+    for boundary in min max; do
+        if [ -f $cpu/cpufreq/scaling_${boundary}_freq ]; then
+            chmod u+w $cpu/cpufreq/scaling_${boundary}_freq
+        fi
+    done
+
+    # Set governor to performance and do not allow changes later on.
+    if [ -f $cpu/cpufreq/scaling_governor ]; then
+        echo performance > $cpu/cpufreq/scaling_governor
+        chmod a-w $cpu/cpufreq/scaling_governor
+    fi
+
+    # Hardware maximum performance.
+    if [ -f $cpu/cpufreq/scaling_min_freq ] && [ -f $cpu/cpufreq/scaling_max_freq ]; then
+        cp $cpu/cpufreq/scaling_{max,min}_freq
+        chmod a-w $cpu/cpufreq/scaling_{max,min}_freq
+    fi
+
+    # Disable all but one thread on each core. Both core_id and physical_package_id are
+    # numbers it must be ensured that for the following examples are seen as distinct:
+    #  - core_id=1,  physical_package=11
+    #  - core_id=11, physycal_package=1
+    # Simple concatenation would result in the string '111' for both cores. Though `cat`
+    # adds a newline after each file, we do not want to rely on `cat` to always add this
+    # 'delimiter'.
+    core_id=$(cat $cpu/topology/core_id | tr -d '\n')'-'$(cat $cpu/topology/physical_package_id | tr -d '\n')
+    if [[ ${core_ids[$core_id]:-} ]]; then
+        echo 0 > $cpu/online
+    else
+        core_ids[$core_id]=1
+    fi
+done
 
 DIR_INTEL=/sys/devices/system/cpu/intel_pstate
 DIR_AMD=/sys/devices/system/cpu/cpufreq

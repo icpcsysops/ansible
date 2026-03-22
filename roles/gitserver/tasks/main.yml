@@ -17,7 +17,7 @@
 - name: Ensure git user
   ansible.builtin.user:
     name: "git"
-    password: "{{ git_user_password }}"
+    password: "{{ git_user_password }}" # TODO: disable this, we don't want a git password
     shell: /usr/bin/git-shell
     group: git
     home: "{{ git_home_dir }}"

@@ -70,13 +70,16 @@ fi
 	$photo_args $logo_args \
 	"$WORKDIR/banner.pdf"
 
-/usr/bin/convert -density 300 "$WORKDIR/in.pdf" -gravity NorthEast -pointsize 12 -family "Ubuntu" -fill '#f00' -annotate "+60+60" "Team: $team" "$WORKDIR/watermarked.pdf"
-/usr/bin/pdftk "$WORKDIR/banner.pdf" "$WORKDIR/watermarked.pdf" cat output "$WORKDIR/out.pdf" >> /tmp/test_filter
+#/usr/bin/convert -density 300 "$WORKDIR/in.pdf" -gravity NorthEast -pointsize 12 -family "Ubuntu" -fill '#f00' -annotate "+60+60" "Team: $team" "$WORKDIR/watermarked.pdf"
+#/usr/bin/pdftk "$WORKDIR/banner.pdf" "$WORKDIR/watermarked.pdf" cat output "$WORKDIR/out.pdf" >> /tmp/test_filter
+/usr/bin/pdftk "$WORKDIR/banner.pdf" "$WORKDIR/in.pdf" cat output "$WORKDIR/out.pdf" >> /tmp/test_filter
+#/usr/bin/pdftk "$WORKDIR/in.pdf" "$WORKDIR/in.pdf" cat output "$WORKDIR/out.pdf" >> /tmp/test_filter
 
-#cp $WORKDIR/in.pdf /tmp/in.pdf
-#cp $WORKDIR/out.pdf /tmp/out.pdf
-#chmod 644 /tmp/out.pdf
-#chmod 644 /tmp/in.pdf
+# cp $WORKDIR/banner.pdf /tmp/banner.pdf
+# cp $WORKDIR/in.pdf /tmp/in.pdf
+# cp $WORKDIR/out.pdf /tmp/out.pdf
+# chmod 644 /tmp/out.pdf
+# chmod 644 /tmp/in.pdf
 #exit 1
 
 cat "$WORKDIR/out.pdf"

@@ -48,7 +48,6 @@
       ansible.builtin.import_role:
         name: coachview
         tasks_from: windows.yml
-      when: false
 
 - name: Windows resolver machines
   hosts: resolvers

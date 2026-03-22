@@ -7,36 +7,14 @@
 
 - name: Update/download and install the resolver client
   block:
-    - name: Get prerelease version
-      delegate_to: 127.0.0.1
-      ansible.builtin.uri:
-        url: https://api.github.com/repos/icpctools/icpctools/releases?per_page=3
-        headers: "{{ github_headers }}"
-        method: GET
-        return_content: true
-        status_code: 200
-        body_format: json
-      register: latest_resolver_release_array
-      when: resolver_version is not defined
-
-    - name: Set resolver client latest version
-      ansible.builtin.set_fact:
-        resolver_version: "{{ latest_resolver_release_array.json[0].name | replace('v', '') }}"
-      when: resolver_version is not defined
-
-    - name: Download resolver client
-      ansible.windows.win_get_url:
-        url: https://github.com/icpctools/icpctools/releases/download/v{{ resolver_version }}/resolver-{{ resolver_version }}.zip
-        dest: /Users/{{ ansible_user }}/Downloads/resolver-{{ resolver_version }}.zip
-
-    - name: Delete existing folder
-      ansible.windows.win_file:
-        path: /Users/{{ ansible_user }}/Desktop/resolver
-        state: absent
+    # - name: Delete existing folder
+    #   ansible.windows.win_file:
+    #     path: /Users/{{ ansible_user }}/Desktop/resolver
+    #     state: absent
 
     - name: Copy the resolver
       ansible.windows.win_copy:
-        src: "{{ item }}"
+        src: "files/resolver-{{ resolver_version }}.zip"
         dest: "%TEMP%/resolver.zip"
       with_first_found:
         - files:

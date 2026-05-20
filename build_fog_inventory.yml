@@ -9,7 +9,7 @@
     target_ifc: "eth0"
 
   tasks:
-    - name: Generate CSV file from all hosts in one shot
+    - name: Generate CSV file from all hosts in one shot  # noqa: run-once[task]
       ansible.builtin.copy:
         dest: ./ether.list.csv
         # This J2 expression builds the entire file content in memory
@@ -20,5 +20,6 @@
           {{ mac }},{{ host }},,,{{ img_id }}
           {% endif %}
           {% endfor %}
+      perm: '0644'
       run_once: true
       delegate_to: localhost

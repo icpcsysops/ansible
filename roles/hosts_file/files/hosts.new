@@ -352,6 +352,12 @@
 10.3.3.47	kattis-ccsadmin7
 10.3.3.48	kattis-ccsadmin8
 
+# 10.3.3.90-93 for cdsadmin
+10.3.3.90       cdsadmin1
+10.3.3.91       cdsadmin2
+10.3.3.92       cdsadmin3
+10.3.3.93       cdsadmin4
+
 # 10.3.3.101-130 for pc2-ccsadmin (matches range for PC2 AJs)
 10.3.3.101	pc2-ccsadmin1
 10.3.3.102	pc2-ccsadmin2
@@ -381,7 +387,7 @@
 
 
 # 10.3.3.208/28 for servers
-10.3.3.208	printsrv scoreboard 
+10.3.3.208	printsrv
 10.3.3.209	packages
 10.3.3.210	backup
 10.3.3.212	kattis kattismaster kattis-test kattis-dress kattis-final
@@ -518,7 +524,10 @@
 172.29.0.190	analyst30
 172.29.0.191	analyst31
 172.29.0.192 	icat
+172.29.0.207    coachview-cds
 
+172.29.0.221    collusion01
+172.29.0.222    collusion02
 
 172.29.1.20	clock
 172.29.1.50	sysops-printer
@@ -530,7 +539,7 @@
 172.29.1.101	Netmon
 172.29.1.191	builder
 172.29.1.207   cds-green
-172.29.1.208   scoreboard-green
+172.29.1.208   printsrv-green
 172.29.1.209   packages-green
 172.29.1.210   backup-green
 
@@ -542,6 +551,7 @@
 172.29.1.226  green-judgehost6
 172.29.1.227  green-judgehost7
 172.29.1.228  green-judgehost8
+172.29.1.240  domjudge-analyst-green
 
 
 # 172.29.1.251-254 MGMT systems
@@ -648,7 +658,17 @@
 
 # 172.24.3.230-250  Switch/AP range
 
+# CoachView 2.0 server
+172.36.0.207 coachview-server
 
+172.36.1.31 tvclient1
+172.36.1.32 tvclient2
+172.36.1.33 tvclient3
+172.36.1.34 tvclient4
+172.36.1.35 tvclient5
+172.36.1.36 tvclient6
+172.36.1.37 tvclient7
+172.36.1.38 tvclient8
 
 ###Local hosts file
 # The following lines are desirable for IPv6 capable hosts

@@ -17,7 +17,7 @@
   ansible.builtin.lineinfile:
     path: /etc/cups/cupsd.conf
     regexp: 'Listen localhost:631'
-    line: 'Listen *:631'
+    line: 'Listen 0.0.0.0:631'
   notify: Restart cups
 
 - name: Add ServerAlias to cupsd.conf
@@ -138,11 +138,11 @@
 
 - name: Copy logos
   ansible.builtin.copy:
-    src: "/root/contest_repo/contests/{{ printsrv_contest_id }}/organizations/{{ item.organization_id }}/logo.png"
+    src: "/root/contest_repo/contests/{{ printsrv_contest_id }}/organizations/{{ item.organization_id }}/logo.svg"
     dest: /usr/share/cups/data/Logos/team{{ item.id }}.png
     mode: '0644'
   loop: "{{ lookup('file', '/root/contest_repo/contests/' + printsrv_contest_id + '/teams.json') | from_json }}"
-  ignore_errors: "{{ ansible_check_mode }}"
+  failed_when: false
 
 - name: Copy team pictures
   ansible.builtin.copy:
@@ -150,4 +150,4 @@
     dest: /usr/share/cups/data/Pictures/team{{ item.id }}.jpg
     mode: '0644'
   loop: "{{ lookup('file', '/root/contest_repo/contests/' + printsrv_contest_id + '/teams.json') | from_json }}"
-  ignore_errors: "{{ ansible_check_mode }}"
+  failed_when: false

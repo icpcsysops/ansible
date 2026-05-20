@@ -12,6 +12,10 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
+  - job_name: 'caddy'
+    static_configs:
+      - targets: ['172.36.0.207:9091']
+
   - job_name: 'cups'
     static_configs:
       - targets: ['printsrv:9329']
@@ -21,10 +25,10 @@ scrape_configs:
   - job_name: systems
     static_configs:
       - targets:
-        - "localhost:9100"
         - "cds:9100"
         - "packages:9100"
         - "printsrv:9100"
+        - "172.36.0.207:9100"
 {% if 'reverseproxy' in hostvars %}
         - "reverseproxy:9100"
 {% endif %}

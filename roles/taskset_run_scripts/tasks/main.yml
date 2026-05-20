@@ -3,9 +3,9 @@
   ansible.builtin.lineinfile:
     path: /usr/local/bin/{{ item }}
     state: present
-    regexp: '^([ ]*)(java|kotlin|pypy)(.*)$'
+    regexp: '^(taskset .*)(java|kotlin|pypy)(.*)$'
     backrefs: true
-    line: '\1taskset -c {{ taskset_cpu }} \2\3'
+    line: 'taskset -c {{ taskset_cpu }} \2\3'
   loop:
     - runpython3
     - runkotlin
@@ -15,9 +15,9 @@
   ansible.builtin.lineinfile:
     path: /usr/local/bin/{{ item }}
     state: present
-    regexp: '^(./a.out)(.*)$'
+    regexp: '^(taskset .*)?(./a.out)(.*)$'
     backrefs: true
-    line: 'taskset -c {{ taskset_cpu }} \1\2'
+    line: 'taskset -c {{ taskset_cpu }} \2\3'
   loop:
     - runc
     - runcpp

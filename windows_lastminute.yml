@@ -17,6 +17,10 @@
   roles:
     - role: windows
     - role: fluent_bit
+  tasks:
+    - name: Add internet dns servers so we can download things
+      ansible.windows.win_shell: |
+        Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses ("8.8.8.8")
 
 - name: Resolver hosts
   hosts: win_resolvers
@@ -44,7 +48,6 @@
       ansible.builtin.import_role:
         name: coachview
         tasks_from: windows.yml
-      when: false
 
 - name: Windows resolver machines
   hosts: resolvers

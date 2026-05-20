@@ -1,7 +1,7 @@
 *filter
-:INPUT ACCEPT [0:0]
+:INPUT DROP [0:0]
 :FORWARD DROP [0:0]
-:OUTPUT ACCEPT [0:0]
+:OUTPUT DROP [0:0]
 
 # LOGGING / DEBUGGING
 -N accept-in-log
@@ -19,103 +19,81 @@
 -A OUTPUT -o lo -j ACCEPT
 
 # DNS outbound
--A INPUT -p tcp --sport 53 -j ACCEPT
 -A OUTPUT -p tcp --dport 53 -j ACCEPT
--A INPUT -p udp --sport 53 -j ACCEPT
 -A OUTPUT -p udp --dport 53 -j ACCEPT
 
-# dns outbound
+# dns outbound (internal name resolution)
 -A OUTPUT -p tcp --dport 5353 -d 10.3.3.210 -j ACCEPT
 -A OUTPUT -p udp --dport 5353 -d 10.3.3.210 -j ACCEPT
--A INPUT -p tcp --sport 5353 -s 10.3.3.210 -j ACCEPT
--A INPUT -p udp --sport 5353 -s 10.3.3.210 -j ACCEPT
 
-# open up server to server communication
+# Let us talk to other servers
 -A OUTPUT -d 10.3.3.208/29 -j ACCEPT
--A INPUT -s 10.3.3.208/29 -j ACCEPT
+# printing (ipp) (TODO: a more restricted source) - coverd by the above
+#-A OUTPUT -p tcp --dport 631 -d 10.0.0.0/8 -j ACCEPT
 
 # ssh inbound (for gitserver)
 -A INPUT -p tcp -m tcp --dport 22 -s 10.2.2.0/23 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 22 -d 10.2.2.0/23 -j ACCEPT
 -A INPUT -p tcp -m tcp --dport 22 -s 10.3.2.0/23 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 22 -d 10.3.2.0/23 -j ACCEPT
 -A INPUT -p tcp -m tcp --dport 22 -s 172.29.0.0/22 -j ACCEPT
--A OUTPUT -p tcp -m tcp --sport 22 -d 172.29.0.0/22 -j ACCEPT
 
 # https inbound
 -A INPUT -p tcp --dport 443 -j ACCEPT
--A OUTPUT -p tcp --sport 443 -j ACCEPT
 
 # ntp in
--A OUTPUT -p tcp --sport 123 -j ACCEPT
--A OUTPUT -p udp --sport 123 -j ACCEPT
--A INPUT -p tcp --dport 123 -j ACCEPT
 -A INPUT -p udp --dport 123 -j ACCEPT
-# ntp out
--A OUTPUT -p tcp --dport 123 -j ACCEPT
--A OUTPUT -p udp --dport 123 -j ACCEPT
--A INPUT -p tcp --sport 123 -j ACCEPT
--A INPUT -p udp --sport 123 -j ACCEPT
-
-# syslog
--A INPUT -p tcp --dport 514 -d 10.3.3.208/29 -j ACCEPT
--A INPUT -p udp --dport 514 -d 10.3.3.208/29 -j ACCEPT
--A OUTPUT -p tcp --sport 514 -s 10.3.3.208/29 -j ACCEPT
--A OUTPUT -p udp --sport 514 -s 10.3.3.208/29 -j ACCEPT
-
-# printing (ipp)
--A OUTPUT -p tcp --sport 631 -s 10.3.3.211 -j ACCEPT
--A OUTPUT -p udp --sport 631 -s 10.3.3.211 -j ACCEPT
--A INPUT -p tcp --dport 631 -d 10.3.3.211 -j ACCEPT
--A INPUT -p udp --dport 631 -d 10.3.3.211 -j ACCEPT
--A OUTPUT -p tcp --sport 631 -s 10.0.0.0/8 -j ACCEPT
--A OUTPUT -p udp --sport 631 -s 10.0.0.0/8 -j ACCEPT
--A INPUT -p tcp --dport 631 -d 10.0.0.0/8 -j ACCEPT
--A INPUT -p udp --dport 631 -d 10.0.0.0/8 -j ACCEPT
 
 # windows exporter
 -A OUTPUT -p tcp -m tcp --dport 2021 -j ACCEPT
--A INPUT  -p tcp -m tcp --sport 2021 -j ACCEPT
 # node exporter outbound for monitoring
 -A OUTPUT -p tcp -m tcp --dport 9100 -j ACCEPT
--A INPUT  -p tcp -m tcp --sport 9100 -j ACCEPT
 # cups exporter
 -A OUTPUT -p tcp -m tcp --dport 9329 -j ACCEPT
--A INPUT  -p tcp -m tcp --sport 9329 -j ACCEPT
 
-# grafana to packages (troy's "admin" workstation)
+# Allow mgmt workstations access to grafana/prometheus
+# troy
 -A INPUT -p tcp --dport 8443 -s 172.29.1.251 -j ACCEPT
--A OUTPUT -p tcp --sport 8443 -d 172.29.1.251 -j ACCEPT
-# prometheus admin to packages (troy's "admin" workstation)
 -A INPUT -p tcp --dport 9090 -s 172.29.1.251 -j ACCEPT
--A OUTPUT -p tcp --sport 9090 -d 172.29.1.251 -j ACCEPT
-
-# grafana to packages (keith's "admin" workstation)
+# keith
 -A INPUT -p tcp --dport 8443 -s 172.29.1.252 -j ACCEPT
--A OUTPUT -p tcp --sport 8443 -d 172.29.1.252 -j ACCEPT
-# prometheus admin to packages (keith's "admin" workstation)
 -A INPUT -p tcp --dport 9090 -s 172.29.1.252 -j ACCEPT
--A OUTPUT -p tcp --sport 9090 -d 172.29.1.252 -j ACCEPT
 
-# enable outgoing ICMP request
--A OUTPUT -p icmp --icmp-type 8 -j ACCEPT
-# enable incoming ICMP reply
--A INPUT -p icmp --icmp-type 0 -m state --state ESTABLISHED,RELATED -j ACCEPT
-
-# what else
-# -A INPUT -m state --state ESTABLISHED,RELATED -j accept-in-log
-# -A OUTPUT -m state --state NEW,ESTABLISHED,RELATED -j accept-out-log
+####### ICMP
+# Limit inbound pings to prevent flooding
+-A INPUT -p icmp --icmp-type echo-request -m limit --limit 1/s -j ACCEPT
+# Only allow essential error reporting (Destination Unreachable)
+-A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT
+# Allow outgoing pings but restrict types
+-A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
+####### end ICMP
 
 {{ extra_iptables_rules | default([]) | join("\n") }}
 
-# loki (shared command and log shipping)
--A INPUT -p tcp --dport 3100 -s 172.29.0.0/22 -j DROP
-# netbios
--A INPUT -p udp --dport 138 -s 172.29.0.0/22 -j DROP
-# broadcasts
--A INPUT -d 255.255.255.255 -j DROP
+# allow related outbound
+-A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+{% if outbound_internet_allowed | default(false) %}
+# Allow output to any external resources
+-A OUTPUT -d 192.168.0.0/16 -j RETURN
+-A OUTPUT -d 10.0.0.0/8 -j RETURN
+-A OUTPUT -d 172.16.0.0/12 -j RETURN
+-A OUTPUT -j ACCEPT
+{% endif %}
+
+# and input related
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
 # drop rest
 -A OUTPUT -j drop-n-log
 -A INPUT -j drop-n-log
 
 COMMIT
+
+# loki (shared command and log shipping)
+#-A INPUT -p tcp --dport 3100 -s 172.29.0.0/22 -j DROP
+# netbios
+#-A INPUT -p udp --dport 138 -s 172.29.0.0/22 -j DROP
+# broadcasts
+#-A INPUT -d 255.255.255.255 -j DROP
+# drop rest
+#-A OUTPUT -j drop-n-log
+#-A INPUT -j drop-n-log

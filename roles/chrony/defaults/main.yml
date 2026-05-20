@@ -1,0 +1,3 @@
+---
+# Whether this host should act as a chrony NTP server
+chrony_server: false

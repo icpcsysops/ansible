@@ -3,7 +3,7 @@
   hosts: pc2_ccs,pc2_aj
 
   roles:
-    - role: hyperthreadingdisabled
+    - role: tunecpulaptop
 
   tasks:
     - name: Create ~icpc/.ssh if it does not exist

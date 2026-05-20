@@ -1,4 +1,14 @@
 ---
+
+# These are some on-site changes we need to apply to all hosts (and maybe bake into the base image)
+- name: Last minute fixes
+  gather_facts: false
+  hosts: all
+  tags: last_minute
+  roles:
+    - role: remove_practice
+    - role: image_building_fixes
+
 - name: Configure backup server
   hosts: backup
   strategy: linear # we want this complete before we do any other hosts
@@ -32,11 +42,6 @@
       vars:
         ssh_key_to_sign: /root/.ssh/id_ed25519.pub
         ssh_principal: "root@{{ inventory_hostname }}"
-
-- name: Undo "pr" coisas
-  hosts: all
-  roles:
-    - undo_teamtracking
 
 - name: Configure packages machines
   hosts: packages
@@ -97,14 +102,14 @@
         line: LC_PAPER="en_US.UTF-8"
       tags: fix_LC_PAPER
 
-- name: Configure scoreboard machine
-  hosts: packages,scoreboard
+- name: Configure scoreboard role
+  hosts: packages
   roles:
     - role: scoreboard
       tags: scoreboard
 
 - name: Configure extra_nic machines
-  hosts: backup, scoreboard, printsrv, cds, packages
+  hosts: backup, printsrv, cds, packages
   tags: extra_nics
   tasks:
     - name: Configure nics
@@ -115,7 +120,7 @@
       loop: "{{ extra_nic_configs }}"
 
 - name: Configure coachview machines
-  hosts: coachview*
+  hosts: coachviews
   roles:
     - role: coachview
   tasks:
@@ -161,6 +166,67 @@
     - role: prometheus_target_all
       tags: prom
 
+- name: Configure team/judge/ajs
+  hosts: contestants,judges
+  gather_facts: false
+  tags: teamlike
+  roles:
+    - role: taskset_run_scripts
+  tasks:
+    - name: Copy fixed runc and runcpp scripts
+      ansible.builtin.copy:
+        src: files/{{ item }}
+        dest: /usr/local/bin/{{ item }}
+        mode: '0755'
+      loop:
+        - runc
+        - runcpp
+
+    - name: Copy fixed firefox policies.json
+      ansible.builtin.copy:
+        src: files/firefox-policies.json
+        dest: /usr/lib/firefox/distribution/policies.json
+        mode: '0644'
+
+    - name: Include ccstools role only for domjudge
+      ansible.builtin.include_role:
+        name: ccstools
+      tags: ccstools
+      when: ccs == "domjudge"
+
+    - name: pc2 things
+      when: ccs == "pc2"
+      block:
+      - name: Replace SUBMITBASEURL for current contest in /etc/profile.d/pc2submit_profile.sh
+        ansible.builtin.lineinfile:
+          path: /etc/profile.d/pc2submit_profile.sh
+          regexp: '^export SUBMITBASEURL=.*$'
+          line: 'export SUBMITBASEURL=https://pc2:50443'
+        tags: ccstools
+      - name: Add pc2 and pc2server to /etc/hosts
+        ansible.builtin.lineinfile:
+          path: /etc/hosts
+          line: '10.3.3.214	pc2 pc2server'
+          owner: root
+          group: root
+          mode: '0644'
+        tags: ccstools
+      - name: Update reverse proxy config for contest to point to pc2
+        ansible.builtin.copy:
+          src: files/pc2-reverseproxy.conf
+          dest: /etc/nginx/sites-available/reverseproxy.conf
+          mode: '0644'
+          owner: root
+          group: root
+        tags: ccstools
+        notify: Restart nginx
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+
+
 - name: Configure contestant machines
   hosts: contestants
   roles:
@@ -174,7 +240,6 @@
       when: enable_reverseproxy is defined and enable_reverseproxy
     - role: p100
       tags: p100
-    - role: taskset_run_scripts
     - role: vlc
       when: enable_vlc is defined and enable_vlc
       tags: vlc
@@ -184,106 +249,14 @@
       when: disable_martkeys is not defined or not disable_martkeys
 
   tasks:
-    - name: Install python3-tk
-      ansible.builtin.apt:
-        name: python3-tk
-      tags: install_tk
-    - name: Fix /usr/bin/clion
-      ansible.builtin.file:
-        src: /opt/clion/bin/clion
-        dest: /usr/bin/clion
-        force: true
-        state: link
-      tags: fix_clion
-
-    - name: Install a2ps
-      ansible.builtin.apt:
-        name: a2ps
-
-    - name: Install printfile
-      ansible.builtin.copy:
-        src: files/printfile
-        dest: /usr/local/bin/printfile
-        mode: '0755'
-        owner: root
-        group: root
-    - name: Remove network-manager so teams can't wifi things or whatnot
-      ansible.builtin.apt:
-        name: "{{ item }}"
-        state: absent
-        purge: true
-        autoremove: true
-      with_items:
-        - network-manager
-        - network-manager-gnome
-
-    # more things to fix in icpc-pycharm
-    - name: Fix location in printers.conf
-      ansible.builtin.lineinfile:
-        state: absent
-        path: /etc/cups/printers.conf
-        regexp: ^Location.*
-      tags: fix_location
-      notify: Restart cups
-
-    # TODO fix this in icpc2025
-    - name: Fix idea binary when launching from cli by making it a symlink to the same executable the desktop icon uses
-      ansible.builtin.file:
-        src: /usr/lib/idea/bin/idea.sh
-        dest: /usr/bin/idea
-        state: link
-        force: true
-
-    - name: Remove invalid runconfiguration from pycharm workspace
-      tags: pycharm_fix
-      ansible.builtin.file:
-        state: absent
-        path: /etc/skel/workspace/PycharmProject/.idea/runConfigurations/pypy3.xml
-
-    - name: Include ccstools role only for domjudge
-      ansible.builtin.include_role:
-        name: ccstools
-      tags: ccstools
-      when: ccs == "domjudge"
-
-    - name: Replace SUBMITBASEURL for current contest in /etc/profile.d/pc2submit_profile.sh
-      ansible.builtin.lineinfile:
-        path: /etc/profile.d/pc2submit_profile.sh
-        regexp: '^export SUBMITBASEURL=.*$'
-        line: 'export SUBMITBASEURL=https://pc2:50443'
-      tags: ccstools
-      when: ccs == "pc2"
-
-    - name: Add pc2 and pc2server to /etc/hosts
-      ansible.builtin.lineinfile:
-        path: /etc/hosts
-        line: '10.3.3.214	pc2 pc2server'
-        owner: root
-        group: root
-        mode: '0644'
-      tags: ccstools
-      when: ccs == "pc2"
-
-    # TODO fixed in this to icpc2024
-    - name: Disable idle-dim
-      ansible.builtin.copy:
-        dest: /usr/share/glib-2.0/schemas/21_icpc_power_schema.gschema.override
-        content: |
-          [org.gnome.settings-daemon.plugins.power]
-          idle-dim=false
-        mode: '0644'
-      notify: Glib-compile-schemas
-
-    - name: Cleanup domjudge.desktop,  renaming to ccs.desktop
-      ansible.builtin.file:
-        name: /usr/share/applications/domjudge.desktop
-        state: absent
-
-    - name: Install stress-ng
-      ansible.builtin.apt:
-        pkg: stress-ng
-        state: present
-
+  # I don't think we actually need this?
+  # - name: Fix location in printers.conf
+  #   ansible.builtin.lineinfile:
+  #     state: absent
+  #     path: /etc/cups/printers.conf
+  #     regexp: ^Location.*
+  #   tags: fix_location
+  #   notify: Restart cups
     - name: Disable systemd-resolved
       ansible.builtin.systemd:
         name: systemd-resolved
@@ -376,22 +349,6 @@
         - "gvfsd-computer"
         - "gvfsd-localtest"
 
-    - name: Pre-generate the kernel flags for ansible usage
-      ansible.builtin.set_fact:
-        procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1 i915.force_probe=4690"
-
-    - name: Ensure /etc/default/grub has proper GRUB_CMDLINE_LINUX_DEFAULT
-      ansible.builtin.replace:
-        path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=.*$'
-        replace: "GRUB_CMDLINE_LINUX_DEFAULT=\"{{ procline }}\""
-        owner: root
-        group: root
-        mode: '0644'
-      notify:
-        - Update grub
-        - Reboot
-
     - name: Place 21_icpc-disable-automount-schema.gschema.override
       ansible.builtin.copy:
         content: |
@@ -403,25 +360,9 @@
         group: root
         mode: '0644'
       notify: Glib-compile-schemas
-
-    - name: Copy fixed runc and runcpp scripts
-      ansible.builtin.copy:
-        src: files/{{ item }}
-        dest: /usr/local/bin/{{ item }}
-        mode: '0755'
-        owner: root
-        group: root
-      loop:
-        - runc
-        - runcpp
   handlers:
     - name: Glib-compile-schemas
       ansible.builtin.command: glib-compile-schemas /usr/share/glib-2.0/schemas
-      changed_when: false
-    - name: Reboot
-      ansible.builtin.reboot:
-    - name: Update grub
-      ansible.builtin.command: /usr/sbin/update-grub
       changed_when: false
     - name: Restart cups
       ansible.builtin.service:
@@ -448,28 +389,11 @@
         name: rsyslog
         state: restarted
 
-- name: Install/configure systemd-timesyncd on everything but the ntp servers
-  hosts: all:!ntpservers
+- name: Install/configure chrony on everything but the ntp servers
+  hosts: all
   roles:
-    - role: stuvusIT.systemd-timesyncd
-      timesync_timezone: "{{ timezone }}"
-      timesync_ntp_hosts: "{{ ntp_hosts }}"
-      timesync_fallback_ntp_hosts: "{{ fallback_ntp_hosts }}"
-      tags: systemd-timesyncd
-  tasks:
-    - name: Fix /etc/timezone
-      ansible.builtin.copy:
-        dest: /etc/timezone
-        content: "{{ timezone }}"
-        mode: "0644"
-        owner: root
-        group: root
-
-- name: Set up our ntp servers
-  hosts: ntpservers
-  roles:
-    - role: ntp
-      tags: ntp
+    - role: chrony
+      tags: chrony
 
 - name: Lastminute config for all hosts
   hosts: all
@@ -489,6 +413,7 @@
       loop:
         - ICPCLogo-greeter.png
         - ICPCLogo-on-dark-smaller.png
+      tags: logos
 
     # will be fixed in icpc2026
     - name: Ensure /etc/ssh/sshd_config.d/50-cloud-init.conf does not exist
@@ -619,7 +544,7 @@
       when: clone_contest_repo is defined and clone_contest_repo | bool
 
 - name: Configure the cds instances (new style)
-  hosts: cds*
+  hosts: cds
   roles:
     - role: cds
       tags: cds
@@ -675,13 +600,14 @@
     - role: printserver
       tags: printserver
 
-- name: Set isolcpus to 3 for pc2-ajs
-  hosts: pc2-aj*,pc2-ccsadmin*
+- name: Set isolcpus
+  hosts: pc2-aj*,pc2-ccsadmin*,contestants,human_judges
   gather_facts: false
   tasks:
     - name: Pre-generate the kernel flags for ansible usage
       ansible.builtin.set_fact:
-        procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1 i915.force_probe=4690 isolcpus=3"
+        procline: "quiet ipv6.disable=1 cgroup_enable=memory swapaccount=1 i915.force_probe=4690 isolcpus={{ taskset_cpu }}"
+
     - name: Ensure /etc/default/grub has proper GRUB_CMDLINE_LINUX_DEFAULT
       ansible.builtin.replace:
         path: /etc/default/grub

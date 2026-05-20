@@ -1,0 +1,18 @@
+---
+- name: Check if our sentinal file exists indicating we've done the removal
+  ansible.builtin.stat:
+    path: "/var/lib/remove_practice_done"
+  register: remove_practice_done_file
+
+- name: Remove practice files if not already done
+  ansible.builtin.include_tasks: remove.yml
+  when: not remove_practice_done_file.stat.exists
+
+- name: Create sentinal file indicating we've done the removal
+  ansible.builtin.file:
+    path: "/var/lib/remove_practice_done"
+    state: touch
+    mode: "0644"
+    owner: root
+    group: root
+  when: not remove_practice_done_file.stat.exists

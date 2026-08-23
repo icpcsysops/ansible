@@ -1,0 +1,6 @@
+---
+- name: Restart LightDM
+  ansible.builtin.systemd_service:
+    name: lightdm
+    state: restarted
+  listen: "Restart LightDM"

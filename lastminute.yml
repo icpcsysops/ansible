@@ -83,6 +83,9 @@
   roles:
     - role: apt
       tags: apt
+    - role: enable_logon_on_external
+      tags: enable_logon_on_external
+      when: enable_logon_on_external is defined and enable_logon_on_external
   tasks:
     - name: Fix LC_TIME
       ansible.builtin.lineinfile:

@@ -1,0 +1,13 @@
+---
+- name: Install display_setup.sh
+  ansible.builtin.copy:
+    src: display_setup.sh
+    dest: /etc/lightdm/display_setup.sh
+    mode: '0755'
+
+- name: Configure LightDM to use display_setup.sh
+  ansible.builtin.copy:
+    dest: /etc/lightdm/lightdm.conf.d/50_display_setup.conf
+    content: |                                                                                                                                                            [Seat:*]
+      display-setup-script=/etc/lightdm/display_setup.sh                                                                                                                mode: '0644'
+  notify: Restart LightDM

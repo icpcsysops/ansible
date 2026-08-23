@@ -54,8 +54,6 @@
 
 # prom from the packages
 -A INPUT -p tcp -m tcp --dport 9100 -s 10.3.3.209 -j ACCEPT
-# maybe change to conntrack for the OUTPUT rule so we can drop this.
--A OUTPUT -p tcp -m tcp --sport 9100 -d 10.3.3.209 -j ACCEPT
 
 {% if enable_reverseproxy -%}
 #TODO: make the ip for reverseproxy a lookup/variable/something better than hardcoded
@@ -116,6 +114,7 @@
 -A INPUT -p icmp --icmp-type 8 -m state --state NEW,ESTABLISHED,RELATED -j drop-n-log
 -A OUTPUT -p icmp --icmp-type 0 -m state --state ESTABLISHED,RELATED -j drop-n-log
 
+-A INPUT -p icmp --icmp-type 3 -s 10.3.3.209 -j ACCEPT
 -A INPUT -p icmp --icmp-type 3 -s 10.3.3.210 -j ACCEPT
 
 # disable outgoing ICMP request

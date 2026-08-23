@@ -1,0 +1,22 @@
+services:
+  teamview:
+    image: ghcr.io/icpctools/team-view:latest
+    environment:
+      CONTEST_URL: https://cds.icpc-vcss.org:8443/api
+      CONTEST_USER: presentation
+      CONTEST_PASSWORD: opposing-rewire-sheet-dweeb
+    extra_hosts:
+    - "cds.icpc-vcss.org:172.36.0.207"
+  caddy:
+    image: caddy:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+      - "9091:9091"
+    volumes:
+      - ./cert.pem:/cert.pem:ro
+      - ./key.pem:/key.pem:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./frozen:/srv/frozen:ro
+    depends_on:
+      - teamview

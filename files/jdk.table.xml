@@ -1,0 +1,166 @@
+<application>
+  <component name="ProjectJdkTable">
+    <jdk version="2">
+      <name value="21" />
+      <type value="JavaSDK" />
+      <version value="Java 21.0.8" />
+      <homePath value="/usr/lib/jvm/java-1.21.0-openjdk-amd64" />
+      <roots>
+        <annotationsPath>
+          <root type="composite">
+            <root url="jar://$APPLICATION_HOME_DIR$/plugins/java/lib/resources/jdkAnnotations.jar!/" type="simple" />
+          </root>
+        </annotationsPath>
+        <classPath>
+          <root type="composite">
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.base" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.compiler" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.datatransfer" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.desktop" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.instrument" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.logging" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.management" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.management.rmi" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.naming" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.net.http" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.prefs" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.rmi" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.scripting" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.se" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.security.jgss" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.security.sasl" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.smartcardio" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.sql" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.sql.rowset" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.transaction.xa" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.xml" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.xml.crypto" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.accessibility" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.attach" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.charsets" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.compiler" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.crypto.cryptoki" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.crypto.ec" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.dynalink" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.editpad" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.hotspot.agent" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.httpserver" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.incubator.vector" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.internal.ed" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.internal.jvmstat" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.internal.le" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.internal.opt" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.internal.vm.ci" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.internal.vm.compiler" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.internal.vm.compiler.management" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.jartool" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.javadoc" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.jcmd" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.jconsole" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.jdeps" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.jdi" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.jdwp.agent" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.jfr" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.jlink" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.jpackage" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.jshell" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.jsobject" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.jstatd" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.localedata" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.management" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.management.agent" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.management.jfr" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.naming.dns" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.naming.rmi" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.net" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.nio.mapmode" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.random" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.sctp" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.security.auth" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.security.jgss" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.unsupported" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.unsupported.desktop" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.xml.dom" type="simple" />
+            <root url="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/jdk.zipfs" type="simple" />
+          </root>
+        </classPath>
+        <javadocPath>
+          <root type="composite" />
+        </javadocPath>
+        <sourcePath>
+          <root type="composite">
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.se" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.jdi" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.jfr" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.net" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.rmi" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.sql" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.xml" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.jcmd" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.sctp" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.base" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.jdeps" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.jlink" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.zipfs" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.prefs" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.attach" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.jshell" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.jstatd" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.random" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.naming" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.editpad" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.jartool" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.javadoc" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.xml.dom" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.desktop" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.logging" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.charsets" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.compiler" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.dynalink" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.jconsole" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.jpackage" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.jsobject" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.compiler" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.net.http" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.crypto.ec" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.scripting" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.httpserver" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.jdwp.agent" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.localedata" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.management" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.naming.dns" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.naming.rmi" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.instrument" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.management" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.sql.rowset" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.xml.crypto" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.internal.ed" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.internal.le" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.nio.mapmode" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.unsupported" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.smartcardio" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.internal.opt" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.datatransfer" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.accessibility" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.hotspot.agent" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.security.auth" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.security.jgss" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.security.jgss" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.security.sasl" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.internal.vm.ci" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.management.jfr" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.management.rmi" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/java.transaction.xa" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.crypto.cryptoki" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.incubator.vector" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.internal.jvmstat" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.management.agent" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.unsupported.desktop" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.internal.vm.compiler" type="simple" />
+            <root url="jar:///usr/lib/jvm/java-1.21.0-openjdk-amd64/lib/src.zip!/jdk.internal.vm.compiler.management" type="simple" />
+          </root>
+        </sourcePath>
+      </roots>
+    </jdk>
+  </component>
+</application>

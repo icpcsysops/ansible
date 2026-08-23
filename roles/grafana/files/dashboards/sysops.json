@@ -109,7 +109,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "probe_success{instance=~\"cds|backup|printsrv|scoreboard|packages|reverseproxy\"}",
+          "expr": "probe_success{instance=~\"cds|backup|printsrv|packages|reverseproxy\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,

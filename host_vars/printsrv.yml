@@ -10,6 +10,7 @@ extra_nic_configs: []
 #   address: 172.29.1.211/22
 #   ifc_name: enx00e04c68ff12
 #   routes: []
+chrony_server: true # act as an NTP server
 ntp_servers:
   - 172.29.1.20
   - 10.3.3.209
